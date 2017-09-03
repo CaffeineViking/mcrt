@@ -1,0 +1,68 @@
+\documentclass[a4paper, twocolumn]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[pdftex, hidelinks,
+            pdftitle={Monte Carlo Ray Tracing in a Nutshell},
+            pdfauthor={Martin Estgren and Erik S. V. Jansson},
+            pdfsubject={Rendering -- Global Illumination},
+            pdfkeywords={rendering, global illumination,
+                         path tracing, c++}]{hyperref}
+
+\usepackage{bm}
+\usepackage{caption}
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage{mathtools}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{courier}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{algorithm}
+\usepackage[capitalize, noabbrev]{cleveref}
+\usepackage[activate={true, nocompatibility}, final,
+            tracking=true, kerning=true, spacing=true,
+            factor=1100, stretch=10, shrink=10]{microtype}
+
+\DeclareCaptionFormat{modifiedlst}{\rule{\textwidth}{0.85pt}\\[-2.9pt]#1#2#3}
+\captionsetup[lstlisting]{format =  modifiedlst,
+labelfont=bf,singlelinecheck=off,labelsep=space}
+\lstset{basicstyle=\footnotesize\ttfamily,
+        breakatwhitespace = false,
+        breaklines = true,
+        keepspaces = true,
+        language = C++,
+        showspaces = false,
+        showstringspaces = false,
+        frame = tb,
+        numbers = left,
+        numbersep = 5pt,
+        xleftmargin = 16pt,
+        framexleftmargin = 16pt,
+        belowskip = \bigskipamount,
+        aboveskip = \bigskipamount,
+        escapeinside={<@}{@>}}
+
+\title{\textbf{Monte Carlo Ray Tracing in a Nutshell}\\
+       \Large{\textit{-- Tales of the Wonders and Horrors of Raytracing --}}}
+\author{{\textbf{Martin Estgren}} \;\;\;\;\;\;\, {\href{mailto:mares480@student.liu.se}
+                                                       {\texttt{<mares480@student.liu.se>}}} \\
+        {\textbf{Erik S. V. Jansson}} \;         {\href{mailto:erija578@student.liu.se}
+                                                       {\texttt{<erija578@student.liu.se>}}} \\~\\
+        {Linköping University, Sweden}\vspace{-2.0ex}}
+
+\begin{document}
+    \maketitle
+    \section*{Abstract}
+
+    % Write stuffs over here.
+
+    \tableofcontents \newpage
+
+    % Write stuffs over here.
+
+    \newpage % Next column...
+    \nocite{*} % Include all.
+    \bibliographystyle{abbrv}
+    \bibliography{mcrt}
+\end{document}
