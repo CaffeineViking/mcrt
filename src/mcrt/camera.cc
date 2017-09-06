@@ -1,1 +1,0 @@
-#include "mcrt/camera.hh"

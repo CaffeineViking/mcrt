@@ -1,1 +1,0 @@
-#include "mcrt/image.hh"
