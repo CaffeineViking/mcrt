@@ -103,7 +103,7 @@ mcrt::Color<T> mcrt::operator/(const Color<T>& left, const Color<T>& right) {
 template<typename T>
 std::ostream& mcrt::operator<<(std::ostream& output, const Color<T>& color) {
     return output << "[ " << static_cast<double>(color.r) << " " << static_cast<double>(color.g)
-                  << " " << static_cast<double>(color.b) << " " << static_cast<double>(color.a) << " ]";
+                  << " "  << static_cast<double>(color.b) << " " << static_cast<double>(color.a) << " ]";
 }
 
 #endif
