@@ -9,6 +9,7 @@
 namespace mcrt {
     class Image {
     public:
+        Image(size_t length) : Image { length, length } {  }
         Image(size_t width, size_t height) : width { width }, height { height },
                                              pixelData(width*height) {  }
 
