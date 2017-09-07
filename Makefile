@@ -13,8 +13,8 @@ run: FORCE
 
 docs: FORCE
 	make -C docs/
-view: FORCE
-	make -C docs/ view
+slides: FORCE
+	make -C docs/slides/
 tags: FORCE
 	ctags -R src/mcrt include/mcrt
 	cscope -Rb -s src/mcrt -s include/mcrt
@@ -22,10 +22,12 @@ tags: FORCE
 clean: FORCE
 	rm -rf build
 	rm -rf docs/build
+	rm -rf docs/slides/build
 distclean: clean
 	rm -rf bin
 	rm -f docs/mcrt.pdf
+	rm -f docs/slides/slides.pdf
 FORCE:
 
-# Clarifies gmake that these aren't real deps.
-.PHONY: all test run docs tags clean distclean
+# Clarifies gmake that these aren't real dependencies
+.PHONY: all test run docs slides tags clean distclean
