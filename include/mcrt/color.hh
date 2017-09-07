@@ -10,6 +10,8 @@ namespace mcrt {
         Color<T>& operator-=(const Color<T>&);
         Color<T>& operator*=(const Color<T>&);
         Color<T>& operator/=(const Color<T>&);
+
+        explicit operator T*() const;
         T r, g, b, a; // RGBA-colorspace data.
     };
 
@@ -23,6 +25,12 @@ namespace mcrt {
 
     // Useful for debugging color related problems when ray-tracing the radiances.
     template<typename T> std::ostream& operator<<(std::ostream&, const Color<T>&);
+}
+
+template<typename T>
+mcrt::Color<T>::operator T*() const {
+    // Assumes structs has correct byte alignment.
+    return reinterpret_cast<unsigned char*>(this);
 }
 
 template<typename T>

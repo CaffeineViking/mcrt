@@ -2,22 +2,37 @@
 #define MCRT_IMAGE_FORMAT_HH
 
 #include <string>
-#include <iomanip>
 #include <fstream>
 
 #include "mcrt/image.hh"
 
 namespace mcrt {
-    // The binary PPM formats.
-    struct NetpbmImageFormat {
-        static Image load(const std::string&);
-        static void save(const Image&, const std::string&);
+    class ImageFormat {
+    public:
+        virtual ~ImageFormat() = default;
+        virtual Image load(const std::string&) const = 0;
+        virtual void  save(const Image&, const std::string&) const = 0;
     };
 
-    // Suckless Farbfeld format.
-    struct FarbfeldImageFormat {
-        static Image load(const std::string&);
-        static void save(const Image&, const std::string&);
+    // Easy-to-parse, universal binary PPM format.
+    class NetpbmImageFormat : public ImageFormat {
+    public:
+        Image load(const std::string&) const override;
+        void save(const Image&, const std::string&) const override;
+    };
+
+    // Suckless image format with alpha-channel too.
+    class FarbfeldImageFormat : public ImageFormat {
+    public:
+        Image load(const std::string&) const override;
+        void save(const Image&, const std::string&) const override;
+    };
+
+    // Lossless image format with RGBA support.
+    class PngImageFormat : public ImageFormat {
+    public:
+        Image load(const std::string&) const override;
+        void save(const Image&, const std::string&) const override;
     };
 }
 

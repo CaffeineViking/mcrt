@@ -21,23 +21,21 @@ namespace mcrt {
         size_t getSize() const { return width*height; }
         size_t getHeight() const { return height; }
         size_t getWidth() const { return width; }
+        double getAspectRatio() const;
 
-        // Wrapper for saving to disk.
-        template<typename ImageFormat>
-        void save(const std::string&) const;
+        // Since Color is specified in a struct, it should
+        // aligned element-wise. Therefore, we can convert
+        // it to a stream of bytes directly without having
+        // to do any sort of conversion magic. It's bytes!
+        unsigned char* getPixelData(); // e.g. for OpenGL.
 
-        static constexpr size_t CHANNELS { 4 };
         static constexpr size_t BPP { 24 };
+        static constexpr size_t CHANNELS { 4 };
 
     private:
         size_t width, height; // 24 bpp in our case.
         std::vector<Color<unsigned char>> pixelData;
     };
-
-    template<typename ImageFormat>
-    void Image::save(const std::string& file) const {
-        ImageFormat::save(*this, file);
-    }
 }
 
 #endif

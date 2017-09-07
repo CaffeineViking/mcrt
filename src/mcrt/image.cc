@@ -5,6 +5,7 @@ mcrt::Color<unsigned char>& mcrt::Image::pixel(size_t x, size_t y) {
     return pixelData[x + y * width];
 }
 
+double mcrt::Image::getAspectRatio() const { return width / static_cast<double>(height); }
 void mcrt::Image::resize(size_t width, size_t height) {
     pixelData.resize(width*height);
     this->height = height;
@@ -13,4 +14,9 @@ void mcrt::Image::resize(size_t width, size_t height) {
 
 void mcrt::Image::clear(const Color<unsigned char>& clearColor) {
     for (auto& pixel : pixelData) pixel = clearColor;
+}
+
+unsigned char* mcrt::Image::getPixelData() {
+    Color<unsigned char>* pixels { pixelData.data() };
+    return reinterpret_cast<unsigned char*>(pixels);
 }
