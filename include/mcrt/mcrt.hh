@@ -2,7 +2,7 @@
 #define MCRT_MCRT_HH
 
 #include <glm/glm.hpp>
-
+#include <limits>
 namespace mcrt {    
 
 // Material struct, stores render information about a surface type.
@@ -30,11 +30,19 @@ struct Triangle {
     Material material;
 };
 
-// Return distance from ray origin to sphere, -1 means no intersection.
-double sphere_intersect(const Ray&, const Sphere&);
+struct Intersection {
+    double distance;    // Distance to surface point
+    glm::dvec3 normal;  // Normal of surface    
+}
 
-// Returns distance from ray to triangle, -1 means no intersection.
-double triangle_instersect(const Ray&, const Triangle&);
+// Return distance from ray origin to sphere, 0 means no intersection.
+Intersection sphere_intersect(const Ray&, const Sphere&);
+
+// Returns distance from ray to triangle, 0 means no intersection.
+Intersection triangle_instersect(const Ray&, const Triangle&);
+
+// Return intersection with closes boject in the scene togheter with some values usefull for continued tracing.
+Intersection object_intersection(const Ray&, const std::vector<Sphere>&, const std::vector<Triangle>&);
 
 }
 #endif
