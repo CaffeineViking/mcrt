@@ -14,5 +14,10 @@ int main(int, char**) {
         dummyMaterial};
     double distance = mcrt::triangle_instersect(ray,triangle);
     std::cout << distance << std::endl;
+
+    mcrt::Sphere sphere{glm::dvec3(0.0,0.0,4.0),2.0, dummyMaterial};
+    distance = mcrt::sphere_intersect(ray,sphere);
+    std::cout << distance << std::endl;
+
     return 0;
 }

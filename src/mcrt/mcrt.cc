@@ -1,11 +1,17 @@
 #include "mcrt/mcrt.hh"
 #include <glm/glm.hpp>
-
+#include <cmath>
 namespace mcrt{
 
 // Return distance from ray origin to sphere, -1 means no intersection.
 double sphere_intersect(const Ray& ray, const Sphere& sphere) {
     glm::dvec3 a = ray.origin - sphere.origin;
+    double b = glm::dot(a,ray.direction);
+    double c = glm::dot(a,a) - (sphere.radius * sphere.radius);
+    double d = b * b - c;
+    if(d > 0.0)
+        return -b - sqrt(d);
+    return 0.0;
 }
 
 // Returns distance from ray to triangle, 0 means no intersection.
