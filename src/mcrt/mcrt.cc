@@ -10,10 +10,10 @@ Intersection sphere_intersect(const Ray& ray, const Sphere& sphere) {
     double b = glm::dot(a,ray.direction);
     double c = glm::dot(a,a) - (sphere.radius * sphere.radius);
     double d = b * b - c;
-    if(det > 1e-8) {
+    if(d > 1e-8) {
         double dist = -b - sqrt(d);
         result.distance = dist;
-        result.normal = glm::normalize((ray.origin + origin.direction) - sphere.origin);
+        result.normal = glm::normalize((ray.origin + ray.direction) - sphere.origin);
         return result;        
     }
     return result;
@@ -55,8 +55,8 @@ Intersection triangle_instersect(const Ray& ray, const Triangle& triangle) {
 Intersection object_intersection(const Ray& ray, const std::vector<Sphere>& spheres, const std::vector<Triangle>& triangles) {
     Intersection result
         {
-            std::numeric_limits<double>::max()            
-            glm::dvec3(0.0),
+            std::numeric_limits<double>::max(),            
+            glm::dvec3(0.0)
         };
 
     for(const Sphere& s: spheres) {

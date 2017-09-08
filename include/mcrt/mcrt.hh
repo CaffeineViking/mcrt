@@ -3,6 +3,7 @@
 
 #include <glm/glm.hpp>
 #include <limits>
+#include <vector>
 namespace mcrt {    
 
 // Material struct, stores render information about a surface type.
@@ -33,7 +34,7 @@ struct Triangle {
 struct Intersection {
     double distance;    // Distance to surface point
     glm::dvec3 normal;  // Normal of surface    
-}
+};
 
 // Return distance from ray origin to sphere, 0 means no intersection.
 Intersection sphere_intersect(const Ray&, const Sphere&);
