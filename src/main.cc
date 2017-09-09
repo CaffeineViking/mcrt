@@ -20,7 +20,7 @@ int main(int, char**) {
         }
     }
 
-    mcrt::NetpbmImageFormat imageFormat;
-    imageFormat.save(image, "test.ppm");
+    mcrt::FarbfeldImageFormat imageFormat;
+    imageFormat.save(image, "share/x.ff");
     return 0;
 }
