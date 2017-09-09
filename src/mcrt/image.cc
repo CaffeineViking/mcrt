@@ -39,7 +39,7 @@ mcrt::Image mcrt::Image::bilinearInterpolation(size_t width, size_t height) {
             double scaledX { x * widthRatio },
                    scaledY { y * heightRatio };
 
-            // Pick the four pixels closest to our sampling (x, y).
+            // Pick four pixels near samples.
             size_t tli = std::floor(scaledX),
                    tlj = std::floor(scaledY);
             size_t tri = tli + 1, trj = tlj;
