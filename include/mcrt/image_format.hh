@@ -27,13 +27,6 @@ namespace mcrt {
         // Loading is not very hard in the FF format, might do l8r.
         void save(const Image&, const std::string&) const override;
     };
-
-    // Lossless image format with RGBA support.
-    class PngImageFormat : public ImageFormat {
-    public:
-        // Might need to use a library for both saving and loading.
-        void save(const Image&, const std::string&) const override;
-    };
 }
 
 #endif
