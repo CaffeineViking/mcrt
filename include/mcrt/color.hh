@@ -6,6 +6,8 @@
 namespace mcrt {
     template<typename T>
     struct Color {
+        Color<T>& operator*=(double);
+        Color<T>& operator/=(double);
         Color<T>& operator+=(const Color<T>&);
         Color<T>& operator-=(const Color<T>&);
         Color<T>& operator*=(const Color<T>&);
@@ -13,6 +15,7 @@ namespace mcrt {
 
         explicit operator char*();
         explicit operator const char*() const;
+
         T r, g, b, a; // RGBA-colorspace data.
     };
 
@@ -23,6 +26,8 @@ namespace mcrt {
     template<typename T> Color<T> operator-(const Color<T>&, const Color<T>&);
     template<typename T> Color<T> operator*(const Color<T>&, const Color<T>&);
     template<typename T> Color<T> operator/(const Color<T>&, const Color<T>&);
+    template<typename T> Color<T> operator*(double, const Color<T>&);
+    template<typename T> Color<T> operator/(double, const Color<T>&);
 
     // Useful for debugging color related problems when ray-tracing the radiances.
     template<typename T> std::ostream& operator<<(std::ostream&, const Color<T>&);
@@ -68,11 +73,28 @@ mcrt::Color<T>& mcrt::Color<T>::operator*=(const Color<T>& other) {
 }
 
 template<typename T>
+mcrt::Color<T>& mcrt::Color<T>::operator*=(double scale) {
+    this->r *= scale;
+    this->g *= scale;
+    this->b *= scale;
+    this->a *= scale;
+    return *this;
+}
+
+template<typename T>
 mcrt::Color<T>& mcrt::Color<T>::operator/=(const Color<T>& other) {
     this->r /= other.r;
     this->g /= other.g;
     this->b /= other.b;
     this->a /= other.a;
+    return *this;
+}
+template<typename T>
+mcrt::Color<T>& mcrt::Color<T>::operator/=(double scale) {
+    this->r /= scale;
+    this->g /= scale;
+    this->b /= scale;
+    this->a /= scale;
     return *this;
 }
 
@@ -109,7 +131,21 @@ mcrt::Color<T> mcrt::operator*(const Color<T>& left, const Color<T>& right) {
 }
 
 template<typename T>
+mcrt::Color<T> mcrt::operator*(double right, const Color<T>& left) {
+    Color<T> result { left };
+    result *= right;
+    return result;
+}
+
+template<typename T>
 mcrt::Color<T> mcrt::operator/(const Color<T>& left, const Color<T>& right) {
+    Color<T> result { left };
+    result /= right;
+    return result;
+}
+
+template<typename T>
+mcrt::Color<T> mcrt::operator/(double right, const Color<T>& left) {
     Color<T> result { left };
     result /= right;
     return result;

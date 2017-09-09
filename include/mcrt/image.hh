@@ -10,13 +10,16 @@
 namespace mcrt {
     class Image {
     public:
+        // Used for scaling the image up to higher resolutions.
+        enum class ResizeMethod { NEAREST_NEIGHBOR, BILINEAR };
+
+
         Image(size_t length) : Image { length, length } {  }
         Image(size_t width, size_t height) : width { width }, height { height },
                                              pixelData(width*height) {  }
 
-        void resize(size_t, size_t);
         void clear(const Color<unsigned char>&);
-
+        void resize(size_t, size_t, ResizeMethod);
         Color<unsigned char>& pixel(size_t, size_t);
         Color<unsigned char>  pixel(size_t, size_t) const;
 
@@ -43,6 +46,9 @@ namespace mcrt {
         static constexpr size_t CHANNELS { 4 };
 
     private:
+        // Both aren't very fast, be very careful!!!
+        Image bilinearInterpolation(size_t, size_t);
+        Image nearestInterpolation(size_t,  size_t);
         size_t width, height; // 24 bpp in our case.
         std::vector<Color<unsigned char>> pixelData;
     };
