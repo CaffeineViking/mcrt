@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <glm/glm.hpp>
 
 #include "mcrt/color.hh"
 
@@ -18,6 +19,12 @@ namespace mcrt {
 
         Color<unsigned char>& pixel(size_t, size_t);
         Color<unsigned char>  pixel(size_t, size_t) const;
+
+        // Filters using data from a pixel.
+        template<typename F> void filter(F);
+        // Filters using data from the neighborhood of a
+        // pixel. Data is orderd clockwise around pixel.
+        template<typename F> void filterNeighborhood(F);
 
         size_t getSize() const { return width*height; }
         size_t getHeight() const { return height; }
@@ -39,6 +46,34 @@ namespace mcrt {
         size_t width, height; // 24 bpp in our case.
         std::vector<Color<unsigned char>> pixelData;
     };
+
+    template<typename F>
+    void Image::filter(F filter) {
+        for (size_t y { 0 }; y < height; ++y)
+            for (size_t x { 0 }; x < width; ++x)
+                pixel(x, y) = filter(x, y, width, height,
+                                     pixel(x, y));
+    }
+
+    template<typename F>
+    void Image::filterNeighborhood(F filter) {
+        int w = width-1, h = height-1;
+        for (int y = 0; y < height; ++y)
+            for (int x = 0; x < width; ++x) {
+                Color<unsigned char> neighborhoodColors[9];
+                neighborhoodColors[0] = pixel(glm::clamp(--x, 0, w), glm::clamp(--y, 0, h));
+                neighborhoodColors[1] = pixel(glm::clamp(x, 0, w),   glm::clamp(--y, 0, h));
+                neighborhoodColors[2] = pixel(glm::clamp(++x, 0, w), glm::clamp(--y, 0, h));
+                neighborhoodColors[3] = pixel(glm::clamp(--x, 0, w), glm::clamp(y, 0, h));
+                neighborhoodColors[4] = pixel(glm::clamp(x, 0, w),   glm::clamp(y, 0, h));
+                neighborhoodColors[5] = pixel(glm::clamp(++x, 0, w), glm::clamp(y, 0, h));
+                neighborhoodColors[6] = pixel(glm::clamp(--x, 0, w), glm::clamp(++y, 0, h));
+                neighborhoodColors[7] = pixel(glm::clamp(x, 0, w),   glm::clamp(++y, 0, h));
+                neighborhoodColors[8] = pixel(glm::clamp(++x, 0, w), glm::clamp(++y, 0, h));
+                pixel(x, y) = filter(x, y, width, height,
+                                     neighborhoodColors);
+            }
+    }
 }
 
 #endif

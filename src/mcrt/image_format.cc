@@ -1,5 +1,6 @@
 #include "mcrt/image_format.hh"
 
+#include <fstream>
 #include <cstdint>
 
 void mcrt::NetpbmImageFormat::save(const Image& image, const std::string& file) const  {

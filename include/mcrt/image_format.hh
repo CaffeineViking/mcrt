@@ -2,7 +2,6 @@
 #define MCRT_IMAGE_FORMAT_HH
 
 #include <string>
-#include <fstream>
 
 #include "mcrt/image.hh"
 
