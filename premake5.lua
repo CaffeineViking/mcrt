@@ -30,6 +30,7 @@ project (name)
     kind "WindowedApp"
     files {"src/main.cc"}
     files {"src/"..name.."/**.cc"}
+    includedirs {"include/foreign"}
     includedirs {"include"}
 
     filter {"system:macosx"}
@@ -49,6 +50,7 @@ project (name.."-tests")
     removefiles {"src/main.cc"}
     files {"tests/"..name.."**.cc"}
     files {"src/"..name.."/**.cc"}
+    includedirs {"include/foreign"}
     includedirs {"include"}
 
     filter {"system:macosx"}
