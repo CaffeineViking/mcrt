@@ -46,14 +46,15 @@ mcrt::Image mcrt::Image::bilinearInterpolation(size_t width, size_t height) {
             size_t bri = tli + 1, brj = tlj + 1;
             size_t bli = tli, blj = tlj + 1;
 
+            // Find weights of the contributions of the pixels.
+            double iDist = 1.0 - (tri - scaledX) / (tri - tli),
+                   jDist = 1.0 - (blj - scaledY) / (blj - tlj);
+
+            // Handle cases when pixel are on edges.
             if (tli == this->width  - 1)  tri = tli;
             if (bli == this->width  - 1)  bri = bli;
             if (tlj == this->height - 1)  blj = tlj;
             if (trj == this->height - 1)  brj = trj;
-
-            // Find weights of the contributions of the pixels.
-            double iDist = 1.0 - (tri - scaledX) / (tri - tli),
-                   jDist = 1.0 - (blj - scaledY) / (blj - tlj);
 
             // Pick the actual colors we interpolate.
             Color<unsigned char> tl { pixel(tli, tlj) },
