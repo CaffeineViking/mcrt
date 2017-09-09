@@ -4,7 +4,7 @@
 #include "mcrt/image_format.hh"
 
 int main(int, char**) {
-    size_t sideLength { 128 };
+    size_t sideLength { 1000 };
     mcrt::Image image { sideLength };
     image.clear({ 0, 0, 0, 255 });
 

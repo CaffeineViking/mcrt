@@ -28,7 +28,9 @@ namespace mcrt {
         // aligned element-wise. Therefore, we can convert
         // it to a stream of bytes directly without having
         // to do any sort of conversion magic. It's bytes!
-        unsigned char* getPixelData(); // e.g. for OpenGL.
+        std::vector<Color<unsigned char>>& getPixelData();
+        // Wrapper when not changing, i.e read-only of the pixel data.
+        const std::vector<Color<unsigned char>>& getPixelData() const;
 
         static constexpr size_t BPP { 24 };
         static constexpr size_t CHANNELS { 4 };

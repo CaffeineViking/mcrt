@@ -11,7 +11,8 @@ namespace mcrt {
         Color<T>& operator*=(const Color<T>&);
         Color<T>& operator/=(const Color<T>&);
 
-        explicit operator T*() const;
+        explicit operator char*();
+        explicit operator const char*() const;
         T r, g, b, a; // RGBA-colorspace data.
     };
 
@@ -28,9 +29,15 @@ namespace mcrt {
 }
 
 template<typename T>
-mcrt::Color<T>::operator T*() const {
-    // Assumes structs has correct byte alignment.
-    return reinterpret_cast<unsigned char*>(this);
+mcrt::Color<T>::operator char*() {
+    // Assume structs have byte-byte alignment.
+    return reinterpret_cast<char*>(this);
+}
+
+template<typename T>
+mcrt::Color<T>::operator const char*() const {
+    // Assume structs have byte-byte alignment.
+    return reinterpret_cast<const char*>(this);
 }
 
 template<typename T>
