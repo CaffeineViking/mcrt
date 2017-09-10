@@ -1,6 +1,5 @@
 #include "mcrt/camera.hh"
 
-#include <cmath>
 #include <glm/gtx/string_cast.hpp>
 
 mcrt::Camera::Camera(const glm::dvec3& viewPlanePosition, const glm::dvec3& lookAtPosition,
@@ -30,13 +29,37 @@ double mcrt::Camera::getFieldOfView() const {
 void   mcrt::Camera::setFieldOfView(double fieldOfView) {
 }
 
+glm::dvec3 mcrt::Camera::getPixelCenter(const Image& image, size_t i, size_t j) const {
+}
+
 mcrt::Camera::SamplingPlane mcrt::Camera::getPixelSamplingPlane(const Image& image, size_t i, size_t j) const {
 }
 
 void mcrt::Camera::moveTo(const glm::dvec3& viewPlanePosition) {
+    glm::dvec3 planeCenter  { getViewPlanePosition() };
+    glm::dvec3 eyeToCenter { planeCenter - eyePoint };
+    glm::dvec3 tl { viewPlane[0] - planeCenter },
+               tr { viewPlane[1] - planeCenter },
+               br { viewPlane[2] - planeCenter },
+               bl { viewPlane[3] - planeCenter };
+
+    // Calculate new positions based on center.
+    eyePoint = viewPlanePosition - eyeToCenter;
+    viewPlane[0] = viewPlanePosition + tl;
+    viewPlane[1] = viewPlanePosition + tr;
+    viewPlane[2] = viewPlanePosition + br;
+    viewPlane[3] = viewPlanePosition + bl;
+}
+
+glm::dvec3 mcrt::Camera::getEyePosition() const {
+    // Now this one is quite easy!
+    return eyePoint;
 }
 
 glm::dvec3 mcrt::Camera::getViewPlanePosition() const {
+    glm::dvec3 viewDiagonal { viewPlane[2] - viewPlane[0] };
+    // Return the center of the view plane accross diagonal.
+    return viewPlane[0] + 0.5*viewDiagonal;
 }
 
 void mcrt::Camera::lookAt(const glm::dvec3& lookAtPosition, const glm::dvec3& upwardVector) {

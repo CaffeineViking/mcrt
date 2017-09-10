@@ -23,6 +23,7 @@ namespace mcrt {
 
         void   setAspectRatio(double);
         double getAspectRatio() const;
+        // Horizontal FofV in radians.
         double getFieldOfView() const;
         void   setFieldOfView(double);
 
@@ -31,11 +32,14 @@ namespace mcrt {
         // We use this function to find out where we should sample a pixel under
         // (x, y) in the view plane. This results in a continuous sampling area.
         SamplingPlane getPixelSamplingPlane(const Image&, size_t, size_t) const;
+        // Simpler approach to just take the center of the sampling plane.
+        glm::dvec3 getPixelCenter(const Image&, size_t, size_t) const;
 
         // For debugging purposes.  TODO: remove this later when done.
         friend std::ostream& operator<<(std::ostream&, const Camera&);
 
         void moveTo(const glm::dvec3&);
+        glm::dvec3 getEyePosition() const;
         glm::dvec3 getViewPlanePosition() const;
         void lookAt(const glm::dvec3&, const glm::dvec3&);
 
