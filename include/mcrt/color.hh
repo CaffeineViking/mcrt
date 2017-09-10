@@ -29,6 +29,7 @@ namespace mcrt {
     template<typename T> Color<T> operator*(double, const Color<T>&);
     template<typename T> Color<T> operator/(double, const Color<T>&);
 
+    // TODO: remove this later when we are done with this, unnecessary extra code.
     // Useful for debugging color related problems when ray-tracing the radiances.
     template<typename T> std::ostream& operator<<(std::ostream&, const Color<T>&);
 }
@@ -153,8 +154,8 @@ mcrt::Color<T> mcrt::operator/(double right, const Color<T>& left) {
 
 template<typename T>
 std::ostream& mcrt::operator<<(std::ostream& output, const Color<T>& color) {
-    return output << "[ " << static_cast<double>(color.r) << " " << static_cast<double>(color.g)
-                  << " "  << static_cast<double>(color.b) << " " << static_cast<double>(color.a) << " ]";
+    return output << "color(" << static_cast<double>(color.r) << ", " << static_cast<double>(color.g)
+                  << ", "  << static_cast<double>(color.b) << ", " << static_cast<double>(color.a) << ")";
 }
 
 #endif

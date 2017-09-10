@@ -1,6 +1,7 @@
 #ifndef MCRT_CAMERA_HH
 #define MCRT_CAMERA_HH
 
+#include <iostream>
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 
@@ -31,6 +32,9 @@ namespace mcrt {
         // (x, y) in the view plane. This results in a continuous sampling area.
         SamplingPlane getPixelSamplingPlane(const Image&, size_t, size_t) const;
 
+        // For debugging purposes.  TODO: remove this later when done.
+        friend std::ostream& operator<<(std::ostream&, const Camera&);
+
         void moveTo(const glm::dvec3&);
         glm::dvec3 getViewPlanePosition() const;
         void lookAt(const glm::dvec3&, const glm::dvec3&);
@@ -41,6 +45,8 @@ namespace mcrt {
         // i.e. [tl, tr, br, bl]
         glm::dvec3 viewPlane[4];
     };
+
+    std::ostream& operator<<(std::ostream&, const Camera&);
 }
 
 #endif
