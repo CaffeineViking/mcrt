@@ -6,25 +6,25 @@
 #include "mcrt/image.hh"
 
 namespace mcrt {
-    class ImageFormat {
+    // We'll only allow saves for now.
+    class ImageFormat : public Image {
     public:
-        virtual ~ImageFormat() = default;
-        // Currently we will only support saving to disk, not loading.
-        virtual void  save(const Image&, const std::string&) const = 0;
+        using Image::Image;
+        virtual void  save(const std::string&) const = 0;
     };
 
-    // Easy-to-parse, universal binary PPM format.
-    class NetpbmImageFormat : public ImageFormat {
+    // Easy-to-parse, a binary image format.
+    class NetpbmImage : public ImageFormat {
     public:
-        // Loading is not very hard in the ppm formats, todo later.
-        void save(const Image&, const std::string&) const override;
+        using ImageFormat::ImageFormat;
+        void save(const std::string&) const override;
     };
 
-    // Suckless image format with alpha-channel too.
-    class FarbfeldImageFormat : public ImageFormat {
+    // Simple image format with alpha-channel.
+    class FarbfeldImage : public ImageFormat {
     public:
-        // Loading is not very hard in the FF format, might do l8r.
-        void save(const Image&, const std::string&) const override;
+        using ImageFormat::ImageFormat;
+        void save(const std::string&) const override;
     };
 }
 

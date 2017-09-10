@@ -1,7 +1,6 @@
 #include "mcrt/image.hh"
 
 #include "mcrt/interpolants.hh"
-#include <iostream>
 
 const std::vector<mcrt::Color<unsigned char>>& mcrt::Image::getPixelData() const { return pixelData; }
 std::vector<mcrt::Color<unsigned char>>& mcrt::Image::getPixelData() { return pixelData; }
