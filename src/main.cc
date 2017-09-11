@@ -12,6 +12,7 @@ int main(int, char**) {
               << glm::to_string(p.corners[1]) << " "
               << glm::to_string(p.corners[2]) << " "
               << glm::to_string(p.corners[3]) << " " << std::endl;
+    std::cout << glm::to_string(camera.getPixelCenter(image, 0, 0)) << std::endl;
     std::cout << camera << std::endl;
     return 0;
 }
