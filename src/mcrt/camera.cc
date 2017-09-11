@@ -35,7 +35,10 @@ void   mcrt::Camera::setFieldOfView(double fieldOfView) {
 glm::dvec3 mcrt::Camera::getPixelCenter(const Image& image, size_t i, size_t j) const {
     // Fetch the plane of the pixel, and just get the pixel's central position.
     SamplingPlane pixelSamplingPlane  { getPixelSamplingPlane(image,  i,  j) };
-    return (pixelSamplingPlane.corners[0] + pixelSamplingPlane.corners[3]) / 2;
+    glm::dvec3 xPixelAxis { pixelSamplingPlane.corners[1] - pixelSamplingPlane.corners[0] },
+               yPixelAxis { pixelSamplingPlane.corners[3] - pixelSamplingPlane.corners[0] };
+    // The top-left corner is the origin of the pixel plane, go half in each axis to center.
+    return pixelSamplignPlane.corners[0] + ((xPixelAxis + yPixelAxis) / 2.0);
 }
 
 mcrt::Camera::SamplingPlane mcrt::Camera::getPixelSamplingPlane(const Image& image, size_t i, size_t j) const {
