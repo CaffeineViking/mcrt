@@ -42,8 +42,8 @@ namespace mcrt {
         // Wrapper when not changing, i.e read-only of the pixel data.
         const std::vector<Color<unsigned char>>& getPixelData() const;
 
-        static constexpr size_t BPP { 24 };
         static constexpr size_t CHANNELS { 4 };
+        static constexpr size_t BPP { 24 };
 
     private:
         // Both aren't very fast, be very careful!!!

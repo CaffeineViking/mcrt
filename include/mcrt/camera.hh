@@ -27,8 +27,8 @@ namespace mcrt {
         double getFieldOfView() const;
         void   setFieldOfView(double);
 
-        // Also ordered clockwise, like [ tl, tr, br, bl ]...
-        struct SamplingPlane { glm::dvec3 planeCorners[4]; };
+        // Ordered clockwise, like [ tl, tr, br, bl ]...
+        struct SamplingPlane { glm::dvec3 corners[4]; };
         // We use this function to find out where we should sample a pixel under
         // (x, y) in the view plane. This results in a continuous sampling area.
         SamplingPlane getPixelSamplingPlane(const Image&, size_t, size_t) const;
