@@ -33,31 +33,9 @@ void   mcrt::Camera::setFieldOfView(double fieldOfView) {
 }
 
 glm::dvec3 mcrt::Camera::getPixelCenter(const Image& image, size_t i, size_t j) const {
-    // Fetch the axes built from the top-left to top-right (x)
-    // and the top-left to bottom-left (y-axis). This is to do
-    // mirroring of the coordinate system found in the images.
-    glm::dvec3 xViewPlaneAxis { viewPlane[1] - viewPlane[0] },
-               yViewPlaneAxis { viewPlane[3] - viewPlane[0] };
-
-    // We find the lengths of the view plane's basis axes.
-    double viewPlaneWidth  { glm::length(xViewPlaneAxis) },
-           viewPlaneHeight { glm::length(yViewPlaneAxis) };
-
-    xViewPlaneAxis = glm::normalize(xViewPlaneAxis);
-    yViewPlaneAxis = glm::normalize(yViewPlaneAxis);
-
-    // Finally, we compute the scaling ratio needed from pixel coordinates to viewplane.
-    double widthScaleRatio  { viewPlaneWidth  / static_cast<double>(image.getWidth()) },
-           heightScaleRatio { viewPlaneHeight / static_cast<double>(image.getHeight()) };
-
-    glm::dvec3 pixelCenter { viewPlane[0] };
-    // Offset pixel by "half a pixel" for center.
-    double pixelX { i + widthScaleRatio  / 2.0 },
-           pixelY { j + heightScaleRatio / 2.0 };
-    // Finally, finding the centers of the pixel in the plane.
-    pixelCenter += pixelX * widthScaleRatio  * xViewPlaneAxis;
-    pixelCenter += pixelY * heightScaleRatio * yViewPlaneAxis;
-    return pixelCenter;
+    // Fetch the plane of the pixel, and just get the pixel's central position.
+    SamplingPlane pixelSamplingPlane  { getPixelSamplingPlane(image,  i,  j) };
+    return (pixelSamplingPlane.corners[0] + pixelSamplingPlane.corners[3]) / 2;
 }
 
 mcrt::Camera::SamplingPlane mcrt::Camera::getPixelSamplingPlane(const Image& image, size_t i, size_t j) const {
