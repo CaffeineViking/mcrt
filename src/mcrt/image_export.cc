@@ -1,4 +1,4 @@
-#include "mcrt/image_format.hh"
+#include "mcrt/image_export.hh"
 
 #include <fstream>
 #include <cstdint>

@@ -15,9 +15,11 @@ namespace mcrt {
 
         explicit operator char*();
         explicit operator const char*() const;
-
         T r, g, b, a; // RGBA-colorspace data.
     };
+
+    // This is quite a lot of boilerplate, but the interface is quite nice.
+    // If glm had support for unsig char vec3 them we might have used that.
 
     template<typename T> bool operator==(const Color<T>&, const Color<T>&);
     template<typename T> bool operator!=(const Color<T>&, const Color<T>&);
@@ -29,14 +31,14 @@ namespace mcrt {
     template<typename T> Color<T> operator*(double, const Color<T>&);
     template<typename T> Color<T> operator/(double, const Color<T>&);
 
-    // TODO: remove this later when we are done with this, unnecessary extra code.
+    // TODO:  remove this when we are done with the preliminary stuff, not needed.
     // Useful for debugging color related problems when ray-tracing the radiances.
     template<typename T> std::ostream& operator<<(std::ostream&, const Color<T>&);
 }
 
 template<typename T>
 mcrt::Color<T>::operator char*() {
-    // Assume structs have byte-byte alignment.
+    // Assume struct have byte alignment.
     return reinterpret_cast<char*>(this);
 }
 
@@ -132,9 +134,9 @@ mcrt::Color<T> mcrt::operator*(const Color<T>& left, const Color<T>& right) {
 }
 
 template<typename T>
-mcrt::Color<T> mcrt::operator*(double right, const Color<T>& left) {
-    Color<T> result { left };
-    result *= right;
+mcrt::Color<T> mcrt::operator*(double left, const Color<T>& right) {
+    Color<T> result { right };
+    result *= left;
     return result;
 }
 
@@ -146,9 +148,9 @@ mcrt::Color<T> mcrt::operator/(const Color<T>& left, const Color<T>& right) {
 }
 
 template<typename T>
-mcrt::Color<T> mcrt::operator/(double right, const Color<T>& left) {
-    Color<T> result { left };
-    result /= right;
+mcrt::Color<T> mcrt::operator/(double left, const Color<T>& right) {
+    Color<T> result { right };
+    result /= left;
     return result;
 }
 
