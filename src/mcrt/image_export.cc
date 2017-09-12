@@ -3,20 +3,22 @@
 #include <fstream>
 #include <cstdint>
 
-void mcrt::NetpbmImage::save(const std::string& file) const  {
+// This is the binary 8-bit per channel variant of PPM, which hasn't alpha-channel.
+void mcrt::NetpbmImageExporter::save(const Image& image, const std::string& file) {
     std::ofstream fileStream { file, std::ios::binary };
     // Write the format magic data, as: https://en.wikipedia.org/wiki/Netpbm_format.
-    fileStream << "P6 " <<  this->getWidth() << " " << this->getHeight() << " 255 ";
-    for (const auto& pixelData : this->getPixelData())
+    fileStream << "P6 " <<  image.getWidth() << " " << image.getHeight() << " 255 ";
+    for (const auto& pixelData : image.getPixelData())
         fileStream.write((const char*) pixelData, 3);
 }
 
-void mcrt::FarbfeldImage::save(const std::string& file) const  {
+// Each channel is 16-bits long in big-endian and the image has an alpha-channel too.
+void mcrt::FarbfeldImageExporter::save(const Image& image, const std::string& file) {
     std::ofstream fileStream { file, std::ios::binary };
     // See 'man farbfeld' or just go over to www.suckless.org/tools/farbfeld.
     fileStream << "farbfeld"; // Farbfeld's magic number for the file format.
-    std::uint32_t imageWidth  { static_cast<std::uint32_t>(this->getWidth()) },
-                  imageHeight { static_cast<std::uint32_t>(this->getHeight()) };
+    std::uint32_t imageWidth  { static_cast<std::uint32_t>(image.getWidth()) },
+                  imageHeight { static_cast<std::uint32_t>(image.getHeight()) };
     char* imageWidthBytes  = (char*) &imageWidth,
         * imageHeightBytes = (char*) &imageHeight;
 
@@ -24,7 +26,7 @@ void mcrt::FarbfeldImage::save(const std::string& file) const  {
     fileStream << imageWidthBytes[3]  << imageWidthBytes[2]  << imageWidthBytes[1]  << imageWidthBytes[0];
     fileStream << imageHeightBytes[3] << imageHeightBytes[2] << imageHeightBytes[1] << imageHeightBytes[0];
 
-    for (const auto& pixelData : this->getPixelData()) {
+    for (const auto& pixelData : image.getPixelData()) {
         std::uint16_t scaledColors[4];
         // We scale up the colors fr. 8-bit to 16-bit RGBA-color range.
         scaledColors[0] = static_cast<std::uint16_t>(pixelData.r) << 8;
