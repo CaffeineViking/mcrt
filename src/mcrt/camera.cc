@@ -127,6 +127,8 @@ glm::dvec3 mcrt::Camera::getViewPlanePosition() const {
 
 void mcrt::Camera::lookAt(const glm::dvec3& lookAtPosition, const glm::dvec3& upwardVector) {
     double eyeToPlaneDistance = glm::distance(eyePoint, getViewPlanePosition());
+    double eyeFieldOfView { getFieldOfView() }; // For bootstrapping hFoV later.
+
     glm::dvec3 w = glm::normalize(lookAtPosition - eyePoint);
     glm::dvec3 u = glm::cross(w, upwardVector);
     glm::dvec3 v = glm::cross(u, w);
@@ -136,6 +138,10 @@ void mcrt::Camera::lookAt(const glm::dvec3& lookAtPosition, const glm::dvec3& up
     viewPlane[1] = viewPlaneCenter + u + v;
     viewPlane[2] = viewPlaneCenter + u - v;
     viewPlane[3] = viewPlaneCenter - u - v;
+
+    eyePoint = glm::cross(viewPlane[1] - viewPlane[0], viewPlane[3] - viewPlane[0]);
+    if (glm::dot(eyePoint, lookAtPosition - getViewPlanePosition()) < 0) eyePoint = -eyePoint;
+    setFieldOfView(eyeFieldOfView); // We moved the eye to some arbitrary position, fix fov...
 }
 
 std::ostream& mcrt::operator<<(std::ostream& output, const Camera& camera) {
