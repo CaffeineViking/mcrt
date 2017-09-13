@@ -12,11 +12,11 @@ int main(int, char**) {
         glm::dvec3(-5.0, 5.0, 5.0),
         glm::dvec3( 5.0,-5.0, 5.0),
         dummyMaterial};
-    double distance = mcrt::triangle_instersect(ray,triangle).distance;
+    double distance = triangle.intersect(ray).distance;
     std::cout << distance << std::endl;
 
     mcrt::Sphere sphere{glm::dvec3(0.0,0.0,4.0),2.0, dummyMaterial};
-    distance = mcrt::sphere_intersect(ray,sphere).distance;
+    distance = sphere.intersect(ray).distance;
     std::cout << distance << std::endl;
 
     return 0;

@@ -6,29 +6,9 @@
 #include <vector>
 namespace mcrt {    
 
-// Material struct, stores render information about a surface type.
-struct Material {
-    glm::dvec3 color;
-};
-
-// Parametric form representation of a sphere
-struct Sphere {
-    glm::dvec3 origin;
-    double radius;
-    Material material;
-};
-
 struct Ray {
     glm::dvec3 origin;
     glm::dvec3 direction;
-};
-
-// 
-struct Triangle {
-    glm::dvec3 v1;
-    glm::dvec3 v2;
-    glm::dvec3 v3;
-    Material material;
 };
 
 struct Intersection {
@@ -36,14 +16,44 @@ struct Intersection {
     glm::dvec3 normal;  // Normal of surface    
 };
 
-// Return distance from ray origin to sphere, 0 means no intersection.
-Intersection sphere_intersect(const Ray&, const Sphere&);
+// Material struct, stores render information about a surface type.
+class Material {
+private:
+    glm::dvec3 _color;    
+public:
+    Material(const glm::dvec3& c);
+};
 
-// Returns distance from ray to triangle, 0 means no intersection.
-Intersection triangle_instersect(const Ray&, const Triangle&);
+class Geometry {
+private:
+    Material _material;   
 
-// Return intersection with closes boject in the scene togheter with some values usefull for continued tracing.
-Intersection object_intersection(const Ray&, const std::vector<Sphere>&, const std::vector<Triangle>&);
+protected:
+    Geometry(const Material& m);
+
+public:
+    virtual Intersection intersect(const Ray& ray) = 0;
+};
+
+// Parametric form representation of a sphere
+class Sphere : public Geometry{
+private:
+    glm::dvec3 _origin;          
+    double _radius;
+public:
+    Sphere(const glm::dvec3 o, double r, const Material& m);
+    Intersection intersect(const Ray& ray) override;
+};
+
+class Triangle : public Geometry{
+private:
+    glm::dvec3 _v1;
+    glm::dvec3 _v2;
+    glm::dvec3 _v3;  
+public:
+    Triangle(const glm::dvec3& v1,const glm::dvec3& v2,const glm::dvec3& v3, const Material& m);
+    Intersection intersect(const Ray& ray) override;    
+};
 
 }
 #endif
