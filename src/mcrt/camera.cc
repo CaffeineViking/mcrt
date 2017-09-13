@@ -15,15 +15,34 @@ mcrt::Camera::Camera(const glm::dvec3& viewPlanePosition, const glm::dvec3& look
     setAspectRatio(aspectRatio);
     setFieldOfView(fieldOfView);
     moveTo(viewPlanePosition);
-    
+
     // Does the order matter here or not?
     lookAt(lookAtPosition, upwardVector);
 }
 
 void   mcrt::Camera::setAspectRatio(double aspectRatio) {
+    double viewPlaneAspectRatio { getAspectRatio() };
+    glm::dvec3 viewPlaneCenter { getViewPlanePosition() };
+    glm::dvec3 xViewPlaneAxis { viewPlane[1] - viewPlane[0] },
+               yViewPlaneAxis { viewPlane[3] - viewPlane[0] };
+    double aspectRatioDifference { aspectRatio / viewPlaneAspectRatio };
+
+    xViewPlaneAxis *= aspectRatioDifference;
+    yViewPlaneAxis *= 1.0 / aspectRatioDifference;
+    glm::dvec3 xHalfAxis { xViewPlaneAxis / 2.0 },
+               yHalfAxis { yViewPlaneAxis / 2.0 };
+
+    viewPlane[0] = viewPlaneCenter - xHalfAxis + yHalfAxis;
+    viewPlane[1] = viewPlaneCenter + xHalfAxis + yHalfAxis;
+    viewPlane[2] = viewPlaneCenter + xHalfAxis - yHalfAxis;
+    viewPlane[3] = viewPlaneCenter - xHalfAxis - yHalfAxis;
 }
 
 double mcrt::Camera::getAspectRatio() const {
+    // Just fetch the length of each axis and find the ratio of these.
+    double viewPlaneWidth  { glm::distance(viewPlane[1], viewPlane[0]) },
+           viewPlaneHeight { glm::distance(viewPlane[3], viewPlane[0]) };
+    return viewPlaneWidth / viewPlaneHeight;
 }
 
 double mcrt::Camera::getFieldOfView() const {
@@ -107,7 +126,7 @@ void mcrt::Camera::lookAt(const glm::dvec3& lookAtPosition, const glm::dvec3& up
     glm::dvec3 u = glm::cross(w, upwardVector);
     glm::dvec3 v = glm::cross(u, w);
     glm::dvec3 viewPlaneCenter = eyePoint + w*eyeToPlaneDistance;
-	      
+
     viewPlane[0] = viewPlaneCenter - u + v;
     viewPlane[1] = viewPlaneCenter + u + v;
     viewPlane[2] = viewPlaneCenter + u - v;
@@ -115,11 +134,11 @@ void mcrt::Camera::lookAt(const glm::dvec3& lookAtPosition, const glm::dvec3& up
 }
 
 std::ostream& mcrt::operator<<(std::ostream& output, const Camera& camera) {
-    return output << "eye: " << glm::to_string(camera.eyePoint) << std::endl
+    return output << "eye:          " << glm::to_string(camera.eyePoint) << std::endl
                   << "top-left:     " << glm::to_string(camera.viewPlane[0]) << std::endl
-		  << "top-right:    " << glm::to_string(camera.viewPlane[1]) << std::endl
+                  << "top-right:    " << glm::to_string(camera.viewPlane[1]) << std::endl
                   << "bottom-right: " << glm::to_string(camera.viewPlane[2]) << std::endl
                   << "bottom-left:  " << glm::to_string(camera.viewPlane[3]) << std::endl
-                  << "aspectRatio: " << camera.getAspectRatio()
-                  << " fieldOfView: " << camera.getFieldOfView() <<  std::endl;
+                  << "aspectRatio:  " << camera.getAspectRatio() << std::endl
+                  << "fieldOfView:  " << camera.getFieldOfView() <<  std::endl;
 }
