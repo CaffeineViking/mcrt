@@ -17,7 +17,7 @@ mcrt::Camera::Camera(const glm::dvec3& viewPlanePosition, const glm::dvec3& look
     moveTo(viewPlanePosition);
 
     // Does the order matter here or not?
-    lookAt(lookAtPosition, upwardVector);
+    // lookAt(lookAtPosition, upwardVector);
 }
 
 void   mcrt::Camera::setAspectRatio(double aspectRatio) {
@@ -26,16 +26,17 @@ void   mcrt::Camera::setAspectRatio(double aspectRatio) {
     glm::dvec3 xViewPlaneAxis { viewPlane[1] - viewPlane[0] },
                yViewPlaneAxis { viewPlane[3] - viewPlane[0] };
     double aspectRatioDifference { aspectRatio / viewPlaneAspectRatio };
+    aspectRatioDifference = std::sqrt(aspectRatioDifference);
 
     xViewPlaneAxis *= aspectRatioDifference;
     yViewPlaneAxis *= 1.0 / aspectRatioDifference;
     glm::dvec3 xHalfAxis { xViewPlaneAxis / 2.0 },
                yHalfAxis { yViewPlaneAxis / 2.0 };
 
-    viewPlane[0] = viewPlaneCenter - xHalfAxis + yHalfAxis;
-    viewPlane[1] = viewPlaneCenter + xHalfAxis + yHalfAxis;
-    viewPlane[2] = viewPlaneCenter + xHalfAxis - yHalfAxis;
-    viewPlane[3] = viewPlaneCenter - xHalfAxis - yHalfAxis;
+    viewPlane[0] = viewPlaneCenter - xHalfAxis - yHalfAxis;
+    viewPlane[1] = viewPlaneCenter + xHalfAxis - yHalfAxis;
+    viewPlane[2] = viewPlaneCenter + xHalfAxis + yHalfAxis;
+    viewPlane[3] = viewPlaneCenter - xHalfAxis + yHalfAxis;
 }
 
 double mcrt::Camera::getAspectRatio() const {
@@ -48,7 +49,7 @@ double mcrt::Camera::getAspectRatio() const {
 double mcrt::Camera::getFieldOfView() const {
     double eyeToPlaneDistance { glm::distance(eyePoint, getViewPlanePosition()) };
     double viewPlaneWidth     { glm::distance(viewPlane[1], viewPlane[0]) };
-    return 2*glm::atan((viewPlaneWidth/2)/eyeToPlaneDistance);
+    return 2.0 * glm::atan((viewPlaneWidth / 2.0) / eyeToPlaneDistance);
 }
 
 void   mcrt::Camera::setFieldOfView(double fieldOfView) {
