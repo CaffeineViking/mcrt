@@ -17,7 +17,7 @@ mcrt::Camera::Camera(const glm::dvec3& viewPlanePosition, const glm::dvec3& look
     moveTo(viewPlanePosition);
 
     // Does the order matter here or not?
-    // lookAt(lookAtPosition, upwardVector);
+    lookAt(lookAtPosition, upwardVector);
 }
 
 void   mcrt::Camera::setAspectRatio(double aspectRatio) {
@@ -53,6 +53,10 @@ double mcrt::Camera::getFieldOfView() const {
 }
 
 void   mcrt::Camera::setFieldOfView(double fieldOfView) {
+    double viewPlaneWidth { glm::distance(viewPlane[1], viewPlane[0]) };
+    double focalDistance { (2.0/viewPlaneWidth) * std::tan(fieldOfView/2.0) };
+    glm::dvec3 eyeNormal { -glm::normalize(getViewPlanePosition()-eyePoint) };
+    eyePoint = getViewPlanePosition() + eyeNormal * focalDistance;
 }
 
 glm::dvec3 mcrt::Camera::getPixelCenter(const Image& image, size_t i, size_t j) const {
@@ -131,7 +135,7 @@ void mcrt::Camera::lookAt(const glm::dvec3& lookAtPosition, const glm::dvec3& up
     viewPlane[0] = viewPlaneCenter - u + v;
     viewPlane[1] = viewPlaneCenter + u + v;
     viewPlane[2] = viewPlaneCenter + u - v;
-    viewPlane[3] = viewPlaneCenter + u + v;
+    viewPlane[3] = viewPlaneCenter - u - v;
 }
 
 std::ostream& mcrt::operator<<(std::ostream& output, const Camera& camera) {
