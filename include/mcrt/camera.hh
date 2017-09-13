@@ -1,12 +1,10 @@
 #ifndef MCRT_CAMERA_HH
 #define MCRT_CAMERA_HH
 
-#include <iostream>
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 
 #include "mcrt/image.hh"
-#include "mcrt/color.hh"
 
 namespace mcrt {
     class Camera {
@@ -49,8 +47,6 @@ namespace mcrt {
         // i.e. [tl, tr, br, bl]
         glm::dvec3 viewPlane[4];
     };
-
-    std::ostream& operator<<(std::ostream&, const Camera&);
 }
 
 #endif

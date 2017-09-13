@@ -1,8 +1,6 @@
 #ifndef MCRT_COLOR_HH
 #define MCRT_COLOR_HH
 
-#include <iostream>
-
 namespace mcrt {
     template<typename T>
     struct Color {
@@ -30,10 +28,6 @@ namespace mcrt {
     template<typename T> Color<T> operator/(const Color<T>&, const Color<T>&);
     template<typename T> Color<T> operator*(double, const Color<T>&);
     template<typename T> Color<T> operator/(double, const Color<T>&);
-
-    // TODO:  remove this when we are done with the preliminary stuff, not needed.
-    // Useful for debugging color related problems when ray-tracing the radiances.
-    template<typename T> std::ostream& operator<<(std::ostream&, const Color<T>&);
 }
 
 template<typename T>
@@ -152,12 +146,6 @@ mcrt::Color<T> mcrt::operator/(double left, const Color<T>& right) {
     Color<T> result { right };
     result /= left;
     return result;
-}
-
-template<typename T>
-std::ostream& mcrt::operator<<(std::ostream& output, const Color<T>& color) {
-    return output << "color(" << static_cast<double>(color.r) << ", " << static_cast<double>(color.g)
-                  << ", "  << static_cast<double>(color.b) << ", " << static_cast<double>(color.a) << ")";
 }
 
 #endif
