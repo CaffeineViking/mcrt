@@ -45,7 +45,7 @@ namespace mcrt {
 	    if(r.distance >= glm::length(diff)){
                 // Light hit
 		double angleFallof = std::max(0.0,glm::dot(shadowRay.direction,i.normal));                
-                color = l.color  * i.material.color ;//* angleFallof;
+                color = l.color  * i.material.color * angleFallof;
             }
         }
         return color;

@@ -17,8 +17,11 @@ namespace mcrt {
         // Surface normal I think
         glm::dvec3 pvec = glm::cross(ray.direction,e2);
         double det = glm::dot(e1,pvec);
+
+        glm::dvec3 normal { glm::normalize(glm::cross(e1, e2)) };
+        if (glm::dot(normal, ray.direction) > 0) normal = -normal;
         
-        Intersection result {0,glm::normalize(pvec),{glm::dvec3(0.0)}};    
+        Intersection result {0, normal, {glm::dvec3(0.0)}};
         
         if(det < 1e-8 && det > -1e-8) {
             return result;
