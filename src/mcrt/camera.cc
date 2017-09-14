@@ -52,7 +52,7 @@ double mcrt::Camera::getFieldOfView() const {
 
 void   mcrt::Camera::setFieldOfView(double fieldOfView) {
     double viewPlaneWidth { glm::distance(viewPlane[1], viewPlane[0]) };
-    double focalDistance { (2.0/viewPlaneWidth) * std::tan(fieldOfView/2.0) };
+    double focalDistance { (viewPlaneWidth/2.0) / std::tan(fieldOfView/2.0) };
     glm::dvec3 eyeNormal { -glm::normalize(getViewPlanePosition()-eyePoint) };
     eyePoint = getViewPlanePosition() + eyeNormal * focalDistance;
 }
@@ -97,8 +97,8 @@ mcrt::Camera::SamplingPlane mcrt::Camera::getPixelSamplingPlane(const Image& ima
     return pixelSamplingPlane;
 }
 
-void mcrt::Camera::moveTo(const glm::dvec3& eyePosition) {
-    glm::dvec3 eyeToPlane { getViewPlanePosition() - eyePoint };
+void mcrt::Camera::moveTo(const glm::dvec3& viewPlanePosition) {
+    glm::dvec3 planeToCamera { eyePoint - getViewPlanePosition() };
     glm::dvec3 viewPlaneCenter { getViewPlanePosition() };
 
     glm::dvec3 tl { viewPlane[0] - viewPlaneCenter },
@@ -106,11 +106,11 @@ void mcrt::Camera::moveTo(const glm::dvec3& eyePosition) {
                br { viewPlane[2] - viewPlaneCenter },
                bl { viewPlane[3] - viewPlaneCenter };
 
-    viewPlane[0] = eyePosition + eyeToPlane + tl;
-    viewPlane[1] = eyePosition + eyeToPlane + tr;
-    viewPlane[2] = eyePosition + eyeToPlane + br;
-    viewPlane[3] = eyePosition + eyeToPlane + bl;
-    eyePoint = eyePosition;
+    viewPlane[0] = viewPlaneCenter + tl;
+    viewPlane[1] = viewPlaneCenter + tr;
+    viewPlane[2] = viewPlaneCenter + br;
+    viewPlane[3] = viewPlaneCenter + bl;
+    eyePoint = viewPlaneCenter + planeToCamera;
 }
 
 glm::dvec3 mcrt::Camera::getEyePosition() const {
@@ -125,20 +125,20 @@ glm::dvec3 mcrt::Camera::getViewPlanePosition() const {
 }
 
 void mcrt::Camera::lookAt(const glm::dvec3& lookAtPosition, const glm::dvec3& upwardVector) {
-    double eyeToPlaneDistance = glm::distance(eyePoint, getViewPlanePosition());
+    glm::dvec3 viewPlaneCenter = getViewPlanePosition();
+    double eyeToPlaneDistance = glm::distance(eyePoint, viewPlaneCenter);
     double eyeFieldOfView { getFieldOfView() }; // For bootstrapping hFoV later.
 
-    glm::dvec3 w = glm::normalize(lookAtPosition - eyePoint);
+    glm::dvec3 w = glm::normalize(lookAtPosition - viewPlaneCenter);
     glm::dvec3 u = glm::cross(w, upwardVector);
     glm::dvec3 v = glm::cross(u, w);
-    glm::dvec3 viewPlaneCenter = eyePoint + w*eyeToPlaneDistance;
+    eyePoint = viewPlaneCenter - w*eyeToPlaneDistance;
 
     viewPlane[0] = viewPlaneCenter - u + v;
     viewPlane[1] = viewPlaneCenter + u + v;
     viewPlane[2] = viewPlaneCenter + u - v;
     viewPlane[3] = viewPlaneCenter - u - v;
 
-    eyePoint = glm::cross(viewPlane[1] - viewPlane[0], viewPlane[3] - viewPlane[0]);
     if (glm::dot(eyePoint, lookAtPosition - getViewPlanePosition()) > 0) eyePoint = -eyePoint;
     setFieldOfView(eyeFieldOfView); // We moved the eye to some arbitrary position, fix fov...
 }
