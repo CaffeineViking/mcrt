@@ -33,9 +33,6 @@ namespace mcrt {
         // Simpler approach to just take the center of the sampling plane.
         glm::dvec3 getPixelCenter(const Image&, size_t, size_t) const;
 
-        // For debugging purposes.  TODO: remove this later when done.
-        friend std::ostream& operator<<(std::ostream&, const Camera&);
-
         void moveTo(const glm::dvec3&);
         glm::dvec3 getEyePosition() const;
         glm::dvec3 getViewPlanePosition() const;

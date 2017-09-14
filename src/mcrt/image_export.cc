@@ -2,10 +2,12 @@
 
 #include <fstream>
 #include <cstdint>
+#include <stdexcept>
 
 // This is the binary 8-bit per channel variant of PPM, which hasn't alpha-channel.
 void mcrt::NetpbmImageExporter::save(const Image& image, const std::string& file) {
     std::ofstream fileStream { file, std::ios::binary };
+    if (!fileStream) throw std::runtime_error { "Could not create '" + file + "'."};
     // Write the format magic data, as: https://en.wikipedia.org/wiki/Netpbm_format.
     fileStream << "P6 " <<  image.getWidth() << " " << image.getHeight() << " 255 ";
     for (const auto& pixelData : image.getPixelData())
@@ -15,6 +17,7 @@ void mcrt::NetpbmImageExporter::save(const Image& image, const std::string& file
 // Each channel is 16-bits long in big-endian and the image has an alpha-channel too.
 void mcrt::FarbfeldImageExporter::save(const Image& image, const std::string& file) {
     std::ofstream fileStream { file, std::ios::binary };
+    if (!fileStream) throw std::runtime_error { "Couldn't create '" + file + "'."};
     // See 'man farbfeld' or just go over to www.suckless.org/tools/farbfeld.
     fileStream << "farbfeld"; // Farbfeld's magic number for the file format.
     std::uint32_t imageWidth  { static_cast<std::uint32_t>(image.getWidth()) },
