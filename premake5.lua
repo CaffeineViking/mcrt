@@ -29,6 +29,7 @@ project (name)
     targetdir "bin"
     kind "WindowedApp"
     files {"src/main.cc"}
+    files {"src/foreign/**.cc"}
     files {"src/"..name.."/**.cc"}
     includedirs {"include/foreign"}
     includedirs {"include"}
