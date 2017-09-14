@@ -56,6 +56,14 @@ public:
     Intersection intersect(const Ray& ray) const override;    
 };
 
-Intersection intersect(const Ray& ray, const std::vector<Geometry*>& geometry);
+class Scene {
+private:
+    std::vector<const Geometry*> _geometry;
+public:
+    Intersection intersect(const Ray& ray) const;
+    
+    void add(const Geometry& geometry);
+};
+
 }
 #endif

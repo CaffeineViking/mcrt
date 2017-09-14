@@ -77,7 +77,7 @@ namespace mcrt{
         return result;
     }
 
-    Intersection intersect(const Ray& ray, const std::vector<Geometry*>& geometry) {
+    Intersection Scene::intersect(const Ray& ray) const{
         Intersection result
         {
             std::numeric_limits<double>::max(),            
@@ -85,7 +85,7 @@ namespace mcrt{
             {glm::dvec3(0.0)}
         };
 
-        for(Geometry* g: geometry){
+        for(const Geometry* g: _geometry){
             Intersection i = g->intersect(ray);
             if(i.distance > 0.0 && i.distance < result.distance){
                 result = i;
@@ -93,4 +93,8 @@ namespace mcrt{
         }
         return result;
     }    
+
+    void Scene::add(const Geometry& g) {
+        _geometry.push_back(&g);
+    }
 }

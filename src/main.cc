@@ -8,15 +8,16 @@
 #include <vector>
 
 int main(int, char**) {
+
+    mcrt::Scene scene{};
     mcrt::Material dummyMaterial1{glm::dvec3(1.0,0.0,0.0)};
     mcrt::Material dummyMaterial2{glm::dvec3(0.0,1.0,0.0)};
     
     mcrt::Sphere sphere{glm::dvec3(0.0,0.0,-10.0),2.0, dummyMaterial1};
     mcrt::Sphere sphere2{glm::dvec3(0.0,0.0,-1.0),0.1, dummyMaterial2};
     
-    std::vector<mcrt::Geometry*> scene;
-    scene.push_back(&sphere);
-    scene.push_back(&sphere2);
+    scene.add(sphere);
+    scene.add(sphere2);
 
     mcrt::Image renderImage { 512, 512 };
     renderImage.clear({0, 0, 0,  255});
@@ -69,7 +70,7 @@ int main(int, char**) {
             mcrt::Ray ray{pixel, rayDirection};
             glm::dvec3 color(0.0,0.0,0.0);        
             
-            mcrt::Intersection i = mcrt::intersect(ray,scene);
+            mcrt::Intersection i = scene.intersect(ray);
             if(i.distance > 0){
                 color = i.material.color;
             }
