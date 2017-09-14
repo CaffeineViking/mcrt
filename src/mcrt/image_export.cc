@@ -5,6 +5,16 @@
 #include <stdexcept>
 #include "lodepng.hh"
 
+// Parses the extension and try to save with the formats we have implemented.
+void mcrt::ImageExporter::save(const Image& image, const std::string& file) {
+    size_t extensionPosition { file.find_last_of(".") + 1 };
+    std::string extension { file.substr(extensionPosition) };
+    if (extension == "png") mcrt::PngImageExporter::save(image, file);
+    else if (extension == "ppm") mcrt::NetpbmImageExporter::save(image, file);
+    else if (extension == "ff") mcrt::FarbfeldImageExporter::save(image, file);
+    else throw std::runtime_error { "Invalid format for '" + file + "'!" };
+}
+
 // This is the binary 8-bit per channel variant of PPM, which hasn't alpha-channel.
 void mcrt::NetpbmImageExporter::save(const Image& image, const std::string& file) {
     std::ofstream fileStream { file, std::ios::binary };

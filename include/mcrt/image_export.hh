@@ -6,6 +6,12 @@
 #include "mcrt/image.hh"
 
 namespace mcrt {
+    // Self-aware export.
+    class ImageExporter {
+    public:
+        // Chooses correct format based on given extension.
+        static void save(const Image&, const std::string&);
+    };
     // Binary PPM Image Format.
     class NetpbmImageExporter {
     public:
