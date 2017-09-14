@@ -19,6 +19,13 @@ namespace mcrt {
         // farbfeld <width> <height> [<R16><G16><B16><A16>]
         static void save(const Image&, const std::string&);
     };
+
+    // Lossless RGBA format.
+    class PngImageExporter {
+    public:
+        // We're using the standard libPNG implementations.
+        static void save(const Image&, const std::string&);
+    };
 }
 
 #endif

@@ -34,10 +34,10 @@ project (name)
     includedirs {"include"}
 
     filter {"system:macosx"}
-        -- links {"library"}
+        links {"png"}
     filter {"system:windows"}
-        -- links {"library"}
+        links {"png"}
         buildoptions {" -static -static-libgcc -static-libstdc++",
                       "-mwindows", "-mconsole"}
     filter {"system:linux or system:bsd"}
-        -- links {"library"}
+        links {"png"}

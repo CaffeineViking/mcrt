@@ -48,3 +48,6 @@ void mcrt::FarbfeldImageExporter::save(const Image& image, const std::string& fi
                    << colorBytes[3][1] << colorBytes[3][0];
     }
 }
+
+void mcrt::PngImageExporter::save(const Image& image, const std::string& string) {
+}

@@ -48,7 +48,7 @@ int main(int, char**) {
     std::cout << "Scaling image with bilinear interpolation." << std::endl;
     renderImage.resize(256, 256, mcrt::Image::ResizeMethod::BILINEAR);
     std::cout << "Saving PPM image to disk..." << std::endl;
-    mcrt::NetpbmImageExporter::save(renderImage, "share/render.ppm");
+    mcrt::PngImageExporter::save(renderImage, "share/render.png");
 
     // Create camera with standard settings, position is rela-
     // tive to the eye position (as are all of the operaitons)
