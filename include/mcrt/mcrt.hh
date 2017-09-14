@@ -7,9 +7,14 @@
 
 namespace mcrt {
 
-    // Material struct, stores render information about a surface type.
+// Material struct, stores render information about a surface type.
 struct Material {
-    glm::dvec3 color;    
+    glm::dvec3 color;   
+};
+
+struct Light {
+    glm::dvec3 origin;
+    glm::dvec3 color;
 };
 
 struct Ray {
@@ -59,11 +64,15 @@ public:
 class Scene {
 private:
     std::vector<const Geometry*> _geometry;
+    std::vector<Light> _lights;
 public:
     Intersection intersect(const Ray& ray) const;
     
     void add(const Geometry& geometry);
+    void add(Light light);
+    glm::dvec3 rayTrace(const Ray& ray);    
 };
+
 
 }
 #endif

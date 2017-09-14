@@ -3,6 +3,9 @@
 #include <glm/glm.hpp>
 #include <limits>
 #include <vector>
+#include <cmath>
+#include <iostream>
+
 namespace mcrt{
 
     Geometry::Geometry(const Material& m): 
@@ -28,19 +31,40 @@ namespace mcrt{
 
     // Return distance from ray origin to sphere, distance = 0 means no intersection.
     Intersection Sphere::intersect(const Ray& ray) const{
-        Intersection result {0.0,glm::dvec3(0.0),{glm::dvec3(0.0)}};
-        glm::dvec3 a = ray.origin - _origin;
-        double b = glm::dot(a,ray.direction);
-        double c = glm::dot(a,a) - (_radius * _radius);
-        double d = b * b - c;
-        if(d > 1e-8) {
-            double dist = -b - sqrt(d);
-            result.distance = dist;
-            result.normal = glm::normalize((ray.origin + ray.direction) - _origin);
-            result.material = _material;
-            
-            return result;        
+        Intersection result {0,glm::dvec3(0.0),{glm::dvec3(0.0)}};
+        
+        double t0,t1;
+        glm::dvec3 L = _origin - ray.origin;
+        double tca = glm::dot(L,ray.direction);
+        if(tca < 0) {
+            return result;            
         }
+
+        double d2 = glm::dot(L,L) - tca * tca;
+        if( d2 > _radius*_radius) {
+            return result;
+        }
+
+        double thc = std::sqrt(_radius*_radius -d2);
+        t0 = tca - thc;
+        t1 = tca + thc;
+
+        if(t0 > t1) {
+            double tmp = t0;
+            t0 = t1;
+            t1 = tmp;
+        }
+
+        if(t0 < 0){
+            t0 = t1;
+            if( t0 < 0) {
+                return result;
+            }
+        }
+
+        result.distance = t0;
+        result.material = _material;
+        result.normal = glm::normalize((ray.origin + ray.direction * t0) - _origin);
         return result;
     }
 
@@ -53,7 +77,7 @@ namespace mcrt{
         glm::dvec3 pvec = glm::cross(ray.direction,e2);
         double det = glm::dot(e1,pvec);
         
-        Intersection result {0.0,pvec,{glm::dvec3(0.0)}};    
+        Intersection result {0,glm::normalize(pvec),{glm::dvec3(0.0)}};    
         
         if(det < 1e-8 && det > -1e-8) {
             return result;
@@ -97,4 +121,34 @@ namespace mcrt{
     void Scene::add(const Geometry& g) {
         _geometry.push_back(&g);
     }
+
+    void Scene::add(Light light) {
+        _lights.push_back(light);
+    }
+    
+    glm::dvec3 Scene::rayTrace(const Ray& ray) {
+        glm::dvec3 color(0.0);
+        Intersection i = intersect(ray);
+        for(Light l: _lights){
+            glm::dvec3 point = ray.origin + ray.direction * i.distance;
+            
+            glm::dvec3 diff = l.origin - point;
+
+            Ray shadowRay{point, glm::normalize(diff)};
+            Intersection r = intersect(shadowRay);
+            if(r.distance < 1e-8) {
+                // Light hit
+                double angleFallof = std::max(0.0,glm::dot(shadowRay.direction,i.normal));                
+                color = l.color * r.material.color;// * angleFallof;
+            } 
+            else if(r.distance >= glm::length(diff)){
+                // Light hit
+                 double angleFallof = std::max(0.0,glm::dot(shadowRay.direction,i.normal));                
+                color = l.color  * i.material.color ;//* angleFallof;
+            }
+        }
+        return color;
+    }
+
+    
 }
