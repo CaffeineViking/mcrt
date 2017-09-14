@@ -1,6 +1,9 @@
 # Project Specific
 bin/
 build/
+share/*.ff
+share/*.png
+share/*.ppm
 
 # Compiled Object files
 *.slo
