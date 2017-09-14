@@ -1,18 +1,18 @@
 #include "mcrt/camera.hh"
 
-mcrt::Camera::Camera(const glm::dvec3& eyePosition,  const glm::dvec3& lookAtPosition,
+mcrt::Camera::Camera(const glm::dvec3& position,  const glm::dvec3& lookAtPosition,
                      const glm::dvec3& upwardVector, double aspectRatio, double fieldOfView) {
     // Initial, temporary values.
     viewPlane[0] = { -1, +1, 0 };
     viewPlane[1] = { +1, +1, 0 };
     viewPlane[2] = { +1, -1, 0 };
     viewPlane[3] = { -1, -1, 0 };
-    eyePoint = { 0.0, 0.0, 1.0 };
+    eyePoint = { -1.0, 0.0, 0.0 };
 
     // Setup our camera setting.
     setAspectRatio(aspectRatio);
     setFieldOfView(fieldOfView);
-    moveTo(eyePosition);
+    moveTo(position);
 
     // Does the order matter here or not?
     lookAt(lookAtPosition, upwardVector);
