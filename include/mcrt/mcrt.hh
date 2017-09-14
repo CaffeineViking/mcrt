@@ -28,51 +28,5 @@ struct Intersection {
     Material material;
 };
 
-
-
-class Geometry {
-protected:
-    Material _material;       
-    Geometry(const Material& m);
-
-public:
-    virtual Intersection intersect(const Ray& ray) const = 0;
-
-    Material getMaterial() const;
-};
-
-// Parametric form representation of a sphere
-class Sphere : public Geometry{
-private:
-    glm::dvec3 _origin;          
-    double _radius;
-public:
-    Sphere(const glm::dvec3 o, double r, const Material& m);
-    Intersection intersect(const Ray& ray) const override;
-};
-
-class Triangle : public Geometry{
-private:
-    glm::dvec3 _v1;
-    glm::dvec3 _v2;
-    glm::dvec3 _v3;  
-public:
-    Triangle(const glm::dvec3& v1,const glm::dvec3& v2,const glm::dvec3& v3, const Material& m);
-    Intersection intersect(const Ray& ray) const override;    
-};
-
-class Scene {
-private:
-    std::vector<const Geometry*> _geometry;
-    std::vector<Light> _lights;
-public:
-    Intersection intersect(const Ray& ray) const;
-    
-    void add(const Geometry& geometry);
-    void add(Light light);
-    glm::dvec3 rayTrace(const Ray& ray);    
-};
-
-
 }
 #endif

@@ -4,10 +4,14 @@
 #include "mcrt/color.hh"
 #include "mcrt/image.hh"
 #include "mcrt/camera.hh"
+#include "mcrt/sphere.hh"
+#include "mcrt/triangle.hh"
+#include "mcrt/scene.hh"
 #include "mcrt/image_export.hh"
 #include <glm/gtx/string_cast.hpp>
 #include <vector>
 #include <sstream>
+
 int main(int, char**) {
 
     mcrt::Scene scene{};
@@ -220,7 +224,7 @@ int main(int, char**) {
     mcrt::Light light{glm::dvec3(10.0,0.0,0.0),glm::dvec3(1.0)};
     scene.add(light);
 
-    mcrt::Image renderImage { 2048, 2048 };
+    mcrt::Image renderImage { 512, 512 };
     renderImage.clear({0, 0, 0,  255});
 
     std::cout << "Image size: " << renderImage.getWidth() << "x" << renderImage.getHeight() << std::endl;
