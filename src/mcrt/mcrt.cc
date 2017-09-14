@@ -4,11 +4,7 @@
 #include <limits>
 #include <vector>
 namespace mcrt{
-        
-    Material::Material(const glm::dvec3& c):
-    _color{c}
-    {}
-        
+
     Geometry::Geometry(const Material& m): 
     _material{m}
     {}
@@ -25,10 +21,14 @@ namespace mcrt{
     _v2{v2},
     _v3{v3}
     {} 
-                
+            
+    Material Geometry::getMaterial() const {
+        return _material;
+    }
+
     // Return distance from ray origin to sphere, distance = 0 means no intersection.
-    Intersection Sphere::intersect(const Ray& ray) {
-        Intersection result {0.0,glm::dvec3(0.0)};
+    Intersection Sphere::intersect(const Ray& ray) const{
+        Intersection result {0.0,glm::dvec3(0.0),{glm::dvec3(0.0)}};
         glm::dvec3 a = ray.origin - _origin;
         double b = glm::dot(a,ray.direction);
         double c = glm::dot(a,a) - (_radius * _radius);
@@ -37,13 +37,15 @@ namespace mcrt{
             double dist = -b - sqrt(d);
             result.distance = dist;
             result.normal = glm::normalize((ray.origin + ray.direction) - _origin);
+            result.material = _material;
+            
             return result;        
         }
         return result;
     }
 
     // Returns distance from ray to triangle, 0 means no intersection.
-    Intersection Triangle::intersect(const Ray& ray) {
+    Intersection Triangle::intersect(const Ray& ray) const {
         glm::dvec3 e1 = _v2 - _v1;
         glm::dvec3 e2 = _v3 - _v1;
         
@@ -51,7 +53,7 @@ namespace mcrt{
         glm::dvec3 pvec = glm::cross(ray.direction,e2);
         double det = glm::dot(e1,pvec);
         
-        Intersection result {0.0,pvec};    
+        Intersection result {0.0,pvec,{glm::dvec3(0.0)}};    
         
         if(det < 1e-8 && det > -1e-8) {
             return result;
@@ -71,30 +73,24 @@ namespace mcrt{
         }
         
         result.distance = glm::dot(e2,qvec) * inv_det;
+        result.material = _material;
         return result;
     }
 
-    // Return intersection with closes boject in the scene togheter with some values usefull for continued tracing.
-    // Intersection object_intersection(const Ray& ray, const std::vector<Sphere>& spheres, const std::vector<Triangle>& triangles) {
-    //     Intersection result
-    //     {
-    //         std::numeric_limits<double>::max(),            
-    //         glm::dvec3(0.0)
-    //     };
-        
-    //     for(const Sphere& s: spheres) {
-    //         Intersection i = sphere_intersect(ray,s);
-    //         if(i.distance > 0.0 && i.distance < result.distance) {
-    //             result = i;
-    //         }
-    //     }
-        
-    //     for(const Triangle& t: triangles) {
-    //         Intersection i = triangle_instersect(ray,t);
-    //         if(i.distance > 0.0 && i.distance < result.distance) {
-    //             result = i;
-    //         }
-    //     }
-    //     return result;
-    // }
+    Intersection intersect(const Ray& ray, const std::vector<Geometry*>& geometry) {
+        Intersection result
+        {
+            std::numeric_limits<double>::max(),            
+            glm::dvec3(0.0),
+            {glm::dvec3(0.0)}
+        };
+
+        for(Geometry* g: geometry){
+            Intersection i = g->intersect(ray);
+            if(i.distance > 0.0 && i.distance < result.distance){
+                result = i;
+            }
+        }
+        return result;
+    }    
 }

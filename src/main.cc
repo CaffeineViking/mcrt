@@ -5,23 +5,20 @@
 #include "mcrt/image.hh"
 #include "mcrt/camera.hh"
 #include "mcrt/image_export.hh"
+#include <vector>
 
 int main(int, char**) {
-    mcrt::Material dummyMaterial{glm::dvec3(0.0)};
-    mcrt::Ray ray{glm::dvec3(0.0), glm::dvec3(0.0,0.0,1.0)};
-    mcrt::Triangle triangle{
-        glm::dvec3( 5.0, 5.0, 5.0),
-        glm::dvec3(-5.0, 5.0, 5.0),
-        glm::dvec3( 5.0,-5.0, 5.0),
-        dummyMaterial};
-    double distance = triangle.intersect(ray).distance;
-    std::cout << distance << std::endl;
+    mcrt::Material dummyMaterial1{glm::dvec3(1.0,0.0,0.0)};
+    mcrt::Material dummyMaterial2{glm::dvec3(0.0,1.0,0.0)};
+    
+    mcrt::Sphere sphere{glm::dvec3(0.0,0.0,-10.0),2.0, dummyMaterial1};
+    mcrt::Sphere sphere2{glm::dvec3(0.0,0.0,-1.0),0.1, dummyMaterial2};
+    
+    std::vector<mcrt::Geometry*> scene;
+    scene.push_back(&sphere);
+    scene.push_back(&sphere2);
 
-    mcrt::Sphere sphere{glm::dvec3(0.0,0.0,4.0),2.0, dummyMaterial};
-    distance = sphere.intersect(ray).distance;
-    std::cout << distance << std::endl;
-
-    mcrt::Image renderImage { 64, 64 };
+    mcrt::Image renderImage { 1024, 1024 };
     renderImage.clear({0, 0, 0,  255});
 
     std::cout << "Image size: " << renderImage.getWidth() << "x" << renderImage.getHeight() << std::endl;
@@ -46,7 +43,7 @@ int main(int, char**) {
     }
 
     std::cout << "Scaling image with bilinear interpolation." << std::endl;
-    renderImage.resize(256, 256, mcrt::Image::ResizeMethod::BILINEAR);
+  //  renderImage.resize(256, 256, mcrt::Image::ResizeMethod::NEAREST_NEIGHBOR);
     std::cout << "Saving PPM image to disk..." << std::endl;
     mcrt::NetpbmImageExporter::save(renderImage, "share/render.ppm");
 
@@ -69,8 +66,22 @@ int main(int, char**) {
 
             // Do raytracing schenanigans over here.
             glm::dvec3 rayDirection { pixel - eye };
+            mcrt::Ray ray{pixel, rayDirection};
+            glm::dvec3 color(0.0,0.0,0.0);        
+            
+            mcrt::Intersection i = mcrt::intersect(ray,scene);
+            if(i.distance > 0){
+                color = i.material.color;
+            }
+
+            renderImage.pixel(x,y) = {
+                static_cast<unsigned char>(color.x * 255),
+                static_cast<unsigned char>(color.y * 255),
+                static_cast<unsigned char>(color.z * 255), 255 };
         }
     }
-
+    renderImage.resize(512, 512, mcrt::Image::ResizeMethod::BILINEAR);
+    mcrt::NetpbmImageExporter::save(renderImage, "share/render.ppm");
+    
     return 0;
 }
