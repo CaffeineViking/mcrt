@@ -18,7 +18,7 @@ int main(int, char**) {
     scene.push_back(&sphere);
     scene.push_back(&sphere2);
 
-    mcrt::Image renderImage { 1024, 1024 };
+    mcrt::Image renderImage { 512, 512 };
     renderImage.clear({0, 0, 0,  255});
 
     std::cout << "Image size: " << renderImage.getWidth() << "x" << renderImage.getHeight() << std::endl;
@@ -80,7 +80,7 @@ int main(int, char**) {
                 static_cast<unsigned char>(color.z * 255), 255 };
         }
     }
-    renderImage.resize(512, 512, mcrt::Image::ResizeMethod::BILINEAR);
+    //renderImage.resize(512, 512, mcrt::Image::ResizeMethod::BILINEAR);
     mcrt::NetpbmImageExporter::save(renderImage, "share/render.ppm");
     
     return 0;
