@@ -10,14 +10,56 @@
 int main(int, char**) {
 
     mcrt::Scene scene{};
-    mcrt::Material dummyMaterial1{glm::dvec3(1.0,0.0,0.0)};
-    mcrt::Material dummyMaterial2{glm::dvec3(0.0,1.0,0.0)};
+    mcrt::Material frontWallMaterial{glm::dvec3(1.0,0.0,0.0)};
+    mcrt::Material BackWallMaterial{glm::dvec3(0.0,1.0,0.0)};
     
-    mcrt::Sphere sphere{glm::dvec3(0.0,0.0,-10.0),2.0, dummyMaterial1};
-    mcrt::Sphere sphere2{glm::dvec3(0.0,0.0,-1.0),0.1, dummyMaterial2};
-    
-    scene.add(sphere);
-    scene.add(sphere2);
+    mcrt::Triangle wall11{
+        glm::dvec3(0,5,-6),
+        glm::dvec3(10,5,-6),
+        glm::dvec3(0,-5,-6),
+        frontWallMaterial
+    };
+    mcrt::Triangle wall12{
+        glm::dvec3(0,-5,-6),
+        glm::dvec3(10,5,-6),
+        glm::dvec3(10,-5,-6),
+        frontWallMaterial
+    };
+
+    scene.add(wall11);
+    scene.add(wall12);
+
+    mcrt::Triangle wall21{
+        glm::dvec3(0,5,6),
+        glm::dvec3(10,5,6),
+        glm::dvec3(0,-5,6),
+        BackWallMaterial
+    };
+    mcrt::Triangle wall22{
+        glm::dvec3(0,-5,6),
+        glm::dvec3(10,5,6),
+        glm::dvec3(10,-5,6),
+        BackWallMaterial
+    };
+
+    scene.add(wall21);
+    scene.add(wall22);
+
+    mcrt::Triangle wall31{
+        glm::dvec3(0,5,-6),
+        glm::dvec3(-3,5,0),
+        glm::dvec3(0,-5,-6),
+        BackWallMaterial
+    };
+    mcrt::Triangle wall32{
+        glm::dvec3(0,-5,-6),
+        glm::dvec3(-3,5,0),
+        glm::dvec3(-3,-5,0),
+        BackWallMaterial
+    };
+
+    scene.add(wall31);
+    scene.add(wall32);
 
     mcrt::Image renderImage { 512, 512 };
     renderImage.clear({0, 0, 0,  255});
