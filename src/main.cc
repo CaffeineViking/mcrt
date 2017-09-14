@@ -92,8 +92,8 @@ int main(int, char**) {
 
     mcrt::Triangle wall51{
         glm::dvec3(10,5,6),
-        glm::dvec3(13,5,0),
         glm::dvec3(13,-5,0),
+        glm::dvec3(13,5,0),
         yellow
     };
     mcrt::Triangle wall52{
@@ -220,14 +220,14 @@ int main(int, char**) {
     scene.add(floor5);
     scene.add(floor6);
 
-    mcrt::Material sphereMaterial {grey};
+    mcrt::Material sphereMaterial {blue};
     mcrt::Sphere sphere {glm::dvec3(7.0,0.0,0.0),1.0, sphereMaterial};
     scene.add(sphere);
 
-    mcrt::Light light{glm::dvec3(10.0,0.0,0.0),glm::dvec3(1.0)};
+    mcrt::Light light{glm::dvec3(0.0,0.0,-3.0),glm::dvec3(1.0)};
     scene.add(light);
 
-    mcrt::Image renderImage { 512, 512 };
+    mcrt::Image renderImage { 1024, 1024 };
     renderImage.clear({0, 0, 0,  255});
 
     std::cout << "Image size: " << renderImage.getWidth() << "x" << renderImage.getHeight() << std::endl;
@@ -269,7 +269,7 @@ int main(int, char**) {
             // the actual pixel colors. e.g. when supersampling 4x or 16x.
 
             // Do raytracing schenanigans over here.
-            glm::dvec3 rayDirection { pixel - eye };
+            glm::dvec3 rayDirection { glm::normalize(pixel - eye) };
             mcrt::Ray ray{pixel, rayDirection};
             glm::dvec3 color(0.0,0.0,0.0);        
             color = scene.rayTrace(ray);
