@@ -29,15 +29,16 @@ project (name)
     targetdir "bin"
     kind "WindowedApp"
     files {"src/main.cc"}
+    files {"src/foreign/**.cc"}
     files {"src/"..name.."/**.cc"}
     includedirs {"include/foreign"}
     includedirs {"include"}
 
     filter {"system:macosx"}
-        links {"png"}
+        -- links {"library"}
     filter {"system:windows"}
-        links {"png"}
+        -- links {"library"}
         buildoptions {" -static -static-libgcc -static-libstdc++",
                       "-mwindows", "-mconsole"}
     filter {"system:linux or system:bsd"}
-        links {"png"}
+        -- links {"library"}
