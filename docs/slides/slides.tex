@@ -1,0 +1,53 @@
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage{algorithmic}
+\usepackage{algorithm}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{courier}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{mathtools}
+\usepackage[font={small}, labelfont={color=black}]{caption}
+\usetheme{Rochester}
+
+\beamertemplatenavigationsymbolsempty
+\title{\LARGE{Global Illumination Using Photon Maps}\\
+       \large{\emph{A summary of the paper by Henrik W. Jensen~\cite{jensen1996global}}}}
+\author{\vspace{2ex}\\\textbf{Martin Estegren} \;\;\,\,
+        \texttt{<mares480@student.liu.se>} \\
+        \textbf{Erik S. V. Jansson}\;
+        \texttt{<erija578@student.liu.se>} \\~\\
+        {Advanced Global Illumination and Rendering}\\
+        {at ITN Linköping University (LiTH), Sweden}}
+
+\lstset{
+    escapeinside={<@}{@>},
+    basicstyle=\tiny\ttfamily,
+    breakatwhitespace = false,
+    breaklines = true,
+    captionpos = b,
+    keepspaces = true,
+    language = C++,
+    showspaces = false,
+    showstringspaces = false,
+    frame = tb,
+    aboveskip = 10pt,
+    belowskip = 10pt,
+    numbers = left,
+    numbersep = 3pt
+}
+
+\setbeamertemplate{footline}[frame number]
+\begin{document}
+    \frame{\titlepage}
+
+    % Write presentation slides.
+
+    \frame{\frametitle{Questions?}}
+    \frame{\frametitle{Bibliography}
+        \nocite{*}
+        \bibliographystyle{alpha}
+        \bibliography{slides}
+    }
+\end{document}

@@ -1,7 +1,7 @@
 The MIT License (MIT)
 =====================
 
-Copyright © 2017 Martin Estgren and Erik S. V. Jansson
+Copyright © 2017 M. Estgren, R. Hedin, E. S. V. Jansson
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation

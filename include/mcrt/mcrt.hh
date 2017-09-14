@@ -4,7 +4,8 @@
 #include <glm/glm.hpp>
 #include <limits>
 #include <vector>
-namespace mcrt {    
+
+namespace mcrt {
 
 struct Ray {
     glm::dvec3 origin;
