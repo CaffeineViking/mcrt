@@ -106,11 +106,11 @@ void mcrt::Camera::moveTo(const glm::dvec3& viewPlanePosition) {
                br { viewPlane[2] - viewPlaneCenter },
                bl { viewPlane[3] - viewPlaneCenter };
 
-    viewPlane[0] = viewPlaneCenter + tl;
-    viewPlane[1] = viewPlaneCenter + tr;
-    viewPlane[2] = viewPlaneCenter + br;
-    viewPlane[3] = viewPlaneCenter + bl;
-    eyePoint = viewPlaneCenter + planeToCamera;
+    viewPlane[0] = viewPlanePosition + tl;
+    viewPlane[1] = viewPlanePosition + tr;
+    viewPlane[2] = viewPlanePosition + br;
+    viewPlane[3] = viewPlanePosition + bl;
+    eyePoint = viewPlanePosition + planeToCamera;
 }
 
 glm::dvec3 mcrt::Camera::getEyePosition() const {
