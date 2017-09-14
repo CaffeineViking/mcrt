@@ -1,6 +1,7 @@
 # Project Specific
 bin/
 build/
+share/
 
 # Compiled Object files
 *.slo
