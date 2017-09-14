@@ -1,0 +1,14 @@
+{
+    "camera": {
+        "fieldOfView": 90.0,
+        "origin": [0.0, 0.0, 0.0],
+        "lookAt": [1.0, 0.0, 0.0],
+        "up": [0.0, 1.0, 0.0]
+    },
+
+    "materials": [
+    ],
+
+    "surfaces": [
+    ]
+}
