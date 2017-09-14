@@ -15,89 +15,92 @@
 int main(int, char**) {
 
     mcrt::Scene scene{};
-    mcrt::Material wall1{glm::dvec3(1.0,0.0,0.0)};
-    mcrt::Material wall2{glm::dvec3(0.0,1.0,0.0)};
-    mcrt::Material wall3{glm::dvec3(0.0,0.0,1.0)};
-    mcrt::Material wall4{glm::dvec3(1.0,1.0,0.0)};
-    mcrt::Material wall5{glm::dvec3(0.0,1.0,1.0)};
-    mcrt::Material wall6{glm::dvec3(1.0,0.0,1.0)};
-    mcrt::Material ceiling{glm::dvec3(0.7,0.7,0.7)};
+    mcrt::Material red{glm::dvec3(1.0,0.0,0.0)};
+    mcrt::Material yellow{glm::dvec3(1.0,1.0,0.0)};
+    mcrt::Material green{glm::dvec3(0.0,1.0,0.0)};
+    mcrt::Material cyan{glm::dvec3(0.0,1.0,1.0)};
+    mcrt::Material blue{glm::dvec3(0.0,0.0,1.0)};
+    mcrt::Material magenta{glm::dvec3(1.0,0.0,1.0)};
+    mcrt::Material white{glm::dvec3(1.0,1.0,1.0)};
+    mcrt::Material grey{glm::dvec3(0.7,0.7,0.7)};
+
+    mcrt::Material ceiling{white};
     
     mcrt::Triangle wall11{
         glm::dvec3(0,5,-6),
         glm::dvec3(10,5,-6),
         glm::dvec3(0,-5,-6),
-        wall1
+        cyan
     };
     mcrt::Triangle wall12{
         glm::dvec3(0,-5,-6),
         glm::dvec3(10,5,-6),
         glm::dvec3(10,-5,-6),
-        wall1
+        cyan
     };
 
     scene.add(wall11);
     scene.add(wall12);
 
     mcrt::Triangle wall21{
-        glm::dvec3(0,5,6),
-        glm::dvec3(10,5,6),
-        glm::dvec3(0,-5,6),
-        wall2
+        glm::dvec3(0,5,-6),
+        glm::dvec3(-3,5,0),
+        glm::dvec3(0,-5,-6),
+        blue
     };
     mcrt::Triangle wall22{
-        glm::dvec3(0,-5,6),
-        glm::dvec3(10,5,6),
-        glm::dvec3(10,-5,6),
-        wall2
+        glm::dvec3(0,-5,-6),
+        glm::dvec3(-3,-5,0),
+        glm::dvec3(-3,5,0),
+        blue
     };
 
     scene.add(wall21);
     scene.add(wall22);
 
     mcrt::Triangle wall31{
-        glm::dvec3(0,5,-6),
         glm::dvec3(-3,5,0),
-        glm::dvec3(0,-5,-6),
-        wall3
+        glm::dvec3(0,5,6),
+        glm::dvec3(-3,-5,0),
+        magenta
     };
     mcrt::Triangle wall32{
-        glm::dvec3(0,-5,-6),
-        glm::dvec3(-3,5,0),
         glm::dvec3(-3,-5,0),
-        wall3
+        glm::dvec3(0,-5,6),
+        glm::dvec3(0,5,6),
+        magenta
     };
 
     scene.add(wall31);
     scene.add(wall32);
 
     mcrt::Triangle wall41{
-        glm::dvec3(10,5,-6),
-        glm::dvec3(13,5,0),
-        glm::dvec3(10,-5,-6),
-        wall4
+        glm::dvec3(0,5,6),
+        glm::dvec3(10,5,6),
+        glm::dvec3(10,-5,6),
+        red
     };
     mcrt::Triangle wall42{
-        glm::dvec3(10,-5,-6),
-        glm::dvec3(13,5,0),
-        glm::dvec3(13,-5,0),
-        wall4
+        glm::dvec3(10,-5,6),
+        glm::dvec3(0,-5,6),
+        glm::dvec3(0,5,6),
+        red
     };
 
     scene.add(wall41);
     scene.add(wall42);
 
     mcrt::Triangle wall51{
-        glm::dvec3(-3,5,0),
-        glm::dvec3(0,5,6),
-        glm::dvec3(-3,-5,0),
-        wall5
+        glm::dvec3(10,5,6),
+        glm::dvec3(13,5,0),
+        glm::dvec3(13,-5,0),
+        yellow
     };
     mcrt::Triangle wall52{
-        glm::dvec3(-3,-5,-0),
-        glm::dvec3(0,5,6),
-        glm::dvec3(0,-5,6),
-        wall5
+        glm::dvec3(13,-5,0),
+        glm::dvec3(10,-5,6),
+        glm::dvec3(10,5,6),
+        yellow
     };
 
     scene.add(wall51);
@@ -105,15 +108,15 @@ int main(int, char**) {
 
     mcrt::Triangle wall61{
         glm::dvec3(13,5,0),
-        glm::dvec3(10,5,6),
-        glm::dvec3(13,-5,0),
-        wall6
+        glm::dvec3(10,5,-6),
+        glm::dvec3(10,-5,-6),
+        green
     };
     mcrt::Triangle wall62{
-        glm::dvec3(13,-5,-0),
-        glm::dvec3(10,5,6),
-        glm::dvec3(10,-5,6),
-        wall6
+        glm::dvec3(10,-5,-6),
+        glm::dvec3(13,-5,0),
+        glm::dvec3(13,5,0),
+        green
     };
 
     scene.add(wall61);
@@ -217,7 +220,7 @@ int main(int, char**) {
     scene.add(floor5);
     scene.add(floor6);
 
-    mcrt::Material sphereMaterial {glm::dvec3(0.0,0.0,1.0)};
+    mcrt::Material sphereMaterial {grey};
     mcrt::Sphere sphere {glm::dvec3(7.0,0.0,0.0),1.0, sphereMaterial};
     scene.add(sphere);
 
