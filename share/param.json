@@ -1,7 +1,7 @@
 {
-    "parallelization": "none",
-    "resolution": [1024, 1024],
+    "parallelFramework":  "omp",
+    "resolution":  [1024, 1024],
     "scalingFactor": [1.0, 1.0],
     "interpolation": "bilinear",
-    "supersamples": [8, "grid"]
+    "supersamples": [16, "grid"]
 }
