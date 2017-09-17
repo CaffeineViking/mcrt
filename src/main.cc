@@ -28,7 +28,7 @@ void printProgress(const std::string& task, double progress, size_t characters =
         else std::cout << ">";
     } std::cout << "] ";
     size_t percent = progress * 100.0;
-    std::cout << percent << " %";
+    std::cout << percent << " %\r";
     std::cout.flush();
 }
 
@@ -56,9 +56,14 @@ int main(int argc, char** argv) {
     auto renderStart { std::chrono::steady_clock::now() };
 
     double renderProgress { 0.0 };
+    for (size_t y { 0 }; y < renderImage.getWidth(); ++y) {
+        for (size_t x { 0 }; x < renderImage.getHeight(); ++x) {
+            printProgress("Ray tracing:", renderProgress);
+            renderProgress += 1.0 / renderImage.getSize();
+        }
+    }
 
     printProgress("Ray tracing:", renderProgress);
-
     std::cout << std::endl; // Reset b4 progress bar hack.
     auto renderFinish { std::chrono::steady_clock::now() };
     std::chrono::duration<double> renderDuration { renderFinish - renderStart };
