@@ -27,6 +27,7 @@ void printProgress(const std::string& task, double progress, size_t characters =
         else if (i > position) std::cout << " ";
         else std::cout << ">";
     } std::cout << "] ";
+
     size_t percent = progress * 100.0;
     std::cout << percent << " %\r";
     std::cout.flush();
@@ -53,7 +54,9 @@ int main(int argc, char** argv) {
     mcrt::Image renderImage { parameters.resolutionWidth,
                               parameters.resolutionHeight };
 
-    auto renderStart { std::chrono::steady_clock::now() };
+    auto renderStart  { std::chrono::steady_clock::now() };
+
+    // ====================================================
 
     double renderProgress { 0.0 };
     for (size_t y { 0 }; y < renderImage.getWidth(); ++y) {
@@ -63,9 +66,12 @@ int main(int argc, char** argv) {
         }
     }
 
-    printProgress("Ray tracing:", renderProgress);
-    std::cout << std::endl; // Reset b4 progress bar hack.
+    // ====================================================
+
     auto renderFinish { std::chrono::steady_clock::now() };
+
+    printProgress("Ray tracing:", renderProgress);
+    std::cout << std::endl; // Reset buffer after progress bar flush() hack.
     std::chrono::duration<double> renderDuration { renderFinish - renderStart };
     size_t renderTimeInSeconds = renderDuration.count();
     size_t renderTimeInMinutes = renderTimeInSeconds / 60.0;
