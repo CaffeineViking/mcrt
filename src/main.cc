@@ -20,7 +20,7 @@ int usage(int argc, char** argv) {
 }
 
 void printProgress(const std::string& task, double progress, size_t characters = 70) {
-    std::cout << task << " [";
+    std::cout << task << "[";
     size_t position = progress * characters;
     for (size_t i { 0 }; i < characters; ++i) {
         if (i < position) std::cout << "=";
@@ -53,16 +53,29 @@ int main(int argc, char** argv) {
     // Note that render background will be transparent.
     mcrt::Image renderImage { parameters.resolutionWidth,
                               parameters.resolutionHeight };
+    const mcrt::Camera& sceneCamera { scene.getCamera() };
 
     auto renderStart  { std::chrono::steady_clock::now() };
 
     // ====================================================
 
+    size_t pixelsRendered { 0 };
     double renderProgress { 0.0 };
+    const double pixelCount = renderImage.getSize();
+    glm::dvec3 eyePoint { sceneCamera.getEyePosition() };
+
     for (size_t y { 0 }; y < renderImage.getWidth(); ++y) {
+        renderProgress = pixelsRendered / pixelCount;
+        printProgress("Ray tracing: ", renderProgress);
         for (size_t x { 0 }; x < renderImage.getHeight(); ++x) {
-            printProgress("Ray tracing:", renderProgress);
-            renderProgress += 1.0 / renderImage.getSize();
+            // Bit of a hack for now, we probably want to sample from the pixel plane...
+            glm::dvec3 viewPlanePoint { sceneCamera.getPixelCenter(renderImage, x, y) };
+            glm::dvec3 rayDirection { glm::normalize(viewPlanePoint - eyePoint) };
+            mcrt::Ray rayFromViewPlane { viewPlanePoint, rayDirection };
+
+            // And also average these pixel color based on the samples.
+            glm::dvec3 pixelColor { scene.rayTrace(rayFromViewPlane) };
+            renderImage.pixel(x, y) = pixelColor; ++pixelsRendered;
         }
     }
 
@@ -70,7 +83,7 @@ int main(int argc, char** argv) {
 
     auto renderFinish { std::chrono::steady_clock::now() };
 
-    printProgress("Ray tracing:", renderProgress);
+    printProgress("Ray tracing: ", 1.0); // Might not be 100% in output.
     std::cout << std::endl; // Reset buffer after progress bar flush() hack.
     std::chrono::duration<double> renderDuration { renderFinish - renderStart };
     size_t renderTimeInSeconds = renderDuration.count();

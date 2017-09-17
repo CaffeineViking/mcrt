@@ -1,22 +1,28 @@
 #ifndef MCRT_SCENE_HH
 #define MCRT_SCENE_HH
 
-#include "mcrt.hh"
-#include "geometry.hh"
+#include "mcrt/mcrt.hh"
+#include "mcrt/camera.hh"
+#include "mcrt/geometry.hh"
 
 namespace mcrt {
-    
     class Scene {
-    private:
-	std::vector<const Geometry*> _geometry;
-	std::vector<Light> _lights;
     public:
-	Intersection intersect(const Ray& ray) const;
-    
-	void add(const Geometry& geometry);
-	void add(Light light);
-	glm::dvec3 rayTrace(const Ray& ray);    
-    };
+        Intersection intersect(const Ray& ray) const;
 
+        void add(const Light& light);
+        void add(const Geometry& geometry);
+
+        glm::dvec3 rayTrace(const Ray& ray) const;
+
+        const Camera& getCamera() const { return camera; }
+        Camera& getCamera() { return camera; }
+
+    private:
+        std::vector<const Geometry*> geometries;
+        std::vector<Light> lights;
+        Camera camera;
+    };
 }
+
 #endif
