@@ -11,6 +11,7 @@ namespace mcrt {
 	Geometry(const Material& m);
 
     public:
+    virtual ~Geometry() = default;
 	virtual Intersection intersect(const Ray& ray) const = 0;
 
 	Material getMaterial() const;

@@ -20,8 +20,9 @@ namespace mcrt {
         return closestHit;
     }
 
-    void Scene::add(const Geometry& geometry) {
-        geometries.push_back(&geometry);
+    // Will be our resource after this...
+    void Scene::add(Geometry* geometry) {
+        geometries.push_back(geometry);
     }
 
     void Scene::add(const Light& light) {

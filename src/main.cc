@@ -55,6 +55,11 @@ int main(int argc, char** argv) {
                               parameters.resolutionHeight };
     const mcrt::Camera& sceneCamera { scene.getCamera() };
 
+    // Combine settings from the scenes and trace parameters.
+    double fieldOfView { scene.getCamera().getFieldOfView() };
+    scene.getCamera().setAspectRatio(renderImage.getAspectRatio());
+    scene.getCamera().setFieldOfView(fieldOfView);
+
     auto renderStart  { std::chrono::steady_clock::now() };
 
     // ====================================================
@@ -64,10 +69,10 @@ int main(int argc, char** argv) {
     const double pixelCount = renderImage.getSize();
     glm::dvec3 eyePoint { sceneCamera.getEyePosition() };
 
-    for (size_t y { 0 }; y < renderImage.getWidth(); ++y) {
+    for (size_t y { 0 }; y < renderImage.getHeight(); ++y) {
         renderProgress = pixelsRendered / pixelCount;
         printProgress("Ray tracing: ", renderProgress);
-        for (size_t x { 0 }; x < renderImage.getHeight(); ++x) {
+        for (size_t x { 0 }; x < renderImage.getWidth(); ++x) {
             // Bit of a hack for now, we probably want to sample from the pixel plane...
             glm::dvec3 viewPlanePoint { sceneCamera.getPixelCenter(renderImage, x, y) };
             glm::dvec3 rayDirection { glm::normalize(viewPlanePoint - eyePoint) };
