@@ -1,4 +1,5 @@
 #include "mcrt/triangle.hh"
+#include <glm/gtx/string_cast.hpp>
 
 namespace mcrt {
 
@@ -41,4 +42,27 @@ namespace mcrt {
         return result;
     }
 
+    void Triangle::move(glm::dvec3 p) {
+	_v1 += p;
+	_v2 += p;
+	_v3 += p;
+    }
+
+    void Triangle::scale(const double& c) {
+	_v1 *= c;
+	_v2 *= c;
+	_v3 *= c;
+    }
+
+    std::ostream& Triangle::write(std::ostream& stream) const {
+	stream << "Triangle:\n"
+	       << glm::to_string(_v1) << "\n"
+	       << glm::to_string(_v2) << "\n"
+	       << glm::to_string(_v3) << "\n";
+	return stream;
+    }
+
+    std::ostream& operator<<(std::ostream& stream, Triangle const& t) {
+	return t.write(stream);
+    }
 }
