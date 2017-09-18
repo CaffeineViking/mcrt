@@ -6,6 +6,10 @@ run: FORCE
 	premake5 gmake
 	make -j8 -C build mcrt config=${config}
 	bin/mcrt ${args}
+render: FORCE
+	premake5 gmake
+	make -j8 -C build mcrt config=${config}
+	bin/mcrt render.png share/scene.json share/param.json
 view-render: FORCE
 	premake5 gmake
 	make -j8 -C build mcrt config=${config}
@@ -31,4 +35,4 @@ distclean: clean
 FORCE:
 
 # Clarifies gmake that these aren't any real dependencies...
-.PHONY: all run view-render docs slides tags clean distclean
+.PHONY: all run render view-render docs slides tags clean distclean
