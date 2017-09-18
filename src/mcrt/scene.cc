@@ -40,12 +40,12 @@ namespace mcrt {
             
             glm::dvec3 diff = l.origin - point;
 
-            Ray shadowRay{point+glm::normalize(diff)*1e-8, glm::normalize(diff)};
+            Ray shadowRay{point+glm::normalize(diff)*1e-6, glm::normalize(diff)};
             Intersection r = intersect(shadowRay);
 	    if(r.distance >= glm::length(diff)){
                 // Light hit
-		double angleFallof = std::max(0.0,glm::dot(shadowRay.direction,i.normal));                
-                color = l.color  * i.material.color * angleFallof;
+		double angleFallof = std::max(0.0,glm::dot(shadowRay.direction,i.normal));
+		color += l.color  * i.material.color * angleFallof;
             }
         }
         return color;
