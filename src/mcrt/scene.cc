@@ -45,7 +45,7 @@ namespace mcrt {
             Intersection shadowRayHit { intersect(shadowRay) };
             if (shadowRayHit.distance >= glm::length(rayToLightSource)) {
                 double lambertianFalloff { std::max(0.0, glm::dot(shadowRay.direction, rayHit.normal)) };
-                rayColor = lightSource.color * rayHit.material.color * lambertianFalloff;
+                rayColor += lightSource.color * rayHit.material.color * lambertianFalloff;
             }
         }
 
