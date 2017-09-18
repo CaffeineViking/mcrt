@@ -6,6 +6,15 @@ run: FORCE
 	premake5 gmake
 	make -j8 -C build mcrt config=${config}
 	bin/mcrt ${args}
+render: FORCE
+	premake5 gmake
+	make -j8 -C build mcrt config=${config}
+	bin/mcrt render.png share/scene.json share/param.json
+view-render: FORCE
+	premake5 gmake
+	make -j8 -C build mcrt config=${config}
+	bin/mcrt render.png share/scene.json share/param.json
+	feh --force-aliasing -F render.png
 
 docs: FORCE
 	make -C docs/
@@ -25,5 +34,5 @@ distclean: clean
 	rm -f docs/slides/slides.pdf
 FORCE:
 
-# Clarifies gmake that these aren't real dependencies
-.PHONY: all test run docs slides tags clean distclean
+# Clarifies gmake that these aren't any real dependencies...
+.PHONY: all run render view-render docs slides tags clean distclean

@@ -1,295 +1,107 @@
+#include <chrono>
+#include <cstring>
 #include <iostream>
+#include <iomanip>
 
-#include "mcrt/mcrt.hh"
-#include "mcrt/color.hh"
-#include "mcrt/image.hh"
-#include "mcrt/camera.hh"
-#include "mcrt/sphere.hh"
-#include "mcrt/triangle.hh"
+#include "mcrt/param_import.hh"
+#include "mcrt/scene_import.hh"
+#include "mcrt/parameter.hh"
 #include "mcrt/scene.hh"
+
+#include "mcrt/image.hh"
 #include "mcrt/image_export.hh"
-#include <glm/gtx/string_cast.hpp>
-#include <vector>
-#include <sstream>
 
-int main(int, char**) {
+int usage(int argc, char** argv) {
+    if (argc < 2) std::cerr << "Error: need the path to render scenes to!" << std::endl;
+    std::cerr << "Usage: " << argv[0] << " "
+              << "IMAGE [SCENE] [PARAMETER]"
+              << std::endl;
+    return 1;
+}
 
-    mcrt::Scene scene{};
-    mcrt::Material red{glm::dvec3(1.0,0.0,0.0)};
-    mcrt::Material yellow{glm::dvec3(1.0,1.0,0.0)};
-    mcrt::Material green{glm::dvec3(0.0,1.0,0.0)};
-    mcrt::Material cyan{glm::dvec3(0.0,1.0,1.0)};
-    mcrt::Material blue{glm::dvec3(0.0,0.0,1.0)};
-    mcrt::Material magenta{glm::dvec3(1.0,0.0,1.0)};
-    mcrt::Material white{glm::dvec3(1.0,1.0,1.0)};
-    mcrt::Material grey{glm::dvec3(0.7,0.7,0.7)};
+void printProgress(const std::string& task, double progress, size_t characters = 70) {
+    std::cout << task << "[";
+    size_t position = progress * characters;
+    for (size_t i { 0 }; i < characters; ++i) {
+        if (i < position) std::cout << "=";
+        else if (i > position) std::cout << " ";
+        else std::cout << ">";
+    } std::cout << "] ";
 
-    mcrt::Material ceiling{white};
-    
-    mcrt::Triangle wall11{
-        glm::dvec3(0,5,-6),
-        glm::dvec3(10,5,-6),
-        glm::dvec3(0,-5,-6),
-        cyan
-    };
-    mcrt::Triangle wall12{
-        glm::dvec3(0,-5,-6),
-        glm::dvec3(10,5,-6),
-        glm::dvec3(10,-5,-6),
-        cyan
-    };
+    size_t percent = progress * 100.0;
+    std::cout << percent << " %\r";
+    std::cout.flush();
+}
 
-    scene.add(wall11);
-    scene.add(wall12);
+int main(int argc, char** argv) {
+    if (argc == 1) return usage(argc, argv);
+    if (argc == 2 && std::strcmp(argv[1], "-h") == 0) {
+        // User seems to be requesting for help...
+        return usage(argc, argv);
+    }
 
-    mcrt::Triangle wall21{
-        glm::dvec3(0,5,-6),
-        glm::dvec3(-3,5,0),
-        glm::dvec3(0,-5,-6),
-        blue
-    };
-    mcrt::Triangle wall22{
-        glm::dvec3(0,-5,-6),
-        glm::dvec3(-3,-5,0),
-        glm::dvec3(-3,5,0),
-        blue
-    };
+    std::string renderImagePath;
+    mcrt::Parameters parameters;
+    mcrt::Scene scene;
 
-    scene.add(wall21);
-    scene.add(wall22);
+    if (argc > 1) renderImagePath = argv[1];
+    else return usage(argc, argv); // Too few arguments.
+    if (argc > 2) scene = mcrt::SceneImporter::load(argv[2]);
+    if (argc > 3) parameters = mcrt::ParameterImporter::load(argv[3]);
+    if (argc > 4) return usage(argc, argv); // Now it's just too many.
 
-    mcrt::Triangle wall31{
-        glm::dvec3(-3,5,0),
-        glm::dvec3(0,5,6),
-        glm::dvec3(-3,-5,0),
-        magenta
-    };
-    mcrt::Triangle wall32{
-        glm::dvec3(-3,-5,0),
-        glm::dvec3(0,-5,6),
-        glm::dvec3(0,5,6),
-        magenta
-    };
+    // Note that render background will be transparent.
+    mcrt::Image renderImage { parameters.resolutionWidth,
+                              parameters.resolutionHeight };
+    const mcrt::Camera& sceneCamera { scene.getCamera() };
 
-    scene.add(wall31);
-    scene.add(wall32);
+    // Combine settings from the scenes and trace parameters.
+    double fieldOfView { scene.getCamera().getFieldOfView() };
+    scene.getCamera().setAspectRatio(renderImage.getAspectRatio());
+    scene.getCamera().setFieldOfView(fieldOfView);
 
-    mcrt::Triangle wall41{
-        glm::dvec3(0,5,6),
-        glm::dvec3(10,5,6),
-        glm::dvec3(10,-5,6),
-        red
-    };
-    mcrt::Triangle wall42{
-        glm::dvec3(10,-5,6),
-        glm::dvec3(0,-5,6),
-        glm::dvec3(0,5,6),
-        red
-    };
+    auto renderStart  { std::chrono::steady_clock::now() };
 
-    scene.add(wall41);
-    scene.add(wall42);
+    // ====================================================
 
-    mcrt::Triangle wall51{
-        glm::dvec3(10,5,6),
-        glm::dvec3(13,-5,0),
-        glm::dvec3(13,5,0),
-        yellow
-    };
-    mcrt::Triangle wall52{
-        glm::dvec3(13,-5,0),
-        glm::dvec3(10,-5,6),
-        glm::dvec3(10,5,6),
-        yellow
-    };
+    size_t pixelsRendered { 0 };
+    double renderProgress { 0.0 };
+    const double pixelCount = renderImage.getSize();
+    glm::dvec3 eyePoint { sceneCamera.getEyePosition() };
 
-    scene.add(wall51);
-    scene.add(wall52);
-
-    mcrt::Triangle wall61{
-        glm::dvec3(13,5,0),
-        glm::dvec3(10,5,-6),
-        glm::dvec3(10,-5,-6),
-        green
-    };
-    mcrt::Triangle wall62{
-        glm::dvec3(10,-5,-6),
-        glm::dvec3(13,-5,0),
-        glm::dvec3(13,5,0),
-        green
-    };
-
-    scene.add(wall61);
-    scene.add(wall62);
-    
-    mcrt::Triangle ceiling1{
-        glm::dvec3(5,5,0),
-        glm::dvec3(0,5,6),
-        glm::dvec3(10,5,6),
-        ceiling
-    };
-
-    mcrt::Triangle ceiling2{
-        glm::dvec3(5,5,0),
-        glm::dvec3(10,5,6),
-        glm::dvec3(13,5,0),
-        ceiling
-    };
-
-    mcrt::Triangle ceiling3{
-        glm::dvec3(5,5,0),
-        glm::dvec3(13,5,0),
-        glm::dvec3(10,5,-6),
-        ceiling
-    };
-
-    mcrt::Triangle ceiling4{
-        glm::dvec3(5,5,0),
-        glm::dvec3(0,5,-6),
-        glm::dvec3(10,5,-6),
-        ceiling
-    };
-
-    mcrt::Triangle ceiling5{
-        glm::dvec3(5,5,0),
-        glm::dvec3(0,5,-6),
-        glm::dvec3(-3,5,0),
-        ceiling
-    };
-
-    mcrt::Triangle ceiling6{
-        glm::dvec3(5,5,0),
-        glm::dvec3(-3,5,0),
-        glm::dvec3(0,5,6),
-        ceiling
-    };
-
-    scene.add(ceiling1);    
-    scene.add(ceiling2);    
-    scene.add(ceiling3);    
-    scene.add(ceiling4);    
-    scene.add(ceiling5);
-    scene.add(ceiling6);
-
-    mcrt::Triangle floor1{
-        glm::dvec3(5,-5,0),
-        glm::dvec3(0,-5,6),
-        glm::dvec3(10,-5,6),
-        ceiling
-    };
-
-    mcrt::Triangle floor2{
-        glm::dvec3(5,-5,0),
-        glm::dvec3(10,-5,6),
-        glm::dvec3(13,-5,0),
-        ceiling
-    };
-
-    mcrt::Triangle floor3{
-        glm::dvec3(5, -5,0),
-        glm::dvec3(13,-5,0),
-        glm::dvec3(10,-5,-6),
-        ceiling
-    };
-
-    mcrt::Triangle floor4{
-        glm::dvec3(5, -5,0),
-        glm::dvec3(0, -5,-6),
-        glm::dvec3(10,-5,-6),
-        ceiling
-    };
-
-    mcrt::Triangle floor5{
-        glm::dvec3(5, -5,0),
-        glm::dvec3(0, -5,-6),
-        glm::dvec3(-3,-5,0),
-        ceiling
-    };
-
-    mcrt::Triangle floor6{
-        glm::dvec3(5, -5,0),
-        glm::dvec3(-3,-5,0),
-        glm::dvec3(0, -5,6),
-        ceiling
-    };
-
-    scene.add(floor1);    
-    scene.add(floor2);    
-    scene.add(floor3);    
-    scene.add(floor4);    
-    scene.add(floor5);
-    scene.add(floor6);
-
-    mcrt::Material sphereMaterial {blue};
-    mcrt::Sphere sphere {glm::dvec3(7.0,0.0,0.0),1.0, sphereMaterial};
-    scene.add(sphere);
-
-    mcrt::Light light{glm::dvec3(0.0,0.0,-3.0),glm::dvec3(1.0)};
-    scene.add(light);
-
-    mcrt::Image renderImage { 1024, 1024 };
-    renderImage.clear({0, 0, 0,  255});
-
-    std::cout << "Image size: " << renderImage.getWidth() << "x" << renderImage.getHeight() << std::endl;
-    std::cout << "Image aspect ratio: " << renderImage.getAspectRatio() << std::endl;
-
-    mcrt::Color<unsigned char> firstPixelColor { renderImage.pixel(0, 0) };
-    std::cout << "First pixel color: (" << static_cast<unsigned>(firstPixelColor.r) << ", "
-                                        << static_cast<unsigned>(firstPixelColor.g) << ", "
-                                        << static_cast<unsigned>(firstPixelColor.b) << ", "
-                                        << static_cast<unsigned>(firstPixelColor.a)
-                                        << ")" << std::endl;
-
-    std::cout << "Replacing image with a nice gradient." << std::endl;
-
-    double stepX = 255.0 / renderImage.getWidth(),
-           stepY = 255.0 / renderImage.getHeight();
     for (size_t y { 0 }; y < renderImage.getHeight(); ++y) {
+        renderProgress = pixelsRendered / pixelCount;
+        printProgress("Ray tracing: ", renderProgress);
         for (size_t x { 0 }; x < renderImage.getWidth(); ++x) {
-            renderImage.pixel(x, y) = { x*stepX, y*stepY,
-                                        0, 255 };
+            // Bit of a hack for now, we probably want to sample from the pixel plane...
+            glm::dvec3 viewPlanePoint { sceneCamera.getPixelCenter(renderImage, x, y) };
+            glm::dvec3 rayDirection { glm::normalize(viewPlanePoint - eyePoint) };
+            mcrt::Ray rayFromViewPlane { viewPlanePoint, rayDirection };
+
+            // And also average these pixel color based on the samples.
+            glm::dvec3 pixelColor { scene.rayTrace(rayFromViewPlane) };
+            renderImage.pixel(x, y) = pixelColor; ++pixelsRendered;
         }
     }
 
-    // Create camera with standard settings, position is rela-
-    // tive to the eye position (as are all of the operaitons)
-    // but not the viewport ones (like finding pixels & stuff.
-    mcrt::Camera camera { {0.0, 0.0, 0.0}, {1.0, 0.0,0.0} };
+    // ====================================================
 
-    // camera.setAspectRatio(image.getAspectRatio());
-    // camera.setFieldOfView(3.141592 / 2.0);
-    // camera.moveTo({ 1.0, 0.0, 1.0 });
-    // camera.lookAt({0.0, 0.0, 0.0}, {0.0, 1.0, 0.0});
+    auto renderFinish { std::chrono::steady_clock::now() };
 
-     glm::dvec3 eye { camera.getEyePosition() };
-    for (size_t y { 0 }; y < renderImage.getHeight(); ++y) {
-        for (size_t x { 0 }; x < renderImage.getWidth(); ++x) {
-            glm::dvec3 pixel { camera.getPixelCenter(renderImage, x, y) };
-            // or: call getPixelSamplePlane for gathering more samples for
-            // the actual pixel colors. e.g. when supersampling 4x or 16x.
+    printProgress("Ray tracing: ", 1.0); // Might not be 100% in output.
+    std::cout << std::endl; // Reset buffer after progress bar flush() hack.
+    std::chrono::duration<double> renderDuration { renderFinish - renderStart };
+    size_t renderTimeInSeconds = renderDuration.count();
+    size_t renderTimeInMinutes = renderTimeInSeconds / 60.0;
+    renderTimeInSeconds = renderTimeInSeconds % 60;
+    std::cout << "Render took: " << renderTimeInMinutes << " minutes and "
+                                 << renderTimeInSeconds << " seconds."
+                                 << std::endl;
 
-            // Do raytracing schenanigans over here.
-            glm::dvec3 rayDirection { glm::normalize(pixel - eye) };
-            mcrt::Ray ray{pixel, rayDirection};
-            glm::dvec3 color(0.0,0.0,0.0);        
-            color = scene.rayTrace(ray);
-            //mcrt::Intersection i = scene.intersect(ray);
-            //if(i.distance > 0){
-            //    color = i.material.color;
-            //    color = color * (1.0/((i.distance * i.distance) / 15.0));
-            //}
-            
-            renderImage.pixel(x,y) = {
-                static_cast<unsigned char>(color.x * 255),
-                static_cast<unsigned char>(color.y * 255),
-                static_cast<unsigned char>(color.z * 255), 255 };
-        }
-    }
-    //renderImage.resize(512, 512, mcrt::Image::ResizeMethod::BILINEAR);
-    std::ostringstream os;
-    os << "share/render";
-    os << ".ppm";
-    mcrt::NetpbmImageExporter::save(renderImage, os.str());
-
+    size_t scaledWidth  = parameters.resolutionWidth  * parameters.scalingFactorX,
+           scaledHeight = parameters.resolutionHeight * parameters.scalingFactorY;
+    renderImage.resize(scaledWidth, scaledHeight, parameters.interpolationMethod);
+    mcrt::ImageExporter::save(renderImage, renderImagePath);
+    std::cout << "Rendered to: '" << renderImagePath << "'." << std::endl;
     return 0;
 }

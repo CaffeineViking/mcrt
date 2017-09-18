@@ -18,6 +18,8 @@ namespace mcrt {
         // Complete constructor with bells and whistles. It should uniquely specify some
         // camera by using position, focus position and deriving eye position from hFov.
         Camera(const glm::dvec3&, const glm::dvec3&, const glm::dvec3&, double, double);
+        Camera() : Camera { { 0.0, 0.0, 0.0 }, { 0.0, 0.0, -1.0 }, { 0.0, 1.0, 0.0 },
+                            1.0, glm::half_pi<double>() } {}
 
         void   setAspectRatio(double);
         double getAspectRatio() const;

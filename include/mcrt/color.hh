@@ -4,6 +4,14 @@
 namespace mcrt {
     template<typename T>
     struct Color {
+        Color() = default;
+        Color(const glm::dvec3& v) {
+            r = v.r * 255;
+            g = v.g * 255;
+            b = v.b * 255;
+            a = 255;
+        }
+
         Color<T>& operator*=(double);
         Color<T>& operator/=(double);
         Color<T>& operator+=(const Color<T>&);

@@ -1,25 +1,15 @@
 Monte Carlo Ray Tracer
 ======================
 
-Path tracing is a computer graphics Monte Carlo method of rendering images of three-dimensional scenes such that the global illumination is faithful to reality. Fundamentally, the algorithm is integrating over all the illuminance arriving to a single point on the surface of an object. This illuminance is then reduced by a surface reflectance function (BRDF) to determine how much of it will go towards the viewpoint camera. This integration procedure is repeated for every pixel in the output image. When combined with physically accurate models of surfaces, accurate models of real light sources (light bulbs), and optically-correct cameras, path tracing can produce still images that are indistinguishable from photographs.
-
-Path tracing naturally simulates many effects that have to be specifically added to other methods (conventional ray tracing or scanline rendering), such as soft shadows, depth of field, motion blur, caustics, ambient occlusion, and indirect lighting. Implementation of a renderer including these effects is correspondingly simpler. An extended version of the algorithm is realized by volumetric path tracing, which considers the light scattering of a scene. Due to its accuracy and unbiased nature, path tracing is used to generate reference images when testing the quality of other rendering algorithms. In order to get high quality images from path tracing, a large number of rays must be traced to avoid visible noisy artifacts.
-
 Compiling and Testing
 ---------------------
 
 1. Place yourself in the root directory of this project.
-
 2. Acquire the latest version of the `premake5` build system.
-
 3. Thereafter, execute `premake5 gmake` if building on Make.
-
 4. Finally, issue the command `make -j8 -C build` and wait.
-
 5. When complete, you'll find the built software in `bin`.
-
 6. Tests can be run with the `bin/*-tests` programs.
-
 7. **Shortcuts:** `make run` and `make test`.
 
 Usage and Documents
