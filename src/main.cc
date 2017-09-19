@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
             mcrt::Ray rayFromViewPlane { viewPlanePoint, rayDirection };
 
             // And also average these pixel color based on the samples.
-            glm::dvec3 pixelColor { scene.rayTrace(rayFromViewPlane) };
+            glm::dvec3 pixelColor { scene.rayTrace(rayFromViewPlane, 0) };
             renderImage.pixel(x, y) = pixelColor;
         }
 
