@@ -4,8 +4,7 @@
 namespace mcrt {
     struct Parameters {
         enum class ParallelFramework {
-            NONE, OPENMP,
-            OPENMPI, CILK
+            NONE, OPENMP, OPENMPI
         };
 
         enum class SamplingMethod {

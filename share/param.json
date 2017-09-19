@@ -1,6 +1,6 @@
 {
-    "parallelFramework": "none",
-    "resolution":  [512,   512],
+    "parallelMethod": "openmp",
+    "resolution":  [512,  512],
     "scalingFactor": [1.0, 1.0],
     "interpolation": "bilinear",
     "supersamples": [16, "grid"]
