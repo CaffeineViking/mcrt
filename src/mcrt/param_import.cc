@@ -11,8 +11,8 @@ mcrt::Parameters mcrt::ParameterImporter::load(const std::string& file) {
 
     Parameters parameters;
 
-    if (parser.find("parallelFramework") != parser.end()) {
-        std::string parallel { parser["parallelFramework"].get<std::string>() };
+    if (parser.find("parallelMethod") != parser.end()) {
+        std::string parallel { parser["parallelMethod"].get<std::string>() };
         if (parallel == "none") parameters.parallelFramework = Parameters::ParallelFramework::NONE;
         else if (parallel == "openmp") parameters.parallelFramework = Parameters::ParallelFramework::OPENMP;
         else if (parallel == "openmpi") parameters.parallelFramework = Parameters::ParallelFramework::OPENMPI;
