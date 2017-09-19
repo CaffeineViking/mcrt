@@ -50,6 +50,9 @@ int main(int argc, char** argv) {
     if (argc > 3) parameters = mcrt::ParameterImporter::load(argv[3]);
     if (argc > 4) return usage(argc, argv); // Now it's just too many.
 
+    // Shorthands for enabling or disabling the parallel framework under run-time. TODO: OpenMPI.
+    bool openmp  { parameters.parallelFramework == mcrt::Parameters::ParallelFramework::OPENMP };
+
     // Note that render background will be transparent.
     mcrt::Image renderImage { parameters.resolutionWidth,
                               parameters.resolutionHeight };
@@ -64,15 +67,23 @@ int main(int argc, char** argv) {
 
     // ====================================================
 
-    size_t pixelsRendered { 0 };
-    double renderProgress { 0.0 };
-    const double pixelCount = renderImage.getSize();
-    glm::dvec3 eyePoint { sceneCamera.getEyePosition() };
+    size_t rowsRendered { 0 }; // Shared resource.
+    const double rowCount = renderImage.getHeight();
+    const glm::dvec3 eyePoint { sceneCamera.getEyePosition() };
 
-    for (size_t y { 0 }; y < renderImage.getHeight(); ++y) {
-        renderProgress = pixelsRendered / pixelCount;
-        printProgress("Ray tracing: ", renderProgress);
-        for (size_t x { 0 }; x < renderImage.getWidth(); ++x) {
+    #pragma omp parallel for schedule(dynamic) if (openmp)
+    for (size_t y = 0; y < renderImage.getHeight(); ++y) {
+        double renderProgress = rowsRendered / rowCount;
+
+        #pragma omp critical
+        printProgress("Ray tracing: ",
+                      renderProgress);
+        #pragma omp atomic
+        ++rowsRendered;
+
+        // ------------------------------------------------
+
+        for (size_t x = 0; x < renderImage.getWidth(); ++x) {
             // Bit of a hack for now, we probably want to sample from the pixel plane...
             glm::dvec3 viewPlanePoint { sceneCamera.getPixelCenter(renderImage, x, y) };
             glm::dvec3 rayDirection { glm::normalize(viewPlanePoint - eyePoint) };
@@ -80,8 +91,10 @@ int main(int argc, char** argv) {
 
             // And also average these pixel color based on the samples.
             glm::dvec3 pixelColor { scene.rayTrace(rayFromViewPlane) };
-            renderImage.pixel(x, y) = pixelColor; ++pixelsRendered;
+            renderImage.pixel(x, y) = pixelColor;
         }
+
+        // ------------------------------------------------
     }
 
     // ====================================================

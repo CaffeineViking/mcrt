@@ -16,7 +16,6 @@ mcrt::Parameters mcrt::ParameterImporter::load(const std::string& file) {
         if (parallel == "none") parameters.parallelFramework = Parameters::ParallelFramework::NONE;
         else if (parallel == "openmp") parameters.parallelFramework = Parameters::ParallelFramework::OPENMP;
         else if (parallel == "openmpi") parameters.parallelFramework = Parameters::ParallelFramework::OPENMPI;
-        else if (parallel == "cilk") parameters.parallelFramework = Parameters::ParallelFramework::CILK;
         else std::runtime_error { "Error: no support for parallel framework '" + parallel + "'!" };
     }
 

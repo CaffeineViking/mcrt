@@ -35,10 +35,12 @@ project (name)
     includedirs {"include"}
 
     filter {"system:macosx"}
-        -- links {"library"}
+        linkoptions  {"-fopenmp"}
+        buildoptions {"-fopenmp"}
     filter {"system:windows"}
-        -- links {"library"}
+        linkoptions  {"-fopenmp"}
         buildoptions {" -static -static-libgcc -static-libstdc++",
-                      "-mwindows", "-mconsole"}
+                      "-mwindows", "-mconsole", "-fopenmp"}
     filter {"system:linux or system:bsd"}
-        -- links {"library"}
+        linkoptions  {"-fopenmp"}
+        buildoptions {"-fopenmp"}
