@@ -21,7 +21,7 @@ namespace mcrt {
         glm::dvec3 normal { glm::normalize(glm::cross(e1, e2)) };
         if (glm::dot(normal, ray.direction) > 0) normal = -normal;
         
-        Intersection result {0, normal, {glm::dvec3(0.0)}};
+        Intersection result {0, normal, {glm::dvec3(0.0), MaterialType::Diffuse, 0.0}};
         
         if(det < 1e-8 && det > -1e-8) {
             return result;

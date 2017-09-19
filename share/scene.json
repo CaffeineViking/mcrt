@@ -17,50 +17,76 @@
         {
             "name": "white",
             "color": [1.0, 1.0, 1.0],
-            "type": 0
+            "type": 0,
+            "ior": 0.0 
         },
         {
             "name": "orange",
             "color": [0.964, 0.317, 0.113],
-            "type": 0
+            "type": 0,
+            "ior": 0.0 
         },
         {
             "name": "yellow",
             "color": [1.000, 0.705, 0.000],
-            "type": 0
+            "type": 0,
+            "ior": 0.0 
         },
         {
             "name": "blue",
             "color": [0.000, 0.650, 0.929],
-            "type": 0
+            "type": 0,
+            "ior": 0.0 
         },
         {
             "name": "green",
             "color": [0.498, 0.721, 0.000],
-            "type": 0
+            "type": 0,
+            "ior": 0.0 
         },
         {
             "name": "marine",
             "color": [0.050, 0.172, 0.329],
-            "type": 0
+            "type": 0,
+            "ior": 0.0 
         },
         {
             "name": "red",
             "color": [0.909, 0.372, 0.360],
-            "type": 0
+            "type": 0,
+            "ior": 0.0 
         },
         {
             "name": "mirror",
             "color": [1.00, 1.0, 1.0],
-            "type": 1
+            "type": 1,
+            "ior": 0.0            
+        },
+        {
+            "name": "glass",
+            "color": [1.00, 1.0, 1.0],
+            "type": 2,
+            "ior": 1.5
+        },
+        {
+            "name": "water",
+            "color": [1.00, 1.0, 1.0],
+            "type": 2,
+            "ior": 1.3
         }
     ],
 
     "surfaces": [
         {
             "geometry": "sphere",
+            "origin": [4.0, -2.0, 0.0],
+            "material": "glass",
+            "radius": 1.0
+        },
+        {
+            "geometry": "sphere",
             "origin": [7.0, 0.0, 0.0],
-            "material": "mirror",
+            "material": "water",
             "radius": 1.0
         },
         {

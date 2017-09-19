@@ -48,6 +48,8 @@ namespace mcrt {
         std::vector<Geometry*> geometries;
         std::vector<Light> lights;
         Camera camera;
+
+        double fresnel(const glm::dvec3& direction, const glm::dvec3& normal, const double ior) const;
     };
 }
 

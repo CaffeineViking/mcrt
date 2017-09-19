@@ -81,6 +81,7 @@ mcrt::Scene mcrt::SceneImporter::load(const std::string& file) {
                     material["color"][1].get<double>(),
                     material["color"][2].get<double>()
                 },  static_cast<MaterialType>(material["type"].get<unsigned>())
+                 ,  material["ior"].get<double>()
                 };
         }
     }

@@ -17,6 +17,7 @@ enum MaterialType {
 struct Material {
     glm::dvec3 color;   
     MaterialType type;
+    double ior;
 };
 
 struct Light {
