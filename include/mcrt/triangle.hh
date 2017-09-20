@@ -21,6 +21,7 @@ namespace mcrt {
         void scale(const double&);
 
         std::ostream& write(std::ostream& stream) const;
+        glm::dmat3 getCorners();
     };
 
     std::ostream& operator<<(std::ostream& stream, Triangle const& t);

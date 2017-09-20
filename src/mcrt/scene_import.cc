@@ -124,6 +124,7 @@ mcrt::Scene mcrt::SceneImporter::load(const std::string& file) {
                 mesh->move({surface["position"][0].get<double>(),
                             surface["position"][1].get<double>(),
                             surface["position"][2].get<double>()});
+                mesh->updateBoundingSphere();
                 geometry = mesh;
             } else throw std::runtime_error { "Error: unknown geometry type '" + geometryType + "'!" };
             scene.add(geometry); // Actually add the surface to our scene. We need to destroy it later.

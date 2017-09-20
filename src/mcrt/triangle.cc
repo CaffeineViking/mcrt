@@ -54,6 +54,10 @@ namespace mcrt {
 	_v3 *= c;
     }
 
+    glm::dmat3 Triangle::getCorners() {
+        return {_v1, _v2, _v3};
+    }
+
     std::ostream& Triangle::write(std::ostream& stream) const {
 	stream << "Triangle:\n"
 	       << glm::to_string(_v1) << "\n"
