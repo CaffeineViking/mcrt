@@ -12,27 +12,27 @@ namespace mcrt {
 
     class Mesh : public Geometry {
     public:
-	Mesh();
-	Mesh(const Material&);
+        Mesh();
+        Mesh(const Material&);
 	
-	void move(glm::dvec3);
-	void scale(const double&);
-	void rotateX(const double&);
-	void rotateY(const double&);
-	void rotateZ(const double&);
+        void move(glm::dvec3);
+        void scale(const double&);
+        void rotateX(const double&);
+        void rotateY(const double&);
+        void rotateZ(const double&);
 
-	void setMaterial(const Material&);
-	void addTriangle(const Triangle&);
-	void addTriangle(glm::dvec3, glm::dvec3, glm::dvec3);
-	std::vector<Triangle> getTriangles() const;
+        void setMaterial(const Material&);
+        void addTriangle(Triangle*);
+        void addTriangle(glm::dvec3, glm::dvec3, glm::dvec3);
+        std::vector<Triangle*> getTriangles() const;
 
-	Intersection intersect(const Ray&) const override;
+        Intersection intersect(const Ray&) const override;
 
-	void print();
+        void print();
 	
     private:
-	std::vector<Triangle> triangles;
-	//Sphere bound;
+        std::vector<Triangle*> triangles;
+        //Sphere bound;
     };
 }
 
