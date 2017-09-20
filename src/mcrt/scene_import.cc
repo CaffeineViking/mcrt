@@ -10,6 +10,7 @@
 #include "mcrt/material.hh"
 #include "mcrt/triangle.hh"
 #include "mcrt/camera.hh"
+#include "mcrt/mesh_import.hh"
 
 mcrt::Scene mcrt::SceneImporter::load(const std::string& file) {
     std::ifstream fileStream { file };
@@ -117,6 +118,13 @@ mcrt::Scene mcrt::SceneImporter::load(const std::string& file) {
                       surface["vertex-3"][2].get<double>() },
                     palette[materialName]
                 };
+            } else if (geometryType == "mesh") {
+                MeshImporter::setMaterial(palette[materialName]);
+                Mesh* mesh = MeshImporter::load(surface["file"]);
+                mesh->move({surface["position"][0].get<double>(),
+                            surface["position"][1].get<double>(),
+                            surface["position"][2].get<double>()});
+                geometry = mesh;
             } else throw std::runtime_error { "Error: unknown geometry type '" + geometryType + "'!" };
             scene.add(geometry); // Actually add the surface to our scene. We need to destroy it later.
         }

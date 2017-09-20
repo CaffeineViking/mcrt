@@ -270,6 +270,12 @@
             "vertex-2": [13.0, -5.0, 0.0],
             "vertex-3": [13.0, 5.0, 0.0],
             "material": "yellow"
+        },
+        {
+            "geometry": "mesh",
+            "file": "share/cube.obj",
+            "position": [5.0, 0.0, 0.0],
+            "material": "blue"
         }
     ]
 }
