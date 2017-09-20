@@ -11,6 +11,7 @@
 \usepackage[font={small}, labelfont={color=black}]{caption}
 \usetheme{Rochester}
 
+\usefonttheme[onlymath]{serif}
 \beamertemplatenavigationsymbolsempty
 \title{\LARGE{Global Illumination Using Photon Maps}\\
        \large{\emph{A summary of the paper by Henrik W. Jensen~\cite{jensen1996global}}}}
@@ -42,7 +43,20 @@
 \begin{document}
     \frame{\titlepage}
 
-    % Write presentation slides.
+    \frame{\frametitle{Rendering Equation}
+        \[L_o(\vec{x}, \hat{\omega}_o) = L_e(\vec{x}, \hat{\omega}_o) +
+                                         \int_\Omega L_i(\vec{x}, \hat{\omega}_i)
+                                         f_r(\vec{x}, \hat{\omega}_i, \hat{\omega}_o)
+                                         (\hat{n}_{x} \cdot \hat{\omega}_i) \, d\hat{\omega}_i\]
+        \begin{itemize}
+            \item \(L_o(\vec{x}, \hat{\omega}_o)\): total \emph{outgoing radiance} at point \(\vec{x}\) towards a \(\hat{\omega}_o\).
+            \item \(L_e(\vec{x}, \hat{\omega}_o)\):
+            \item \(\Omega\):
+            \item \(L_i(\vec{x}, \hat{\omega}_i)\):
+            \item \(f_r(\vec{x}, \hat{\omega}_i, \hat{\omega}_o)\):
+            \item \(\hat{n}_x\):
+        \end{itemize}
+    }
 
     \frame{\frametitle{Questions?}}
     \frame{\frametitle{Bibliography}
