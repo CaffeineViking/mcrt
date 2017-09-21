@@ -4,9 +4,6 @@ build/
 share/*.ff
 share/*.png
 share/*.ppm
-*.ppm
-*.png
-*.ff
 
 # Compiled Object files
 *.slo

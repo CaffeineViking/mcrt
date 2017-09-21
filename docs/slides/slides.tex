@@ -43,7 +43,7 @@
 \begin{document}
     \frame{\titlepage}
 
-    \frame{\frametitle{Rendering Equation}
+    \frame{\frametitle{Global Illumination}\framesubtitle{Rendering Equation}
         \[L_o(\vec{x}, \hat{\omega}_o) = L_e(\vec{x}, \hat{\omega}_o) +
                                          \overbrace{\int_\Omega L_i(\vec{x}, \hat{\omega}_i)
                                          f_r(\vec{x}, \hat{\omega}_i, \hat{\omega}_o)
@@ -56,6 +56,72 @@
             \item \(L_i(\vec{x}, \hat{\omega}_i)\):\ \emph{incoming radiance} contributions fr.\ \(\hat{\omega}_i\) towards \(\vec{x}\).
             \item \(f_r(\vec{x}, \hat{\omega}_i, \hat{\omega}_o)\): surface \emph{reflectance properties} at \(\vec{x}\), an BRDF.
         \end{itemize}
+    }
+
+    \frame{\frametitle{Global Illumination}\framesubtitle{Radiosity}
+        \[B_i = E_i + \rho_i \sum_{j=1}^n F_{ij} B_j\]
+        \begin{description}
+            \item[+] Viewport independent (offline processing)
+            \item[-] No specular or glossy reflections
+            \item[+-] Simplified rendering equation
+        \end{description}
+        \begin{figure}
+        \centering
+        \includegraphics[width=0.9\textwidth]{share/radiosity.png}
+        \end{figure}
+    }
+
+    \frame{\frametitle{Global Illumination}\framesubtitle{Whitted Raytracing}
+        \begin{description}
+            \item[+] Specular and glossy surfaces
+            \item[-] Viewport dependent
+            \item[-] Only point lights
+            \item[-] Local diffuse lighting model
+        \end{description}
+        \begin{figure}
+        \centering
+        \includegraphics[width=0.7\textwidth]{share/whitted.png}
+        \end{figure}
+    }
+    
+    \frame{\frametitle{Global Illumination}\framesubtitle{Path tracing}
+        \begin{description}
+            \item[+] Photo realistic
+            \item[-] Super slow (otherwise noisy)
+            \item[-] Expensive caustics
+            \item[-] Volumetric light scattering
+        \end{description}
+        \begin{figure}
+        \centering
+        \includegraphics[width=0.7\textwidth]{share/pathtracing.png}
+        \end{figure}
+    }
+
+    \frame{\frametitle{Photon Mapping}\framesubtitle{Overview}
+        An extension to path tracing which uses \emph{photon maps} for faster convergence.
+        \begin{itemize}
+            \item Easier caustics
+            \item Volumetric material properties
+            \item Memory requirement
+            \item Photon maps viewport independent
+            \item 2-pass rendering
+        \end{itemize}
+    }
+    
+    \frame{\frametitle{Photon Mapping}\framesubtitle{1st pass}
+        
+    }
+    
+    \frame{\frametitle{Photon Mapping}\framesubtitle{2nd pass}
+    
+    }
+
+    \frame{\frametitle{Discussion}
+    
+    }
+
+    \frame{\frametitle{Future Studies}
+
     }
 
     \frame{\frametitle{Any Questions?}}
