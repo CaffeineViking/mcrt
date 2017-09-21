@@ -3,6 +3,7 @@
 #include <fstream>
 #include <cstdint>
 #include <stdexcept>
+#include <vector>
 #include "lodepng.hh"
 
 // Parses the extension and try to save with the formats we have implemented.
@@ -21,7 +22,8 @@ void mcrt::NetpbmImageExporter::save(const Image& image, const std::string& file
     if (!fileStream) throw std::runtime_error { "Could not create '" + file + "'!"};
     // Write the format magic data, as: https://en.wikipedia.org/wiki/Netpbm_format.
     fileStream << "P6 " <<  image.getWidth() << " " << image.getHeight() << " 255 ";
-    for (const auto& pixelData : image.getPixelData())
+    std::vector<mcrt::Color<unsigned char>> normalizedPixelData = image.getNormalizedPixelData();
+    for (const auto& pixelData : normalizedPixelData )
         fileStream.write((const char*) pixelData, 3);
 }
 
@@ -40,7 +42,8 @@ void mcrt::FarbfeldImageExporter::save(const Image& image, const std::string& fi
     fileStream << imageWidthBytes[3]  << imageWidthBytes[2]  << imageWidthBytes[1]  << imageWidthBytes[0];
     fileStream << imageHeightBytes[3] << imageHeightBytes[2] << imageHeightBytes[1] << imageHeightBytes[0];
 
-    for (const auto& pixelData : image.getPixelData()) {
+    std::vector<mcrt::Color<unsigned char>> normalizedPixelData = image.getNormalizedPixelData();
+    for (const auto& pixelData : normalizedPixelData) {
         std::uint16_t scaledColors[4];
         // We scale up the colors fr. 8-bit to 16-bit RGBA-color range.
         scaledColors[0] = static_cast<std::uint16_t>(pixelData.r) << 8;
@@ -61,7 +64,8 @@ void mcrt::FarbfeldImageExporter::save(const Image& image, const std::string& fi
 }
 
 void mcrt::PngImageExporter::save(const Image& image, const std::string& file) {
-    std::vector<unsigned char>& imageData = (std::vector<unsigned char>&) image.getPixelData();
+    auto data = image.getNormalizedPixelData();
+    std::vector<unsigned char>& imageData = (std::vector<unsigned char>&) (data);
     unsigned errorCode { lodepng::encode(file, imageData, image.getWidth(),
                                                           image.getHeight()) };
     if (errorCode) throw std::runtime_error { lodepng_error_text(errorCode) };
