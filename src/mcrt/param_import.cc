@@ -56,7 +56,8 @@ mcrt::Parameters mcrt::ParameterImporter::load(const std::string& file) {
         std::string sampleMethod { supersamples[0][1].get<std::string>() };
         if (sampleMethod == "grid") parameters.samplingPattern = Supersampler::Pattern::GRID;
         else if (sampleMethod == "rand") parameters.samplingPattern = Supersampler::Pattern::RANDOM;
-        else std::runtime_error { "Error: no support for the '" + sampleMethod + "' pattern!" };
+        else if (sampleMethod == "norm") parameters.samplingPattern = Supersampler::Pattern::GAUSSIAN;
+        else std::runtime_error { "Error: no support for this: '" + sampleMethod + "' pattern!" };
     }
 
     return parameters;

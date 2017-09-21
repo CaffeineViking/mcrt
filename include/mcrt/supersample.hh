@@ -9,7 +9,8 @@ namespace mcrt {
     class Supersampler {
     public:
         enum class Pattern {
-            GRID, RANDOM
+            GRID, RANDOM,
+            GAUSSIAN
         };
 
         Supersampler(size_t samplingAmount, Pattern pattern)
@@ -27,15 +28,17 @@ namespace mcrt {
         glm::dvec3 next(Camera::SamplingPlane&, size_t) const;
 
     private:
-        // Below are them types of sample pattern distributions.
-        glm::dvec3 grid(Camera::SamplingPlane&,   size_t) const;
+        // Below are the types of sample pattern distribution.
+        glm::dvec3 grid(Camera::SamplingPlane&, size_t) const;
         glm::dvec3 prng(Camera::SamplingPlane&, size_t) const;
+        glm::dvec3 norm(Camera::SamplingPlane&, size_t) const;
 
         size_t samplingAmount { 1 };
         double samplingWidth  { 1 };
         Pattern pattern  { Pattern::GRID };
-        std::mt19937 randomNumberGenerator;
-        std::uniform_real_distribution<double> distribution { 0.0, 1.0 };
+        mutable std::mt19937 randomNumberGenerator;
+        mutable std::normal_distribution<double> gaussian { 0.5, 0.5 };
+        mutable std::uniform_real_distribution<double> uniform { 0.0, 1.0 };
     };
 }
 
