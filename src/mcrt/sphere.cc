@@ -2,23 +2,20 @@
 
 namespace mcrt {
     Sphere::Sphere(const glm::dvec3 o, double r, const Material& m):
-	Geometry(m),    
-	_origin{o},
-	_radius{r}
-    {}
+                  Geometry(m), _origin{o}, _radius{r} {  }
 
-    
+
     // Return distance from ray origin to sphere, distance = 0 means no intersection.
-    Intersection Sphere::intersect(const Ray& ray) const{
-        Intersection result {0,glm::dvec3(0.0),{glm::dvec3(0.0), MaterialType::Diffuse, 0.0}};
-        
+    Ray::Intersection Sphere::intersect(const Ray& ray) const{
+        Ray::Intersection result {0,glm::dvec3(0.0),{glm::dvec3(0.0), Material::Type::Diffuse, 0.0}};
+
         double t0,t1;
         glm::dvec3 L = _origin - ray.origin;
         double tca = glm::dot(L,ray.direction);
         if(tca < 0) {
             return result;            
         }
-	
+
         double d2 = glm::dot(L,L) - tca * tca;
         if( d2 > _radius*_radius) {
             return result;

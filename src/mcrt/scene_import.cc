@@ -5,8 +5,9 @@
 #include <stdexcept>
 #include "json.hh"
 
-#include "mcrt/mcrt.hh"
+#include "mcrt/ray.hh"
 #include "mcrt/sphere.hh"
+#include "mcrt/material.hh"
 #include "mcrt/triangle.hh"
 #include "mcrt/camera.hh"
 
@@ -54,7 +55,7 @@ mcrt::Scene mcrt::SceneImporter::load(const std::string& file) {
         nlohmann::json lights { parser["lights"] };
 
         for (auto light : lights[0]) {
-            scene.add(Light {
+            scene.add(PointLight {
                 { light["origin"][0].get<double>(),
                   light["origin"][1].get<double>(),
                   light["origin"][2].get<double>() },
@@ -80,8 +81,8 @@ mcrt::Scene mcrt::SceneImporter::load(const std::string& file) {
                     material["color"][0].get<double>(),
                     material["color"][1].get<double>(),
                     material["color"][2].get<double>()
-                },  static_cast<MaterialType>(material["type"].get<unsigned>())
-                 ,  material["ior"].get<double>()
+                },  static_cast<Material::Type>(material["type"].get<unsigned>())
+                 ,  material["refractionIndex"].get<double>()
                 };
         }
     }
