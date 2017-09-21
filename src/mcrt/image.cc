@@ -2,10 +2,36 @@
 
 #include "mcrt/interpolants.hh"
 
-const std::vector<mcrt::Color<unsigned char>>& mcrt::Image::getPixelData() const { return pixelData; }
-std::vector<mcrt::Color<unsigned char>>& mcrt::Image::getPixelData() { return pixelData; }
-mcrt::Color<unsigned char>  mcrt::Image::pixel(size_t x, size_t y) const { return pixel(x, y); }
-mcrt::Color<unsigned char>& mcrt::Image::pixel(size_t x, size_t y) {
+#include <algorithm>
+#include <cmath>
+#include <iostream>
+
+std::vector<mcrt::Color<unsigned char>> mcrt::Image::getNormalizedPixelData() const {
+    const double maxColorR = std::max_element(std::begin(pixelData), std::end(pixelData), 
+        [](const Color<double>& c1, const Color<double>& c2) -> bool { return c1.r < c2.r;})->r;
+    const double maxColorG = std::max_element(std::begin(pixelData), std::end(pixelData), 
+        [](const Color<double>& c1, const Color<double>& c2) -> bool { return c1.g < c2.g;})->g;
+    const double maxColorB = std::max_element(std::begin(pixelData), std::end(pixelData), 
+        [](const Color<double>& c1, const Color<double>& c2) -> bool { return c1.b < c2.b;})->b;
+    
+    const double maxValue = std::max(std::max(maxColorR, maxColorG), maxColorB);
+
+    std::vector<Color<unsigned char>> normalizedPixelData;
+    std::transform(std::begin(pixelData),std::end(pixelData),std::back_inserter(normalizedPixelData), 
+        [&maxValue](const Color<double> & color) -> Color<unsigned char> 
+        { 
+            Color<double> n = color/maxValue;
+            Color<unsigned char> r ((unsigned char)(n.r * 255), (unsigned char)(n.g * 255), (unsigned char)(n.b * 255), (unsigned char)(255));
+            return r; 
+        } );
+
+    return normalizedPixelData;
+}
+
+const std::vector<mcrt::Color<double>>& mcrt::Image::getPixelData() const { return pixelData; }
+std::vector<mcrt::Color<double>>& mcrt::Image::getPixelData() { return pixelData; }
+mcrt::Color<double>  mcrt::Image::pixel(size_t x, size_t y) const { return pixel(x, y); }
+mcrt::Color<double>& mcrt::Image::pixel(size_t x, size_t y) {
     return pixelData[x + y * width];
 }
 
@@ -22,7 +48,7 @@ void mcrt::Image::resize(size_t width, size_t height, ResizeMethod method = Resi
     this->width = width;
 }
 
-void mcrt::Image::clear(const Color<unsigned char>& clearColor) {
+void mcrt::Image::clear(const Color<double>& clearColor) {
     for (auto& pixel : pixelData) pixel = clearColor;
 }
 
@@ -56,7 +82,7 @@ mcrt::Image mcrt::Image::bilinearInterpolation(size_t width, size_t height) {
             if (trj == this->height - 1)  brj = trj;
 
             // Pick the actual colors we interpolate.
-            Color<unsigned char> tl { pixel(tli, tlj) },
+            Color<double> tl { pixel(tli, tlj) },
                                  tr { pixel(tri, trj) },
                                  br { pixel(bri, brj) },
                                  bl { pixel(bli, blj) };

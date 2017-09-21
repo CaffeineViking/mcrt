@@ -11,7 +11,9 @@ namespace mcrt {
             b = v.b * 255;
             a = 255;
         }
-
+        Color(T rr, T gg, T bb, T aa): r{rr}, g{gg}, b{bb}, a{aa} 
+        {}
+            
         Color<T>& operator*=(double);
         Color<T>& operator/=(double);
         Color<T>& operator+=(const Color<T>&);
@@ -29,13 +31,15 @@ namespace mcrt {
 
     template<typename T> bool operator==(const Color<T>&, const Color<T>&);
     template<typename T> bool operator!=(const Color<T>&, const Color<T>&);
-
+    template<typename T> bool operator<(const Color<T>&, const Color<T>&);
+    
     template<typename T> Color<T> operator+(const Color<T>&, const Color<T>&);
     template<typename T> Color<T> operator-(const Color<T>&, const Color<T>&);
     template<typename T> Color<T> operator*(const Color<T>&, const Color<T>&);
     template<typename T> Color<T> operator/(const Color<T>&, const Color<T>&);
     template<typename T> Color<T> operator*(double, const Color<T>&);
     template<typename T> Color<T> operator/(double, const Color<T>&);
+    template<typename T> Color<T> operator/(const Color<T>&, double);
 }
 
 template<typename T>
@@ -114,6 +118,14 @@ bool mcrt::operator!=(const Color<T>& left, const Color<T>& right) {
     return !(left == right);
 }
 
+template<typename T> 
+bool mcrt::operator<(const Color<T>& c1, const Color<T>&c2) {
+    double len2_c1 = ((c1.r * c1.r) + (c1.g * c1.g) + (c1.b * c1.b) + (c1.a * c1.a));
+    double len2_c2 = ((c2.r * c1.r) + (c2.g * c2.g) + (c2.b * c2.b) + (c2.a * c2.a));
+    return len2_c1 < len2_c2;
+}
+
+
 template<typename T>
 mcrt::Color<T> mcrt::operator+(const Color<T>& left, const Color<T>& right) {
     Color<T> result { left };
@@ -155,5 +167,10 @@ mcrt::Color<T> mcrt::operator/(double left, const Color<T>& right) {
     result /= left;
     return result;
 }
-
+template<typename T>
+mcrt::Color<T> mcrt::operator/(const Color<T>& right,double left) {
+    Color<T> result { right };
+    result /= left;
+    return result;
+}
 #endif
