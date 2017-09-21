@@ -18,10 +18,10 @@ namespace mcrt {
         Image(size_t width, size_t height) : width { width }, height { height },
                                              pixelData(width*height) {  }
 
-        void clear(const Color<unsigned char>&);
+        void clear(const Color<double>&);
         void resize(size_t, size_t, ResizeMethod);
-        Color<unsigned char>& pixel(size_t, size_t);
-        Color<unsigned char>  pixel(size_t, size_t) const;
+        Color<double>& pixel(size_t, size_t);
+        Color<double>  pixel(size_t, size_t) const;
 
         // Filters using data from a pixel.
         template<typename F> void filter(F);
@@ -38,9 +38,11 @@ namespace mcrt {
         // aligned element-wise. Therefore, we can convert
         // it to a stream of bytes directly without having
         // to do any sort of conversion magic. It's bytes!
-        std::vector<Color<unsigned char>>& getPixelData();
+        std::vector<Color<double>>& getPixelData();
+        std::vector<Color<unsigned char>> getNormalizedPixelData() const;
+        
         // Wrapper when not changing, i.e read-only of the pixel data.
-        const std::vector<Color<unsigned char>>& getPixelData() const;
+        const std::vector<Color<double>>& getPixelData() const;
 
         static constexpr size_t CHANNELS { 4 };
         static constexpr size_t BPP { 24 };
@@ -50,7 +52,7 @@ namespace mcrt {
         Image bilinearInterpolation(size_t, size_t);
         Image nearestInterpolation(size_t,  size_t);
         size_t width, height; // 24 bpp in our case.
-        std::vector<Color<unsigned char>> pixelData;
+        std::vector<Color<double>> pixelData;
     };
 
     template<typename F>
@@ -66,7 +68,7 @@ namespace mcrt {
         int w = width-1, h = height-1;
         for (int y = 0; y < height; ++y)
             for (int x = 0; x < width; ++x) {
-                Color<unsigned char> neighborhoodColors[9];
+                Color<double> neighborhoodColors[9];
                 neighborhoodColors[0] = pixel(glm::clamp(--x, 0, w), glm::clamp(--y, 0, h));
                 neighborhoodColors[1] = pixel(glm::clamp(x, 0, w),   glm::clamp(--y, 0, h));
                 neighborhoodColors[2] = pixel(glm::clamp(++x, 0, w), glm::clamp(--y, 0, h));
