@@ -57,3 +57,32 @@ Future studies
     * Photon splating
     * Photon relaxation
     * Progressive photon mapping
+
+--------------------------------
+
+Outline
+
+Motivation
+
+Global Illumination
+- Rendering Equation
+- Radiosity
+- Whitted Raytracing
+- Path Tracing
+
+Photon Mapping
+
+Photon Tracing    (1st Pass)
+
+Photon Collection (2nd Pass)
+
+Summary
+
+Future Studies
+- Improved Radiance Measures
+- Photon Relaxation
+- Photon Splatting
+- Progressive Photon Mapping
+- Adaptive Photon Tracing
+
+Any Questions?

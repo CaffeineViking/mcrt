@@ -45,20 +45,20 @@
 
     \frame{\frametitle{Rendering Equation}
         \[L_o(\vec{x}, \hat{\omega}_o) = L_e(\vec{x}, \hat{\omega}_o) +
-                                         \int_\Omega L_i(\vec{x}, \hat{\omega}_i)
+                                         \overbrace{\int_\Omega L_i(\vec{x}, \hat{\omega}_i)
                                          f_r(\vec{x}, \hat{\omega}_i, \hat{\omega}_o)
-                                         (\hat{n}_{x} \cdot \hat{\omega}_i) \, d\hat{\omega}_i\]
+                                         (\hat{n}_{x} \cdot \hat{\omega}_i) \, d\hat{\omega}_i}
+                                         ^{\text{\emph{reflected radiances} from } \Omega \text{ into } \vec{x} \text{ toward } \hat{\omega}_o}\]
         \begin{itemize}
             \item \(L_o(\vec{x}, \hat{\omega}_o)\): total \emph{outgoing radiance} at point \(\vec{x}\) towards a \(\hat{\omega}_o\).
-            \item \(L_e(\vec{x}, \hat{\omega}_o)\):
-            \item \(\Omega\):
-            \item \(L_i(\vec{x}, \hat{\omega}_i)\):
-            \item \(f_r(\vec{x}, \hat{\omega}_i, \hat{\omega}_o)\):
-            \item \(\hat{n}_x\):
+            \item \(L_e(\vec{x}, \hat{\omega}_o)\): \emph{emitted radiance} contribution from \(\vec{x}\) toward \(\hat{\omega}_o\).
+            \item \(\Omega\): hemisphere around the point \(\vec{x}\) with normal \(\hat{n}_x\) of \(d \hat{\omega}_i\)'s.
+            \item \(L_i(\vec{x}, \hat{\omega}_i)\):\ \emph{incoming radiance} contributions fr.\ \(\hat{\omega}_i\) towards \(\vec{x}\).
+            \item \(f_r(\vec{x}, \hat{\omega}_i, \hat{\omega}_o)\): surface \emph{reflectance properties} at \(\vec{x}\), an BRDF.
         \end{itemize}
     }
 
-    \frame{\frametitle{Questions?}}
+    \frame{\frametitle{Any Questions?}}
     \frame{\frametitle{Bibliography}
         \nocite{*}
         \bibliographystyle{alpha}
