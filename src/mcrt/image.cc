@@ -1,29 +1,37 @@
 #include "mcrt/image.hh"
 
-#include "mcrt/interpolants.hh"
-
-#include <algorithm>
 #include <cmath>
 #include <iostream>
+#include <algorithm>
+
+#include "mcrt/interpolants.hh"
 
 std::vector<mcrt::Color<unsigned char>> mcrt::Image::getNormalizedPixelData() const {
-    const double maxColorR = std::max_element(std::begin(pixelData), std::end(pixelData), 
-        [](const Color<double>& c1, const Color<double>& c2) -> bool { return c1.r < c2.r;})->r;
-    const double maxColorG = std::max_element(std::begin(pixelData), std::end(pixelData), 
-        [](const Color<double>& c1, const Color<double>& c2) -> bool { return c1.g < c2.g;})->g;
-    const double maxColorB = std::max_element(std::begin(pixelData), std::end(pixelData), 
-        [](const Color<double>& c1, const Color<double>& c2) -> bool { return c1.b < c2.b;})->b;
-    
+    const double maxColorR = std::max_element(std::begin(pixelData), std::end(pixelData),
+                                              [](const Color<double>& c1, const Color<double>& c2) -> bool {
+                                                  return c1.r < c2.r;
+                                              })->r;
+    const double maxColorG = std::max_element(std::begin(pixelData), std::end(pixelData),
+                                              [](const Color<double>& c1, const Color<double>& c2) -> bool {
+                                                  return c1.g < c2.g;
+                                              })->g;
+    const double maxColorB = std::max_element(std::begin(pixelData), std::end(pixelData),
+                                              [](const Color<double>& c1, const Color<double>& c2) -> bool {
+                                                  return c1.b < c2.b;
+                                              })->b;
+
     const double maxValue = std::max(std::max(maxColorR, maxColorG), maxColorB);
 
     std::vector<Color<unsigned char>> normalizedPixelData;
-    std::transform(std::begin(pixelData),std::end(pixelData),std::back_inserter(normalizedPixelData), 
-        [&maxValue](const Color<double> & color) -> Color<unsigned char> 
-        { 
+    std::transform(std::begin(pixelData), std::end(pixelData), std::back_inserter(normalizedPixelData),
+        [&maxValue](const Color<double> & color) -> Color<unsigned char> {
             Color<double> n = color/maxValue;
-            Color<unsigned char> r ((unsigned char)(n.r * 255), (unsigned char)(n.g * 255), (unsigned char)(n.b * 255), (unsigned char)(255));
-            return r; 
-        } );
+            Color<unsigned char> r ((unsigned char) (n.r * 255),
+                                    (unsigned char) (n.g * 255),
+                                    (unsigned char) (n.b * 255),
+                                    (unsigned char) 255);
+            return r;
+        });
 
     return normalizedPixelData;
 }
