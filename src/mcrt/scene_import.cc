@@ -75,11 +75,14 @@ mcrt::Scene mcrt::SceneImporter::load(const std::string& file) {
             if (palette.count(materialName) != 0) continue;
 
             // Insert our materials to palette.
-            palette[materialName] = Material {{
-                material["color"][0].get<double>(),
-                material["color"][1].get<double>(),
-                material["color"][2].get<double>()
-            }};
+            palette[materialName] = Material {
+                {
+                    material["color"][0].get<double>(),
+                    material["color"][1].get<double>(),
+                    material["color"][2].get<double>()
+                },  static_cast<MaterialType>(material["type"].get<unsigned>())
+                 ,  material["ior"].get<double>()
+                };
         }
     }
 

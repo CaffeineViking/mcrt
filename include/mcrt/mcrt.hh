@@ -7,9 +7,17 @@
 
 namespace mcrt {
 
+enum MaterialType {
+    Diffuse     = 0,
+    Reflective  = 1,
+    Refractive  = 2
+};
+
 // Material struct, stores render information about a surface type.
 struct Material {
     glm::dvec3 color;   
+    MaterialType type;
+    double ior;
 };
 
 struct Light {

@@ -33,7 +33,7 @@ namespace mcrt {
         void add(const Light& light);
         void add(Geometry* geometry);
 
-        glm::dvec3 rayTrace(const Ray& ray) const;
+        glm::dvec3 rayTrace(const Ray& ray, const int) const;
         Intersection intersect(const Ray& ray) const;
 
         std::vector<Geometry*>& getGeometries() { return geometries; }
@@ -48,6 +48,8 @@ namespace mcrt {
         std::vector<Geometry*> geometries;
         std::vector<Light> lights;
         Camera camera;
+
+        double fresnel(const glm::dvec3& direction, const glm::dvec3& normal, const double ior) const;
     };
 }
 
