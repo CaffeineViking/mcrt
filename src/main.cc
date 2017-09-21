@@ -1,6 +1,8 @@
 #include <chrono>
 #include <cstring>
 #include <iostream>
+#include <vector>
+#include <numeric>
 #include <iomanip>
 
 #include "mcrt/param_import.hh"
@@ -9,6 +11,7 @@
 #include "mcrt/scene.hh"
 
 #include "mcrt/image.hh"
+#include "mcrt/supersample.hh"
 #include "mcrt/image_export.hh"
 
 int usage(int argc, char** argv) {
@@ -52,6 +55,7 @@ int main(int argc, char** argv) {
 
     // Shorthands for enabling or disabling the parallel framework under run-time. TODO: OpenMPI.
     bool openmp  { parameters.parallelFramework == mcrt::Parameters::ParallelFramework::OPENMP };
+    const mcrt::Supersampler sampler { parameters.samplesPerPixel,  parameters.samplingPattern };
 
     // Note that render background will be transparent.
     mcrt::Image renderImage { parameters.resolutionWidth,
@@ -69,6 +73,7 @@ int main(int argc, char** argv) {
 
     size_t rowsRendered { 0 }; // Shared resource.
     const double rowCount = renderImage.getHeight();
+    double samplesPerPixel = parameters.samplesPerPixel;
     const glm::dvec3 eyePoint { sceneCamera.getEyePosition() };
 
     #pragma omp parallel for schedule(dynamic) if (openmp)
@@ -84,14 +89,23 @@ int main(int argc, char** argv) {
         // ------------------------------------------------
 
         for (size_t x = 0; x < renderImage.getWidth(); ++x) {
-            // Bit of a hack for now, we probably want to sample from the pixel plane...
-            glm::dvec3 viewPlanePoint { sceneCamera.getPixelCenter(renderImage, x, y) };
-            glm::dvec3 rayDirection { glm::normalize(viewPlanePoint - eyePoint) };
-            mcrt::Ray rayFromViewPlane { viewPlanePoint, rayDirection };
+            std::vector<glm::dvec3> pixelColors;
+            pixelColors.reserve(parameters.samplesPerPixel);
+            // Below is the interval in the pixel where we can get further pp samples.
+            auto samplingPlane = sceneCamera.getPixelSamplingPlane(renderImage, x, y);
+            for (size_t i = 0; i < parameters.samplesPerPixel; ++i) {
+                // Choose some location for us to sample in the pixel plane.
+                glm::dvec3 viewPlanePoint { sampler.next(samplingPlane, i) };
+                glm::dvec3 rayDirection { glm::normalize(viewPlanePoint - eyePoint) };
+                mcrt::Ray rayFromViewPlane { viewPlanePoint, rayDirection };
+                pixelColors.push_back(scene.rayTrace(rayFromViewPlane, 0));
+            }
 
-            // And also average these pixel color based on the samples.
-            glm::dvec3 pixelColor { scene.rayTrace(rayFromViewPlane, 0) };
-            renderImage.pixel(x, y) = pixelColor;
+            // Here we sum contributions from each sample and then average the color's values.
+            glm::dvec3 pixelColorSum = std::accumulate(pixelColors.begin(), pixelColors.end(),
+                                                       glm::dvec3 { 0.0, 0.0, 0.0 });
+            glm::dvec3 meanPixelColor { pixelColorSum / samplesPerPixel };
+            renderImage.pixel(x, y) = meanPixelColor;
         }
 
         // ------------------------------------------------

@@ -9,12 +9,12 @@ run: FORCE
 render: FORCE
 	premake5 gmake
 	make -j8 -C build mcrt config=${config}
-	bin/mcrt render.png share/scene.json share/param.json
+	bin/mcrt share/render.png share/scene.json share/param.json
 view-render: FORCE
 	premake5 gmake
 	make -j8 -C build mcrt config=${config}
-	bin/mcrt render.png share/scene.json share/param.json
-	feh --force-aliasing -F render.png
+	bin/mcrt share/render.png share/scene.json share/param.json
+	feh --force-aliasing -F share/render.png
 
 docs: FORCE
 	make -C docs/

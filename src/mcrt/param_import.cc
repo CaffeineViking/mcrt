@@ -50,12 +50,12 @@ mcrt::Parameters mcrt::ParameterImporter::load(const std::string& file) {
         nlohmann::json supersamples { parser["supersamples"] };
         if (supersamples.size() != 2) std::runtime_error { "Error: supersamples parameters are malformed!" };
         size_t supersampleAmount { supersamples[0][0].get<size_t>() };
-        parameters.supersamplesPerPixel = supersampleAmount;
+        // We square this since we'll set 4x4 = 16 implicitly with sampler.
+        parameters.samplesPerPixel = supersampleAmount * supersampleAmount;
 
         std::string sampleMethod { supersamples[0][1].get<std::string>() };
-        if (sampleMethod == "grid") parameters.samplingMethod = Parameters::SamplingMethod::GRID;
-        else if (sampleMethod == "rotated") parameters.samplingMethod = Parameters::SamplingMethod::ROTATE_GRID;
-        else if (sampleMethod == "rand") parameters.samplingMethod = Parameters::SamplingMethod::RAND;
+        if (sampleMethod == "grid") parameters.samplingPattern = Supersampler::Pattern::GRID;
+        else if (sampleMethod == "rand") parameters.samplingPattern = Supersampler::Pattern::RANDOM;
         else std::runtime_error { "Error: no support for the '" + sampleMethod + "' pattern!" };
     }
 
