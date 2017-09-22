@@ -43,6 +43,29 @@
 \begin{document}
     \frame{\titlepage}
 
+    \frame{\frametitle{Outline}
+        \begin{itemize}
+            \item Motivation
+            \item Global Illumination
+                \begin{itemize}
+                    \item Rendering Equation
+                    \item Radiosity
+                    \item Whitted Raytracing
+                    \item Path Tracing
+                \end{itemize}
+            \item Photon Mapping
+                \begin{itemize}
+                    \item Photon Tracing
+                    \item Photon Collection
+                \end{itemize}
+            \item Summary
+            \item Further Studies
+        \end{itemize}
+    }
+
+    \frame{\frametitle{Motivation}
+    }
+
     \frame{\frametitle{Global Illumination}\framesubtitle{Rendering Equation}
         \[L_o(\vec{x}, \hat{\omega}_o) = L_e(\vec{x}, \hat{\omega}_o) +
                                          \overbrace{\int_\Omega L_i(\vec{x}, \hat{\omega}_i)
@@ -59,69 +82,77 @@
     }
 
     \frame{\frametitle{Global Illumination}\framesubtitle{Radiosity}
-        \[B_i = E_i + \rho_i \sum_{j=1}^n F_{ij} B_j\]
-        \begin{description}
-            \item[+] Viewport independent (offline processing)
-            \item[-] No specular or glossy reflections
-            \item[+-] Simplified rendering equation
-        \end{description}
-        \begin{figure}
-        \centering
-        \includegraphics[width=0.9\textwidth]{share/radiosity.png}
-        \end{figure}
+        \begin{columns}
+        \column{0.64\textwidth}
+            \[B_i = E_i + \rho_i \sum_{j=1}^n F_{ij} B_j\]
+            \begin{itemize}
+                \item[$+$] Noise free, iterative
+                \item[$+$] Viewport independent (baking!)
+                \item[$+$] Accurate for Lambertian surface
+                \item[$-$] No specular or glossy reflections
+                \item[$-$] Complexity scales with triangles
+            \end{itemize}
+        \column{0.36\textwidth} \begin{center}
+            \includegraphics[height=0.8\textheight]{share/radiosity.png}
+        \end{center} \end{columns}
     }
 
     \frame{\frametitle{Global Illumination}\framesubtitle{Whitted Raytracing}
-        \begin{description}
-            \item[+] Specular and glossy surfaces
-            \item[-] Viewport dependent
-            \item[-] Only point lights
-            \item[-] Local diffuse lighting model
-        \end{description}
-        \begin{figure}
-        \centering
-        \includegraphics[width=0.7\textwidth]{share/whitted.png}
-        \end{figure}
-    }
-    
-    \frame{\frametitle{Global Illumination}\framesubtitle{Path tracing}
-        \begin{description}
-            \item[+] Photo realistic
-            \item[-] Super slow (otherwise noisy)
-            \item[-] Expensive caustics
-            \item[-] Volumetric light scattering
-        \end{description}
-        \begin{figure}
-        \centering
-        \includegraphics[width=0.7\textwidth]{share/pathtracing.png}
-        \end{figure}
+        \begin{columns}
+        \column{0.64\textwidth}
+            \begin{itemize}
+                \item[$-$] Viewport dependent
+                \item[$-$] No area light sources
+                \item[$+$] Specular and glossy surfaces
+                \item[$-$] Local model for diffuse surfaces
+                \item[$+$] Easy to parallelize and to setup
+            \end{itemize}
+        \column{0.36\textwidth} \begin{center}
+            \includegraphics[height=0.8\textheight]{share/whitted.png}
+        \end{center} \end{columns}
     }
 
-    \frame{\frametitle{Photon Mapping}\framesubtitle{Overview}
-        An extension to path tracing which uses \emph{photon maps} for faster convergence.
-        \begin{itemize}
-            \item Easier caustics
-            \item Volumetric material properties
-            \item Memory requirement
-            \item Photon maps viewport independent
-            \item 2-pass rendering
-        \end{itemize}
-    }
-    
-    \frame{\frametitle{Photon Mapping}\framesubtitle{1st pass}
-        
-    }
-    
-    \frame{\frametitle{Photon Mapping}\framesubtitle{2nd pass}
-    
+    \frame{\frametitle{Global Illumination}\framesubtitle{Path Tracing}
+        \begin{columns}
+        \column{0.64\textwidth}
+            \begin{itemize}
+                \item[$+$] Photo realistic
+                \item[$-$] Super slow (otherwise noisy)
+                \item[$-$] Expensive caustics
+                \item[$-$] Volumetric light scattering
+            \end{itemize}
+        \column{0.36\textwidth} \begin{center}
+            \includegraphics[height=0.8\textheight]{share/pathtracing.png}
+        \end{center} \end{columns}
     }
 
-    \frame{\frametitle{Discussion}
-    
+    \frame{\frametitle{Photon Mapping}
+        \begin{columns}
+        \column{0.64\textwidth}
+            Efficient ray tracing extension that features \emph{faster caustics}, and, \emph{sub-surface scattering}.
+
+            \vspace{1.5em}
+
+            Algorithm is divided into two major passes:
+            \begin{itemize}
+                \item Photon tracing: emit photons carrying flux \(d\Phi\) from light sources towards our scene and stores hits on \emph{photon maps}.
+                \item Photon collection: estimate irradiance at \(\vec{x}\) by integrating over \emph{photon maps}.
+            \end{itemize}
+        \column{0.36\textwidth} \begin{center}
+            \includegraphics[height=0.8\textheight]{share/photonmapping.jpg}
+        \end{center} \end{columns}
     }
 
-    \frame{\frametitle{Future Studies}
+    \frame{\frametitle{Photon Tracing}
+    }
 
+    \frame{\frametitle{Photon Collection}
+    }
+
+    \frame{\frametitle{Summary}
+    }
+
+    \frame{\frametitle{Further Studies}
     }
 
     \frame{\frametitle{Any Questions?}}
