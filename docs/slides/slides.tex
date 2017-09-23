@@ -147,9 +147,65 @@
     }
 
     \frame{\frametitle{Photon Tracing}
+    \begin{columns}
+        \column{0.8\textwidth}
+
+        Photons are emitted from light source and traced similar to path tracing.
+
+        \textbf{Caustics}
+        \begin{itemize}
+            \item Photons are only emitted towards specular objects
+            \item Stored whenever they hit diffuse surfaces
+        \end{itemize}
+
+        \textbf{Global}
+        \begin{itemize}
+            \item Photons are emitted uniformly
+            \item Can be less precise 
+            \item First hit stored as normal photon
+            \item Secondaries stored as shadow photons  
+        \end{itemize}
+        
+        \column{0.2\textwidth} \begin{center}
+        \end{center} \end{columns}
+    }
+
+    \frame{\frametitle{Photon Tracing} \framesubtitle{photon-surface interaction}
+    \begin{columns}
+        \column{0.8\textwidth}
+        Surface interaction is determined by russian roulette. 
+        
+        \vspace{1.5em}
+        
+        Assume a uniform real distribution \(\xi \in [0,1]\) and the surface coefficients \(d\) and \(s\):
+        
+        \begin{itemize}
+            \item \( \xi \in [0, d] \) - Reflection of photon 
+            \item \( \xi \in [d, s + d] \) - Transmission of photon 
+            \item \( \xi \in [s + d, 1] \) - Absorption of photon
+        \end{itemize}
+        
+        \column{0.2\textwidth} \begin{center}
+        \end{center} \end{columns}
     }
 
     \frame{\frametitle{Radiance Estimate}
+        
+    The outgoing radiance from a point \(\vec{x}\) can be estimated as: 
+
+    \begin{align*}
+        &L_r \approx \sum_{p = 1}^{n} f_r(\vec{x},\Psi_r,\Psi_{i,p})\frac{d\Phi_p(\vec{x},\Psi_{i,p})}{\pi r^2}
+    \end{align*}
+
+    Breaking down the estimate:
+    \begin{enumerate}
+       \item Locate the \(n\) nearest photons \(\Phi_p\) to \(\vec{x}\)
+       \item Approximate the area containing the photons as \(\pi r^2\)
+       \item For each photon: Multiply the \textit{BRDF} \(f_r(\vec{x},\Psi_r,\Psi_{i,p})\) with the \textit{flux} divided by the approximate containment area
+    \end{enumerate}      
+    \vspace{1.0em}                
+    
+    Possible optimization: By using a fixed bounding sphere around \(\vec{x}\) instead of the \(n\) nearest photons.  
     }
 
     \frame{\frametitle{Photon Collection}
