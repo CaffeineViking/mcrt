@@ -56,7 +56,8 @@
             \item Photon Mapping
                 \begin{itemize}
                     \item Photon Tracing
-                    \item Photon Collection
+                    \item Radiance Estimate
+                    \item Photon\; Collection
                 \end{itemize}
             \item Summary
             \item Further Studies
@@ -148,7 +149,45 @@
     \frame{\frametitle{Photon Tracing}
     }
 
+    \frame{\frametitle{Radiance Estimate}
+    }
+
     \frame{\frametitle{Photon Collection}
+            \begin{align*}
+                &L_r(\vec{x}, \hat\omega_o) = \int_\Omega L_i(\vec{x}, \hat{\omega}_i)
+                                             f_r(\vec{x}, \hat{\omega}_i, \hat{\omega}_o)
+                                             (\hat{n}_{x} \cdot \hat{\omega}_i) \, d\hat{\omega}_i = \\
+                                           &L_{r,l}(\vec{x}, \hat\omega_o) + L_{r,s}(\vec{x}, \hat\omega_o) + L_{r,c}(\vec{x}, \hat\omega_o) + L_{r,d}(\vec{x}, \hat\omega_o)
+            \end{align*}
+    }
+
+    \frame{\frametitle{Photon Collection}\framesubtitle{Direct Illumination}
+        \[L_{r,l}(\vec{x}, \hat\omega_o) = \int_\Omega L_{i,l}(\vec{x}, \hat{\omega}_i)
+                                           f_{r,l}(\vec{x}, \hat{\omega}_i, \hat{\omega}_o)
+                                           (\hat{n}_{x} \cdot \hat{\omega}_i) \, d\hat{\omega}_i\]
+    }
+
+    \frame{\frametitle{Photon Collection}\framesubtitle{Specular and Glossy Reflections}
+        \begin{align*}
+            L_{r,s}(\vec{x}, \hat\omega_o) &= \int_\Omega L_{i,c}(\vec{x}, \hat{\omega}_i)
+                                             f_{r,s}(\vec{x}, \hat{\omega}_i, \hat{\omega}_o)
+                                             (\hat{n}_{x} \cdot \hat{\omega}_i) \, d\hat{\omega}_i \\
+                                           &+ \int_\Omega L_{i,d}(\vec{x}, \hat{\omega}_i)
+                                             f_{r,s}(\vec{x}, \hat{\omega}_i, \hat{\omega}_o)
+                                             (\hat{n}_{x} \cdot \hat{\omega}_i) \, d\hat{\omega}_i
+        \end{align*}
+    }
+
+    \frame{\frametitle{Photon Collection}\framesubtitle{Caustics}
+        \[L_{r,c}(\vec{x}, \hat\omega_o) = \int_\Omega L_{i,c}(\vec{x}, \hat{\omega}_i)
+                                           f_{r,d}(\vec{x}, \hat{\omega}_i, \hat{\omega}_o)
+                                           (\hat{n}_{x} \cdot \hat{\omega}_i) \, d\hat{\omega}_i\]
+    }
+
+    \frame{\frametitle{Photon Collection}\framesubtitle{Indirect Diffuse Reflections}
+        \[L_{r,d}(\vec{x}, \hat\omega_o) = \int_\Omega L_{i,d}(\vec{x}, \hat{\omega}_i)
+                                           f_{r,d}(\vec{x}, \hat{\omega}_i, \hat{\omega}_o)
+                                           (\hat{n}_{x} \cdot \hat{\omega}_i) \, d\hat{\omega}_i\]
     }
 
     \frame{\frametitle{Summary}
