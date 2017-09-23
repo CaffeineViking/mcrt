@@ -84,13 +84,14 @@
     \frame{\frametitle{Global Illumination}\framesubtitle{Radiosity}
         \begin{columns}
         \column{0.64\textwidth}
+            Assumes all surfaces are Lambertian reflectors: \(f_r = \rho / \pi\) of discrete size.
             \[B_i = E_i + \rho_i \sum_{j=1}^n F_{ij} B_j\]
             \begin{itemize}
-                \item[$+$] Noise free, iterative
+                \item[$+$] Noise free,\, iterative progression
                 \item[$+$] Viewport independent (baking!)
                 \item[$+$] Accurate for Lambertian surface
                 \item[$-$] No specular or glossy reflections
-                \item[$-$] Complexity scales with triangles
+                \item[$-$] Complexity scales \(\propto\) to triangles
             \end{itemize}
         \column{0.36\textwidth} \begin{center}
             \includegraphics[height=0.8\textheight]{share/radiosity.png}
@@ -101,11 +102,11 @@
         \begin{columns}
         \column{0.64\textwidth}
             \begin{itemize}
-                \item[$-$] Viewport dependent
-                \item[$-$] No area light sources
-                \item[$+$] Specular and glossy surfaces
-                \item[$-$] Local model for diffuse surfaces
-                \item[$+$] Easy to parallelize and to setup
+                \item[$\sim$] Viewport dependent (no baking)
+                \item[$-$] No soft shadows, $\rightarrow$ point lights
+                \item[$+$] Enables fully specular reflections
+                \item[$-$] Uses local model for diffuse surf.
+                \item[$+$] OK to parallelize and implement
             \end{itemize}
         \column{0.36\textwidth} \begin{center}
             \includegraphics[height=0.8\textheight]{share/whitted.png}
@@ -129,14 +130,14 @@
     \frame{\frametitle{Photon Mapping}
         \begin{columns}
         \column{0.64\textwidth}
-            Efficient ray tracing extension that features \emph{faster caustics}, and, \emph{sub-surface scattering}.
+            Efficient ray tracing extension that features faster \emph{caustics}, and, \emph{sub-surface scattering}. Trick:\, send \emph{``photons''} from a light source.
 
             \vspace{1.5em}
 
             Algorithm is divided into two major passes:
             \begin{itemize}
                 \item Photon tracing: emit photons carrying flux \(d\Phi\) from light sources towards our scene and stores hits on \emph{photon maps}.
-                \item Photon collection: estimate irradiance at \(\vec{x}\) by integrating over \emph{photon maps}.
+                \item Photon collection: estimate irradiance at \(\vec{x}\) by integrating over \emph{photon maps}. Either \emph{accurate}, or \emph{approximate} mode.
             \end{itemize}
         \column{0.36\textwidth} \begin{center}
             \includegraphics[height=0.8\textheight]{share/photonmapping.jpg}
@@ -153,6 +154,13 @@
     }
 
     \frame{\frametitle{Further Studies}
+        \begin{itemize}
+            \item Improved radiance estimate
+            \item Photon relaxation
+            \item Photon splatting
+            \item Progressive photon mapping
+            \item Adaptive photon tracing
+        \end{itemize}
     }
 
     \frame{\frametitle{Any Questions?}}
