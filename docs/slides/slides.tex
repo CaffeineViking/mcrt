@@ -71,7 +71,7 @@
                                          \overbrace{\int_\Omega L_i(\vec{x}, \hat{\omega}_i)
                                          f_r(\vec{x}, \hat{\omega}_i, \hat{\omega}_o)
                                          (\hat{n}_{x} \cdot \hat{\omega}_i) \, d\hat{\omega}_i}
-                                         ^{\text{\emph{reflected radiances} from } \Omega \text{ into } \vec{x} \text{ toward } \hat{\omega}_o}\]
+                                         ^{\text{\emph{reflected radiance} \(L_r\) from } \Omega \text{ to } \vec{x} \text{ toward } \hat{\omega}_o}\]
         \begin{itemize}
             \item \(L_o(\vec{x}, \hat{\omega}_o)\): total \emph{outgoing radiance} at point \(\vec{x}\) towards a \(\hat{\omega}_o\).
             \item \(L_e(\vec{x}, \hat{\omega}_o)\): \emph{emitted radiance} contribution from \(\vec{x}\) toward \(\hat{\omega}_o\).
@@ -117,10 +117,11 @@
         \begin{columns}
         \column{0.64\textwidth}
             \begin{itemize}
-                \item[$+$] Photo realistic
-                \item[$-$] Super slow (otherwise noisy)
-                \item[$-$] Expensive caustics
-                \item[$-$] Volumetric light scattering
+                \item[$+$] Models almost all light transport
+                \item[$+$] Embarrassingly parallel algorithm
+                \item[$-$] High-freq.\, noise if undersampled
+                \item[$-$] Doesn't consider vol.\, interaction
+                \item[$-$] Unfeasible for ``detailed caustics''
             \end{itemize}
         \column{0.36\textwidth} \begin{center}
             \includegraphics[height=0.8\textheight]{share/pathtracing.png}
@@ -155,11 +156,12 @@
 
     \frame{\frametitle{Further Studies}
         \begin{itemize}
-            \item Improved radiance estimate
-            \item Photon relaxation
-            \item Photon splatting
-            \item Progressive photon mapping
-            \item Adaptive photon tracing
+            \item Improved radiance estimate:
+            \item Volume photon map:
+            \item Photon relaxation:
+            \item Photon splatting:
+            \item Adaptive photon tracing:
+            \item Progressive photon mapping:
         \end{itemize}
     }
 
