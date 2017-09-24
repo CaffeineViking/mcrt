@@ -170,7 +170,7 @@
         \end{center} \end{columns}
     }
 
-    \frame{\frametitle{Photon Tracing} \framesubtitle{photon-surface interaction}
+    \frame{\frametitle{Photon Tracing} \framesubtitle{Photon-Surface Interaction}
     \begin{columns}
         \column{0.8\textwidth}
         Surface interaction is determined by russian roulette. 
@@ -191,17 +191,17 @@
 
     \frame{\frametitle{Radiance Estimate}
         
-    The outgoing radiance from a point \(\vec{x}\) can be estimated as: 
+    The reflected radiance from a point \(\vec{x}\) can be estimated as:
 
     \begin{align*}
-        &L_r \approx \sum_{p = 1}^{n} f_r(\vec{x},\Psi_r,\Psi_{i,p})\frac{d\Phi_p(\vec{x},\Psi_{i,p})}{\pi r^2}
+        &L_r(\vec{x}, \hat\omega_o) \approx \sum_{p = 1}^{n} f_r(\vec{x},\hat\omega_{i,p}, \hat\omega_o)\frac{\Delta\Phi_p(\vec{x},\hat\omega_{i,p})}{\pi r^2}
     \end{align*}
 
     Breaking down the estimate:
     \begin{enumerate}
-       \item Locate the \(n\) nearest photons \(\Phi_p\) to \(\vec{x}\)
-       \item Approximate the area containing the photons as \(\pi r^2\)
-       \item For each photon: Multiply the \textit{BRDF} \(f_r(\vec{x},\Psi_r,\Psi_{i,p})\) with the \textit{flux} divided by the approximate containment area
+        \item Locate the \(n\) nearest photons \(p\) with \emph{flux} \(\Phi_p\) around \(\vec{x}\)
+        \item Approximate the area containing the photons as \(\pi r^2\) (circle)
+        \item For each photon: Multiply the \textit{BRDF} \(f_r(\vec{x}, \hat\omega_{i,p}, \hat\omega_o)\) with the \textit{flux} divided by the approximate containment area
     \end{enumerate}      
     \vspace{1.0em}                
     
@@ -209,25 +209,35 @@
     }
 
     \frame{\frametitle{Photon Collection}
+        After we have our photon maps of the scene, we use distribution raytracing to compute each pixel's average radiance by sampling estimates from the scene: \(L_o(\vec{x}, \hat\omega_o) = L_e(\vec{x}, \hat\omega_o) + L_r(\vec{x}, \hat\omega_o)\). In photon mapping we split \(L_r(\vec{x}, \hat\omega_o)\) into 4 radiance contributions:
             \begin{align*}
                 &L_r(\vec{x}, \hat\omega_o) = \int_\Omega L_i(\vec{x}, \hat{\omega}_i)
                                              f_r(\vec{x}, \hat{\omega}_i, \hat{\omega}_o)
                                              (\hat{n}_{x} \cdot \hat{\omega}_i) \, d\hat{\omega}_i = \\
                                            &L_{r,l}(\vec{x}, \hat\omega_o) + L_{r,s}(\vec{x}, \hat\omega_o) + L_{r,c}(\vec{x}, \hat\omega_o) + L_{r,d}(\vec{x}, \hat\omega_o)
             \end{align*}
+        Each of these are evaluated either \emph{accurately} or \emph{approximatively}\ :
+        \begin{itemize}
+            \item Accurate evaluation: when \(\vec{x}\) is seen by an eye directly/close
+            \item Approximate evaluation:\ a importance was reflected diffusely
+        \end{itemize}
     }
 
     \frame{\frametitle{Photon Collection}\framesubtitle{Direct Illumination}
+        Represents the reflected radiance at \(\vec{x}\) towards \(\hat\omega_o\) which originated directly from \(\hat\omega_i\), the sources of light found around a hemisphere \(\Omega\).
+        \vspace{1em}
         \[L_{r,l}(\vec{x}, \hat\omega_o) = \int_\Omega L_{i,l}(\vec{x}, \hat{\omega}_i)
-                                           f_{r,l}(\vec{x}, \hat{\omega}_i, \hat{\omega}_o)
+                                           f_{r,d}(\vec{x}, \hat{\omega}_i, \hat{\omega}_o)
                                            (\hat{n}_{x} \cdot \hat{\omega}_i) \, d\hat{\omega}_i\]
         \begin{itemize}
-            \item Accurate evaluation:
-            \item Approximate evaluation:
+            \item Accurate evaluation: we would have to launch \emph{shadow rays} in the same way as Monte Carlo raytracing.\ Sample if area light.
+            \item Approximate evaluation: the radiance estimate obtained from our \emph{global photon map}, sum estimated photon flux around \(\vec{x}\).
         \end{itemize}
     }
 
     \frame{\frametitle{Photon Collection}\framesubtitle{Specular and Glossy Reflections}
+        Specular and glossy reflections are handled using the sum over the incoming caustic and diffuse radiance with the specular BRDF \(f_{r,s}\). No approximated variant is needed, we only have a single direction.
+        \vspace{-0.2em}
         \begin{align*}
             L_{r,s}(\vec{x}, \hat\omega_o) &= \int_\Omega L_{i,c}(\vec{x}, \hat{\omega}_i)
                                              f_{r,s}(\vec{x}, \hat{\omega}_i, \hat{\omega}_o)
@@ -237,27 +247,31 @@
                                              (\hat{n}_{x} \cdot \hat{\omega}_i) \, d\hat{\omega}_i
         \end{align*}
         \begin{itemize}
-            \item Accurate evaluation:
+            \item Accurate evaluation: we use Monte Carlo raytracing and \(f_{r,s}\) distributed importance sampling for reflection \& transmission.
         \end{itemize}
     }
 
     \frame{\frametitle{Photon Collection}\framesubtitle{Caustics}
+        Contributions from caustics are never evaluated using Monte Carlo raytracing, since it's very expensive. We use photon maps instead. \(L_{i,c}(\vec{x}, \hat\omega_o)\) is indirect light via specular reflection, or, transmission.
+        \vspace{0.8em}
         \[L_{r,c}(\vec{x}, \hat\omega_o) = \int_\Omega L_{i,c}(\vec{x}, \hat{\omega}_i)
                                            f_{r,d}(\vec{x}, \hat{\omega}_i, \hat{\omega}_o)
                                            (\hat{n}_{x} \cdot \hat{\omega}_i) \, d\hat{\omega}_i\]
         \begin{itemize}
-            \item Accurate evaluation:
-            \item Approximate evaluation:
+            \item Accurate evaluation: we use radiance estimate of the \emph{caustics photon map}. This is why it needs to be a high-resolution map.
+            \item Approximate evaluation: again, we use the global photon map.
         \end{itemize}
     }
 
     \frame{\frametitle{Photon Collection}\framesubtitle{Indirect Diffuse Reflections}
+        Finally, for contributions arriving at \(\vec{x}\) which have bounced around diffusely at least once we integrate over \(L_{i,d}(\vec{x}, \hat\omega_i)\). This gives the visual effects commonly known as ``color bleeding'', as in radiosity.
+        \vspace{0.8em}
         \[L_{r,d}(\vec{x}, \hat\omega_o) = \int_\Omega L_{i,d}(\vec{x}, \hat{\omega}_i)
                                            f_{r,d}(\vec{x}, \hat{\omega}_i, \hat{\omega}_o)
                                            (\hat{n}_{x} \cdot \hat{\omega}_i) \, d\hat{\omega}_i\]
         \begin{itemize}
-            \item Accurate evaluation:
-            \item Approximate evaluation:
+            \item Accurate evaluation: we use Monte Carlo raytracing again for this, and an optimzed sampling distribution according to \(f_{r,d}\).
+            \item Approximate evaluation: will usually contribute quite little to the end-results, so we again use the global radiance estimate.
         \end{itemize}
     }
 
