@@ -280,10 +280,10 @@
 
     \frame{\frametitle{Further Studies}
         \begin{itemize}
-            \item Improved radiance estimate:
-            \item Volume photon map:
+            \item Improved radiance estimate: we add a filter based on the distance which re-weight the contributions from photons.
+            \item Volume photon map: models interactions in participating media. We need a new radiance estimate and a ``BSDF''.
             \item Photon relaxation:
-            \item Photon splatting:
+            \item Photon splatting: instead of storing a photon individually,\\we accumulate the radiance in a texture\, with all the hits.
             \item Adaptive photon tracing:
             \item Progressive photon mapping:
         \end{itemize}
