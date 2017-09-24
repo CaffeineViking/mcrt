@@ -163,46 +163,37 @@
     }
 
     \frame{\frametitle{Photon Tracing}
-    \begin{columns}
-        \column{0.8\textwidth}
 
-        Photons are emitted from light source and traced similar to path tracing.
+        Photons are emitted from light source and traced similar to path tracing and terminated on diffuse surfaces.
 
-        \textbf{Caustics}
+        \textbf{Caustics} \(\approx L_{i,c}(\vec{x},\hat{\omega}_i)\)
         \begin{itemize}
             \item Photons are only emitted towards specular objects
-            \item Stored whenever they hit diffuse surfaces
+	    \item Used to directly visualize caustics
         \end{itemize}
 
-        \textbf{Global}
+        \textbf{Global} \(\approx L_{i,d}(\vec{x},\hat{\omega}_i)\)
         \begin{itemize}
-            \item Photons are emitted uniformly
-            \item Can be less precise 
-            \item First hit stored as normal photon
-            \item Secondaries stored as shadow photons  
+            \item Photons are emitted uniformly over the hemisphere
+            \item Only used as a data structure
         \end{itemize}
         
-        \column{0.2\textwidth} \begin{center}
-        \end{center} \end{columns}
     }
 
     \frame{\frametitle{Photon Tracing} \framesubtitle{Photon-Surface Interaction}
-    \begin{columns}
-        \column{0.8\textwidth}
-        Surface interaction is determined by russian roulette. 
+        
+	Surface interaction is determined by russian roulette. 
         
         \vspace{1.5em}
         
-        Assume a uniform real distribution \(\xi \in [0,1]\) and the surface coefficients \(d\) and \(s\):
+        Assume a uniform real distribution \(\xi \in [0,1]\) and the surface coefficients \(r\) and \(t\):
         
         \begin{itemize}
-            \item \( \xi \in [0, d] \) - Reflection of photon 
-            \item \( \xi \in [d, s + d] \) - Transmission of photon 
-            \item \( \xi \in [s + d, 1] \) - Absorption of photon
+            \item \( \xi \in [0, r] \) - Reflection of photon 
+            \item \( \xi \in [r, r + t] \) - Transmission of photon 
+            \item \( \xi \in [r + t, 1] \) - Absorption of photon
         \end{itemize}
         
-        \column{0.2\textwidth} \begin{center}
-        \end{center} \end{columns}
     }
 
     \frame{\frametitle{Radiance Estimate}
@@ -215,7 +206,7 @@
 
     Breaking down the estimate:
     \begin{enumerate}
-        \item Locate the \(n\) nearest photons \(p\) with \emph{flux} \(\Phi_p\) around \(\vec{x}\)
+        \item Locate the \(n\) nearest photons \(p\) with \emph{flux} \(\Delta\Phi_p\) around \(\vec{x}\)
         \item Approximate the area containing the photons as \(\pi r^2\) (circle)
         \item For each photon: Multiply the \textit{BRDF} \(f_r(\vec{x}, \hat\omega_{i,p}, \hat\omega_o)\) with the \textit{flux} divided by the approximate containment area
     \end{enumerate}      
