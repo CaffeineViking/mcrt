@@ -71,14 +71,16 @@
 
     \frame{\frametitle{Motivation}
         \begin{columns}
-        \column{0.64\textwidth}
+        \column{0.65\textwidth}
             \begin{itemize}
                 \item We want a global illumination scheme that achieves photorealism as \(N \rightarrow \infty\)
                 \item It should also preferably be noise-free!
-                \item Should be a physically sound model
-                \item Preferably also fast to compute!
+                \item Should also be physically sound model
+                \item Preferably also relat. fast to compute!
+                \vspace{1.0em}
+                \item We'll show a couple of schemes trying to achieve these, where they fall short, and how \emph{photon mapping} can be used.
             \end{itemize}
-        \column{0.36\textwidth} \begin{center}
+        \column{0.35\textwidth} \begin{center}
             \includegraphics[height=0.8\textheight]{share/dragon.jpg}
         \end{center} \end{columns}
     }
@@ -130,7 +132,7 @@
         \end{center} \end{columns}
     }
 
-    \frame{\frametitle{Global Illumination}\framesubtitle{Path Tracing}
+            \frame{\frametitle{Global Illumination}\framesubtitle{Path Tracing, MC Raytracer}
         \begin{columns}
         \column{0.64\textwidth}
             \begin{itemize}
@@ -254,7 +256,7 @@
                                              (\hat{n}_{x} \cdot \hat{\omega}_i) \, d\hat{\omega}_i
         \end{align*}
         \begin{itemize}
-            \item Accurate evaluation: we use Monte Carlo raytracing and \(f_{r,s}\) distributed importance sampling for reflection \& transmission.
+            \item Accurate evaluation: we use Monte Carlo raytracing and \(f_{r,s}\), distributed importance sampling for reflection \& transmission.
         \end{itemize}
     }
 
@@ -282,23 +284,33 @@
         \end{itemize}
     }
 
-    \frame{\frametitle{Photon Mapping} \framesubtitle{Summary}
+    \frame{\frametitle{Photon Mapping} \framesubtitle{Putting It All Together}
         \begin{itemize}
-            \item We emit photons from light sources and store them in a data structure called a photon map
-            \item With the help of these photon maps we can estimate the radiance falling on a surface point
-            \item Finally, we path trace through the scene more effectively by using our photon maps
+            \item We emit photons from the sources of light, bounce these around the scene while recording flux hitting the surfaces. \begin{itemize}
+                \item[\(-\)] These photon maps are usually stored by using a k-d tree.
+            \end{itemize}
+            \item We can estimate the radiance arriving at any point using these photon maps by picking the k-NN photons' flux \(\Phi\).
+            \item Finally, we can more efficietly run Monte Carlo raytracing\\ by adaptively choosing an \emph{accurate} or \emph{approximate} mode: \begin{itemize}
+                \item[\(-\)] Accurate: when we see surfaces directly, use path tracing.
+                \item[\(-\)] Approximate: use the estimate given by our photon maps.
+            \end{itemize}
         \end{itemize}
     }
 
     \frame{\frametitle{Summary}
         \begin{columns}
         \column{0.64\textwidth}
-            In this presentation we have discussed:
+            In this presentation we have explained:
+            \vspace{1em}
             \begin{itemize}
-                \item Why we should care about global illumination at all
-                \item Existing global illumination models
-                \item How photon mapping improves on path tracing
+                \item The desirable properties of accurate global illumination algorithms
+                \item Where the existing models fall short
+                \item How photon mapping improves path tracing by using a radiance estimate \begin{itemize}
+                \item[\(-\)] Photon tracing,\; photon collection
             \end{itemize}
+            \end{itemize}
+            \vspace{1em}
+            We'll now discuss some improvements.
         \column{0.36\textwidth} \begin{center}
             \includegraphics[height=0.8\textheight]{share/otherpathtracing.png}
         \end{center} \end{columns}
