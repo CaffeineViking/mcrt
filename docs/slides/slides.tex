@@ -289,7 +289,7 @@
             \item We emit photons from the sources of light, bounce these around the scene while recording flux hitting the surfaces. \begin{itemize}
                 \item[\(-\)] These photon maps are usually stored by using a k-d tree.
             \end{itemize}
-            \item We can estimate the radiance arriving at any point using these photon maps by picking the k-NN photons' flux \(\Phi\).
+            \item We can estimate the radiance arriving at any point using these photon maps by picking the k-NN photons' flux \(\Delta\Phi\).
             \item Finally, we can more efficietly run Monte Carlo raytracing\\ by adaptively choosing an \emph{accurate} or \emph{approximate} mode: \begin{itemize}
                 \item[\(-\)] Accurate: when we see surfaces directly, use path tracing.
                 \item[\(-\)] Approximate: use the estimate given by our photon maps.
