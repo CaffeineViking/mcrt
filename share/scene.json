@@ -10,14 +10,6 @@
         {
             "origin": [0.0, 0.0, -3.0],
             "radiance": [1.0, 1.0, 1.0]
-        },
-        {
-            "origin": [0.0, 0.0, 3.0],
-            "radiance": [1.0, 1.0, 1.0]
-        },
-        {
-            "origin": [0.0, 3.0, 3.0],
-            "radiance": [1.0, 1.0, 1.0]
         }
     ],
 
@@ -88,19 +80,13 @@
         {
             "geometry": "sphere",
             "origin": [4.0, -2.0, 0.0],
+            "material": "orange",
+            "radius": 1.0
+        },
+        {
+            "geometry": "sphere",
+            "origin": [3.0, 0.0, 0.0],
             "material": "glass",
-            "radius": 1.0
-        },
-        {
-            "geometry": "sphere",
-            "origin": [7.0, 0.0, 0.0],
-            "material": "water",
-            "radius": 1.0
-        },
-        {
-            "geometry": "sphere",
-            "origin": [7.0, 3.0, 0.0],
-            "material": "mirror",
             "radius": 1.0
         },
         {

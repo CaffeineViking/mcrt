@@ -3,5 +3,5 @@
     "resolution":  [512,  512],
     "scalingFactor": [1.0, 1.0],
     "interpolation": "bilinear",
-    "supersamples": [3,  "grid"]
+    "supersamples": [1,  "grid"]
 }
