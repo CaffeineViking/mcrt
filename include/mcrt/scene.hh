@@ -31,7 +31,7 @@ namespace mcrt {
             return *this;
         }
 
-        void add(const PointLight& light);
+        void add(Light* light);
         void add(Geometry* geometry);
 
         glm::dvec3 rayTrace(const Ray& ray, const int) const;
@@ -40,14 +40,16 @@ namespace mcrt {
         std::vector<Geometry*>& getGeometries() { return geometries; }
         const std::vector<Geometry*>& getGeometries() const { return geometries; }
 
-        const std::vector<PointLight>& getPointLights() const { return lights; }
-        std::vector<PointLight>& getPointLights() { return lights; }
+        //const std::vector<PointLight>& getPointLights() const { return lights; }
+        //std::vector<PointLight>& getPointLights() { return lights; }
+        const std::vector<Light*>& getPointLights() const { return lights; }
+        std::vector<Light*>& getPointLights() { return lights; }
         const Camera& getCamera() const { return camera; }
         Camera& getCamera() { return camera; }
 
     private:
         std::vector<Geometry*> geometries;
-        std::vector<PointLight> lights;
+        std::vector<Light*> lights;
         Camera camera;
     };
 }

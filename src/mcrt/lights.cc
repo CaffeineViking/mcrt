@@ -2,10 +2,14 @@
 #include <random>
 
 namespace mcrt {
-    AreaLight::AreaLight(glm::dvec3 v0, glm::dvec3 v1, glm::dvec3 v2, glm::dvec3 color) : v0(v0), v1(v1), v2(v2), color(color) {}
+    Light::Light(glm::dvec3 color) : color(color) {};
+    Light::~Light() {}
+
+    PointLight::PointLight(glm::dvec3 origin, glm::dvec3 color) : Light(color), origin(origin) {}
+ 
+    AreaLight::AreaLight(glm::dvec3 v0, glm::dvec3 v1, glm::dvec3 v2, glm::dvec3 color) : Light(color), v0(v0), v1(v1), v2(v2) {}
  
     glm::dvec3 AreaLight::sample() {     
-        //double A = 0.5*glm::length(glm::cross(v1 - v0, v2 - v0));
         double u;
         double v;
 

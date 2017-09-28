@@ -27,7 +27,7 @@ namespace mcrt {
         geometries.push_back(geometry);
     }
 
-    void Scene::add(const PointLight& light) {
+    void Scene::add(Light* light) {
         lights.push_back(light);
     }
 
@@ -43,18 +43,27 @@ namespace mcrt {
 
         // Hit diffuse object
         if(rayHit.material.type == Material::Type::Diffuse) {
-            for (const PointLight& lightSource : lights) {
+            for (Light* lightSource : lights) {
+                PointLight* pointLight = dynamic_cast<PointLight*>(lightSource);
+                AreaLight* areaLight = dynamic_cast<AreaLight*>(lightSource);
+                int shadowRayCount{10};
 
-                glm::dvec3 rayToLightSource = lightSource.origin - rayHitPosition;
-                glm::dvec3 rayToLightNormal { glm::normalize(rayToLightSource) };
+                std::vector<glm::dvec3> lightOrigins;
+                if (pointLight) lightOrigins.push_back(pointLight->origin);
+                else if (areaLight) for (int i=0; i<shadowRayCount; i++) lightOrigins.push_back(areaLight->sample());
 
-                Ray shadowRay { rayHitPosition + rayToLightNormal*Ray::EPSILON,
-                                glm::normalize(rayToLightSource) };
+                for (const glm::dvec3& origin : lightOrigins) {
+                    glm::dvec3 rayToLightSource = origin - rayHitPosition;
+                    glm::dvec3 rayToLightNormal { glm::normalize(rayToLightSource) };
 
-                Ray::Intersection shadowRayHit { intersect(shadowRay) };
-                if (shadowRayHit.distance >= glm::length(rayToLightSource)) {
-                    double lambertianFalloff { std::max(0.0, glm::dot(shadowRay.direction, rayHit.normal)) };
-                    rayColor += lightSource.color * rayHit.material.color * lambertianFalloff;
+                    Ray shadowRay { rayHitPosition + rayToLightNormal*Ray::EPSILON,
+                            glm::normalize(rayToLightSource) };
+
+                    Ray::Intersection shadowRayHit { intersect(shadowRay) };
+                    if (shadowRayHit.distance >= glm::length(rayToLightSource)) {
+                        double lambertianFalloff { std::max(0.0, glm::dot(shadowRay.direction, rayHit.normal)) };
+                        rayColor += lightSource->color * rayHit.material.color * lambertianFalloff;
+                    }
                 }
             }
         }
