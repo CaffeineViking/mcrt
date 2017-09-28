@@ -14,6 +14,8 @@
 #include "mcrt/supersample.hh"
 #include "mcrt/image_export.hh"
 
+#include "mcrt/material.hh"
+
 int usage(int argc, char** argv) {
     if (argc < 2) std::cerr << "Error: need the path to render scenes to!" << std::endl;
     std::cerr << "Usage: " << argv[0] << " "
@@ -53,6 +55,20 @@ int main(int argc, char** argv) {
     if (argc > 3) parameters = mcrt::ParameterImporter::load(argv[3]);
     if (argc > 4) return usage(argc, argv); // Now it's just too many.
 
+    // Testing hemispherical 
+    // mcrt::Ray::Intersection result 
+    //     {   0,
+    //         glm::dvec3(0.0,1.0,0.),
+    //         {glm::dvec3(0.0), mcrt::Material::Type::Diffuse, 0.0}
+    //     };
+    
+    // const mcrt::Ray r {glm::dvec3(1,1,0), glm::normalize(glm::dvec3(-1,-1,0))};
+
+    // for(int i = 0; i < 1000; i++) {
+    //     glm::dvec3 v = result.sampleHemisphere(r);
+    //     std::cout <<"Output: " <<  v.x << " " << v.y << " " << v.z << std::endl;
+    // }
+   
     // Shorthands for enabling or disabling the parallel framework under run-time. TODO: OpenMPI.
     bool openmp  { parameters.parallelFramework == mcrt::Parameters::ParallelFramework::OPENMP };
     const mcrt::Supersampler sampler { parameters.samplesPerPixel,  parameters.samplingPattern };
