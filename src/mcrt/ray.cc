@@ -1,5 +1,6 @@
 #include "mcrt/ray.hh"
 
+#include <glm/gtx/rotate_vector.hpp> 
 #include <iostream>
 
 glm::dvec3 mcrt::Ray::Intersection::sampleHemisphere(const Ray& i) const {
@@ -17,19 +18,21 @@ glm::dvec3 mcrt::Ray::Intersection::sampleHemisphere(const Ray& i) const {
     double theta2 = dis(gen) * M_PI * 0.5;
     
     //std::cout << theta1 << " " << theta2 << std::endl;
-    const glm::dmat3 yRotate 
-        {
-            std::cos(theta1), 0.0, -std::sin(theta1),
-            0.0,             1.0,  0.0,
-            std::sin(theta1), 0.0, std::cos(theta1)
-        };
-    const glm::dmat3 zRotate 
-        {
-            std::cos(theta2), std::sin(theta2), 0.0,
-            -std::sin(theta2), std::cos(theta2), 0.0,
-            0.0, 0.0, 1.0
-        };
-
-    const glm::dvec3 outgoing = glm::normalize(v1 * yRotate + v1 * zRotate);
+    // const glm::dmat3 yRotate 
+    //     {
+    //         std::cos(theta1), 0.0, -std::sin(theta1),
+    //         0.0,             1.0,  0.0,
+    //         std::sin(theta1), 0.0, std::cos(theta1)
+    //     };
+    // const glm::dmat3 zRotate 
+    //     {
+    //         std::cos(theta2), std::sin(theta2), 0.0,
+    //         -std::sin(theta2), std::cos(theta2), 0.0,
+    //         0.0, 0.0, 1.0
+    //     };
+    
+    const glm::dvec3 azimuthRotation = glm::rotate(v1,theta1,normal);
+    const glm::dvec3 inclanationRotation = glm::rotate(v1, theta2,v2);
+    const glm::dvec3 outgoing = glm::normalize(azimuthRotation + inclanationRotation);
     return outgoing;
 }
