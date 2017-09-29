@@ -8,14 +8,14 @@ namespace mcrt {
 
     class Geometry {
     protected:
-        Material _material;
-        Geometry(const Material& m);
+        Material* _material;
+        Geometry(Material* m);
 
     public:
         virtual ~Geometry() = default;
         virtual Ray::Intersection intersect(const Ray& ray) const = 0;
 
-        Material getMaterial() const;
+        Material* getMaterial() const;
     };
 
 }

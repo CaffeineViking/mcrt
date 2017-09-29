@@ -17,7 +17,7 @@ namespace mcrt {
         struct Intersection {
             double distance; // Distance to the surface's point.
             glm::dvec3 normal; // Normal of surface intersection.
-            Material material; // Material of a intersect point.
+            Material* material; // Material of a intersect point.
         };
 
         double fresnel(const glm::dvec3&, const double) const;

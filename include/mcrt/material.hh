@@ -14,6 +14,9 @@ namespace mcrt {
         glm::dvec3 color;
         Type type;
         double refractionIndex;
+
+        glm::dvec3 brdf(const glm::dvec3& point) const { return brdf(point, {}, {}); }
+        virtual glm::dvec3 brdf(const glm::dvec3&, const glm::dvec3&, const glm::dvec3&) const = 0;
     };
 }
 
