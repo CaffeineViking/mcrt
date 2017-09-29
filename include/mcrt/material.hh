@@ -11,12 +11,29 @@ namespace mcrt {
             Refractive  = 2
         };
 
-        glm::dvec3 color;
+        virtual ~Material() = default;
+
+        Material(const glm::dvec3& albedo, Type type, double refractionIndex)
+            : albedo { albedo }, type { type}, refractionIndex { refractionIndex } {  }
+
+        glm::dvec3 albedo;
         Type type;
         double refractionIndex;
 
-        glm::dvec3 brdf(const glm::dvec3& point) const { return brdf(point, {}, {}); }
+        glm::dvec3 brdf(const glm::dvec3& normal) const { return brdf(normal, {}, {}); }
         virtual glm::dvec3 brdf(const glm::dvec3&, const glm::dvec3&, const glm::dvec3&) const = 0;
+    };
+
+    struct LambertianMaterial : public Material {
+        using Material::Material;
+        glm::dvec3 brdf(const glm::dvec3&, const glm::dvec3&, const glm::dvec3&) const override;
+    };
+
+    struct OrenNayarMaterial : public Material {
+        double sigma;
+        OrenNayarMaterial(const glm::dvec3& color, Type type, double refractionIndex, double sigma)
+            : Material { color, type, refractionIndex }, sigma { sigma } {  }
+        glm::dvec3 brdf(const glm::dvec3&, const glm::dvec3&, const glm::dvec3&) const override;
     };
 }
 

@@ -1,7 +1,7 @@
 #include "mcrt/sphere.hh"
 
 namespace mcrt {
-    Sphere::Sphere(const glm::dvec3 o, double r, const Material& m):
+    Sphere::Sphere(const glm::dvec3 o, double r, Material* m):
                   Geometry(m), _origin{o}, _radius{r} {  }
 
 

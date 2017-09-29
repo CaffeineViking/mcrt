@@ -10,7 +10,12 @@ namespace mcrt {
     class Scene {
     public:
         Scene() = default;
-        ~Scene() { for (auto g : geometries) delete g; }
+
+        ~Scene() {
+            for (auto m : materials)  delete m;
+            for (auto g : geometries) delete g;
+        }
+
         Scene& operator=(const Scene&) = delete;
         Scene(const Scene&) = delete;
 
@@ -31,6 +36,7 @@ namespace mcrt {
             return *this;
         }
 
+        void add(Material* material);
         void add(const PointLight& light);
         void add(Geometry* geometry);
 
@@ -46,6 +52,7 @@ namespace mcrt {
         Camera& getCamera() { return camera; }
 
     private:
+        std::vector<Material*> materials;
         std::vector<Geometry*> geometries;
         std::vector<PointLight> lights;
         Camera camera;

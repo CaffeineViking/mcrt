@@ -10,7 +10,7 @@ namespace mcrt {
         Ray::Intersection closestHit {
             std::numeric_limits<double>::max(),
             glm::dvec3(0.0),
-            {glm::dvec3(0.0),Material::Type::Diffuse,0.0}
+            nullptr
         };
 
         for (const Geometry* geometry : geometries) {
@@ -22,9 +22,12 @@ namespace mcrt {
         return closestHit;
     }
 
-    // Will be our resource after this...
     void Scene::add(Geometry* geometry) {
         geometries.push_back(geometry);
+    }
+
+    void Scene::add(Material* material) {
+        materials.push_back(material);
     }
 
     void Scene::add(const PointLight& light) {
@@ -41,8 +44,11 @@ namespace mcrt {
         Ray::Intersection rayHit = intersect(ray);
         glm::dvec3 rayHitPosition { ray.origin + ray.direction * rayHit.distance };
 
+        // We didn't hit anything when intersecting, goes off to infinity.
+        if (rayHit.material == nullptr) return glm::dvec3 { 0.0, 0.0, 0.0 };
+
         // Hit diffuse object
-        if(rayHit.material.type == Material::Type::Diffuse) {
+        if(rayHit.material->type == Material::Type::Diffuse) {
             for (const PointLight& lightSource : lights) {
 
                 glm::dvec3 rayToLightSource = lightSource.origin - rayHitPosition;
@@ -54,25 +60,25 @@ namespace mcrt {
                 Ray::Intersection shadowRayHit { intersect(shadowRay) };
                 if (shadowRayHit.distance >= glm::length(rayToLightSource)) {
                     double lambertianFalloff { std::max(0.0, glm::dot(shadowRay.direction, rayHit.normal)) };
-                    rayColor += lightSource.color * rayHit.material.color * lambertianFalloff;
+                    rayColor += lightSource.color * rayHit.material->albedo * lambertianFalloff;
                 }
             }
         }
         // Hit specular, mirror-like surface.
-        else if(rayHit.material.type == Material::Type::Reflective) {
+        else if(rayHit.material->type == Material::Type::Reflective) {
             Ray reflectionRay { ray.reflect(rayHitPosition, rayHit.normal) };
             rayColor += rayTrace(reflectionRay, depth + 1) * 0.9; // Falloff.
         }
         // Hit specular, transparent surface.
-        else if(rayHit.material.type == Material::Type::Refractive) {
-            double kr = ray.fresnel(rayHit.normal, rayHit.material.refractionIndex);
+        else if(rayHit.material->type == Material::Type::Refractive) {
+            double kr = ray.fresnel(rayHit.normal, rayHit.material->refractionIndex);
             bool outside = glm::dot(ray.direction, rayHit.normal) < 0.0;
             glm::dvec3 refractionColor = glm::dvec3(0.0);
             glm::dvec3 refractionDir;
 
             if(kr < 1.0) { // Check if ray isn't completely parallel to graze.
                 Ray refractionRay { ray.refract(rayHitPosition, rayHit.normal,
-                                                rayHit.material.refractionIndex) };
+                                                rayHit.material->refractionIndex) };
                 refractionColor = rayTrace(refractionRay,depth + 1);
             }
 
