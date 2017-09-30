@@ -1,22 +1,22 @@
 #ifndef MCRT_MESH
 #define MCRT_MESH
 
-#include "geometry.hh"
-#include "triangle.hh"
-#include "sphere.hh"
-#include "mcrt.hh"
-#include "bounding_sphere.hh"
 #include <vector>
 #include <glm/glm.hpp>
 
-namespace mcrt {
+#include "mcrt/ray.hh"
+#include "mcrt/geometry.hh"
+#include "mcrt/sphere.hh"
+#include "mcrt/mesh_triangle.hh"
+#include "mcrt/bounding_sphere.hh"
 
+namespace mcrt {
     class Mesh : public Geometry {
     public:
         Mesh();
         ~Mesh() { for (auto t : _triangles) delete t; }
         Mesh(const Material&);
-	
+
         void move(glm::dvec3);
         void scale(const double&);
         void rotateX(const double&);
@@ -26,16 +26,17 @@ namespace mcrt {
         void updateBoundingSphere();
 
         void setMaterial(const Material&);
-        void addTriangle(Triangle*);
-        void addTriangle(glm::dvec3, glm::dvec3, glm::dvec3);
-        std::vector<Triangle*> getTriangles() const;
+        void addTriangle(MeshTriangle*);
+        void addTriangle(const glm::dvec3&, const glm::dvec3&, const glm::dvec3&,
+                         const glm::dvec3&, const glm::dvec3&, const glm::dvec3&);
+        std::vector<MeshTriangle*> getTriangles() const;
 
-        Intersection intersect(const Ray&) const override;
+        Ray::Intersection intersect(const Ray&) const override;
 
         void print();
-	
+
     private:
-        std::vector<Triangle*> _triangles;
+        std::vector<MeshTriangle*> _triangles;
         BoundingSphere _bound;
     };
 }

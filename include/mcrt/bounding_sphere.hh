@@ -1,8 +1,8 @@
 #ifndef MCRT_BOUNDING_SPHERE
 #define MCRT_BOUNDING_SPHERE
 
-#include "glm/glm.hpp"
-#include "mcrt.hh"
+#include <glm/glm.hpp>
+#include "mcrt/ray.hh"
 
 namespace mcrt {
 
@@ -10,7 +10,7 @@ namespace mcrt {
     public:
         BoundingSphere() = default;
         BoundingSphere(const glm::dvec3&, const double&);
-        Intersection intersect(const Ray&) const;
+        Ray::Intersection intersect(const Ray&) const;
 
     private:
         glm::dvec3 _origin;

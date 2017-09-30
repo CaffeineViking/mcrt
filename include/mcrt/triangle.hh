@@ -6,24 +6,15 @@
 #include "mcrt/geometry.hh"
 
 namespace mcrt {
-
-    class Triangle : public Geometry{
-    private:
+    class Triangle : public Geometry {
+    protected:
         glm::dvec3 _v1;
         glm::dvec3 _v2;
         glm::dvec3 _v3;
 
     public:
         Triangle(const glm::dvec3& v1, const glm::dvec3& v2, const glm::dvec3& v3, const Material& m);
-
         Ray::Intersection intersect(const Ray& ray) const override;
-        void move(glm::dvec3);
-        void scale(const double&);
-
-        std::ostream& write(std::ostream& stream) const;
-        glm::dmat3 getCorners();
     };
-
-    std::ostream& operator<<(std::ostream& stream, Triangle const& t);
 }
 #endif

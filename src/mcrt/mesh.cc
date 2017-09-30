@@ -1,10 +1,10 @@
 #include "mcrt/mesh.hh"
+
 #include <iostream>
 #include <glm/gtx/string_cast.hpp>
 
 namespace mcrt {
-    
-    glm::dvec3 getMin(Triangle* t) {
+    glm::dvec3 getMin(MeshTriangle* t) {
         glm::dmat3 m{ t->getCorners() };
         double x = std::min(std::min(m[0][0], m[1][0]), m[2][0]);
         double y = std::min(std::min(m[0][1], m[1][1]), m[2][1]);
@@ -12,7 +12,7 @@ namespace mcrt {
         return {x, y, z};
     }
 
-    glm::dvec3 getMax(Triangle* t) {
+    glm::dvec3 getMax(MeshTriangle* t) {
         glm::dmat3 m{ t->getCorners() };
         double x = std::max(std::max(m[0][0], m[1][0]), m[2][0]);
         double y = std::max(std::max(m[0][1], m[1][1]), m[2][1]);
@@ -22,43 +22,41 @@ namespace mcrt {
     }
 
 
-    Mesh::Mesh() : Geometry(Material{{1.0, 1.0, 1.0}})
-    {}
-    
-    Mesh::Mesh(const Material& m) :
-        Geometry(m)
-    {}
+    Mesh::Mesh() : Geometry { { { 1.0, 1.0, 1.0 }, Material::Type::Diffuse, 0.0 } } {  }
+    Mesh::Mesh(const Material& m) : Geometry { m } {  }
 
     void Mesh::move(glm::dvec3 p) {
-        for (int i = 0; i < _triangles.size(); i++) {
+        for (std::size_t i = 0; i < _triangles.size(); i++) {
             _triangles[i]->move(p);
         }
     }
 
-    // May not work as intended
     void Mesh::scale(const double& c) {
-        for (int i = 0; i < _triangles.size(); i++) {
+        for (std::size_t i = 0; i < _triangles.size(); i++) {
             _triangles[i]->scale(c);
         }
     }
 
-    void Mesh::rotateX(const double& c) {
-        //TODO
+    void Mesh::rotateX(const double& radius) {
+        for (std::size_t i = 0; i < _triangles.size(); i++)
+            _triangles[i]->rotate({1.0, 0.0, 0.0}, radius);
     }
 
-    void Mesh::rotateY(const double& c) {
-        //TODO
+    void Mesh::rotateY(const double& radius) {
+        for (std::size_t i = 0; i < _triangles.size(); i++)
+            _triangles[i]->rotate({0.0, 1.0, 0.0}, radius);
     }
 
-    void Mesh::rotateZ(const double& c) {
-        //TODO
+    void Mesh::rotateZ(const double& radius) {
+        for (std::size_t i = 0; i < _triangles.size(); i++)
+            _triangles[i]->rotate({0.0, 0.0, 1.0}, radius);
     }
 
     void Mesh::updateBoundingSphere() {
         glm::dvec3 min { getMin(_triangles[0]) };
         glm::dvec3 max { getMax(_triangles[0]) };
 
-        for (int i = 1; i < _triangles.size(); i++) {
+        for (std::size_t i = 1; i < _triangles.size(); i++) {
             auto t = _triangles[i];
             glm::dvec3 min2 { getMin(t) };
             glm::dvec3 max2 { getMax(t) };
@@ -79,27 +77,28 @@ namespace mcrt {
         _material = m;
     }
 
-    void Mesh::addTriangle(Triangle* t) {
+    void Mesh::addTriangle(MeshTriangle* t) {
         _triangles.push_back(t);
     }
 
-    void Mesh::addTriangle(glm::dvec3 v0, glm::dvec3 v1, glm::dvec3 v2){
-        Triangle* t = new Triangle{v0, v1, v2, _material};
+    void Mesh::addTriangle(const glm::dvec3& v0, const glm::dvec3& v1, const glm::dvec3& v2,
+                           const glm::dvec3& n0, const glm::dvec3& n1, const glm::dvec3& n2){
+        MeshTriangle* t = new MeshTriangle{v0, v1, v2, n0, n1, n2, _material};
         _triangles.push_back(t);
     }
 
-    std::vector<Triangle*> Mesh::getTriangles() const {
+    std::vector<MeshTriangle*> Mesh::getTriangles() const {
         return _triangles;
     }
 
-    Intersection Mesh::intersect(const Ray& ray) const {
-        Intersection boundIntersection = _bound.intersect(ray);
+    Ray::Intersection Mesh::intersect(const Ray& ray) const {
+        Ray::Intersection boundIntersection = _bound.intersect(ray);
         if (boundIntersection.distance == 0)
             return boundIntersection;
 
-        Intersection res{0, glm::dvec3(), _material};
+        Ray::Intersection res{0, glm::dvec3(), _material};
         for (auto t : _triangles) {
-            Intersection i = t->intersect(ray);
+            Ray::Intersection i = t->intersect(ray);
             if (i.distance == 0) continue;
             if (res.distance == 0) {
                 res = i;
@@ -111,7 +110,7 @@ namespace mcrt {
     }
 
     void Mesh::print() {
-        for (Triangle* t : _triangles) {
+        for (MeshTriangle* t : _triangles) {
             std::cout << *t << std::endl;
         }
     }

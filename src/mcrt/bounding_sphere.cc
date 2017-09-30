@@ -3,8 +3,8 @@
 namespace mcrt {
     BoundingSphere::BoundingSphere(const glm::dvec3& origin, const double& radius) : _origin(origin), _radius(radius) {}
 
-    Intersection BoundingSphere::intersect(const Ray& ray) const {
-        Intersection result {0,glm::dvec3(0.0),{glm::dvec3(0.0)}};
+    Ray::Intersection BoundingSphere::intersect(const Ray& ray) const {
+        Ray::Intersection result {0,glm::dvec3(0.0),{glm::dvec3(0.0), Material::Type::Diffuse, 0.0}};
         
         double t0,t1;
         glm::dvec3 L = _origin - ray.origin;

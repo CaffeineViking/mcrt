@@ -1,8 +1,6 @@
 #include "mcrt/triangle.hh"
-#include <glm/gtx/string_cast.hpp>
 
 namespace mcrt {
-
     Triangle::Triangle(const glm::dvec3& v1,const glm::dvec3& v2,const glm::dvec3& v3, const Material& m):
                        Geometry(m), _v1{v1}, _v2{v2}, _v3{v3} { }
 
@@ -40,33 +38,5 @@ namespace mcrt {
         result.distance = glm::dot(e2,qvec) * inv_det;
         result.material = _material;
         return result;
-    }
-
-    void Triangle::move(glm::dvec3 p) {
-	_v1 += p;
-	_v2 += p;
-	_v3 += p;
-    }
-
-    void Triangle::scale(const double& c) {
-	_v1 *= c;
-	_v2 *= c;
-	_v3 *= c;
-    }
-
-    glm::dmat3 Triangle::getCorners() {
-        return {_v1, _v2, _v3};
-    }
-
-    std::ostream& Triangle::write(std::ostream& stream) const {
-	stream << "Triangle:\n"
-	       << glm::to_string(_v1) << "\n"
-	       << glm::to_string(_v2) << "\n"
-	       << glm::to_string(_v3) << "\n";
-	return stream;
-    }
-
-    std::ostream& operator<<(std::ostream& stream, Triangle const& t) {
-	return t.write(stream);
     }
 }
