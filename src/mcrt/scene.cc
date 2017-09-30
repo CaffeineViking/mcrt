@@ -38,17 +38,16 @@ namespace mcrt {
         glm::dvec3 rayColor { 0.0 };
 
         // Make sure we don't bounce forever
-        if(depth >= 10)
-            return rayColor;
+        if(depth >= 10) return rayColor;
 
         Ray::Intersection rayHit = intersect(ray);
         glm::dvec3 rayHitPosition { ray.origin + ray.direction * rayHit.distance };
 
-        // We didn't hit anything when intersecting, goes off to infinity.
+        // We didn't hit anything when intersecting it goes off to infinity.
         if (rayHit.material == nullptr) return glm::dvec3 { 0.0, 0.0, 0.0 };
 
-        // Hit diffuse object
-        if(rayHit.material->type == Material::Type::Diffuse) {
+        if(rayHit.material->type == Material::Type::DIFFUSE) {
+
             for (const PointLight& lightSource : lights) {
 
                 glm::dvec3 rayToLightSource = lightSource.origin - rayHitPosition;
@@ -59,18 +58,20 @@ namespace mcrt {
 
                 Ray::Intersection shadowRayHit { intersect(shadowRay) };
                 if (shadowRayHit.distance >= glm::length(rayToLightSource)) {
+                    glm::dvec3 surfaceProperty { rayHit.material->brdf(rayHitPosition, rayHit.normal,
+                                                                       ray.direction, shadowRay.direction) };
                     double lambertianFalloff { std::max(0.0, glm::dot(shadowRay.direction, rayHit.normal)) };
-                    rayColor += lightSource.color * rayHit.material->albedo * lambertianFalloff;
+                    rayColor += lightSource.color * surfaceProperty * lambertianFalloff;
                 }
             }
-        }
-        // Hit specular, mirror-like surface.
-        else if(rayHit.material->type == Material::Type::Reflective) {
+
+        } else if(rayHit.material->type == Material::Type::REFLECTIVE) {
+
             Ray reflectionRay { ray.reflect(rayHitPosition, rayHit.normal) };
             rayColor += rayTrace(reflectionRay, depth + 1) * 0.9; // Falloff.
-        }
-        // Hit specular, transparent surface.
-        else if(rayHit.material->type == Material::Type::Refractive) {
+
+        } else if(rayHit.material->type == Material::Type::REFRACTIVE) {
+
             double kr = ray.fresnel(rayHit.normal, rayHit.material->refractionIndex);
             bool outside = glm::dot(ray.direction, rayHit.normal) < 0.0;
             glm::dvec3 refractionColor = glm::dvec3(0.0);
@@ -87,6 +88,7 @@ namespace mcrt {
             else reflectionRay = ray.insideReflect(rayHitPosition, rayHit.normal);
             glm::dvec3 reflectionColor = rayTrace(reflectionRay, depth + 1);
             rayColor += reflectionColor * kr + refractionColor * (1.0 - kr);
+
         }
 
         return rayColor;

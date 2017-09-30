@@ -2,9 +2,9 @@
 
 namespace mcrt {
     Geometry::Geometry(Material* m)
-        : _material{m} {  }
+        : material { m } {  }
 
     Material* Geometry::getMaterial() const {
-        return _material;
+        return material;
     }
 }

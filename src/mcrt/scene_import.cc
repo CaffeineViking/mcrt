@@ -68,6 +68,13 @@ mcrt::Scene mcrt::SceneImporter::load(const std::string& file) {
 
     std::unordered_map<std::string, Material*> palette;
 
+    auto stringToSurfaceType = [](const std::string& string) -> Material::Type {
+        if (string == "diffuse") return Material::Type::DIFFUSE;
+        else if (string == "reflective") return Material::Type::REFLECTIVE;
+        else if (string == "refractive") return Material::Type::REFRACTIVE;
+        else throw std::runtime_error { "Error: unkown surface type!" };
+    };
+
     if (parser.find("materials") != parser.end()) {
         nlohmann::json materials { parser["materials"] };
 
@@ -80,26 +87,27 @@ mcrt::Scene mcrt::SceneImporter::load(const std::string& file) {
             Material* materialPointer;
             if (brdfType == "lambertian") {
                 materialPointer = new LambertianMaterial {
+                    stringToSurfaceType(material["type"].get<std::string>()),
                     {
                         material["albedo"][0].get<double>(),
                         material["albedo"][1].get<double>(),
                         material["albedo"][2].get<double>()
                     },
-                    static_cast<Material::Type>(material["type"].get<unsigned>()),
                     material["refractionIndex"].get<double>()
                 };
             } else if (brdfType == "oren-nayar") {
                 materialPointer = new OrenNayarMaterial {
+                    stringToSurfaceType(material["type"].get<std::string>()),
                     {
                         material["albedo"][0].get<double>(),
                         material["albedo"][1].get<double>(),
                         material["albedo"][2].get<double>()
                     },
-                    static_cast<Material::Type>(material["type"].get<unsigned>()),
+
                     material["refractionIndex"].get<double>(),
                     material["roughness"].get<double>()
                 };
-            } else throw std::runtime_error { "Error: unknown brdf!" };
+            } else throw std::runtime_error { "Error: unknown surface BRDF!" };
 
             palette[materialName] = materialPointer;
         }

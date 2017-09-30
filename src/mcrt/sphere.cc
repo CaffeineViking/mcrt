@@ -8,7 +8,7 @@ namespace mcrt {
     // Return distance from ray origin to sphere, distance = 0 means no intersection.
     Ray::Intersection Sphere::intersect(const Ray& ray) const{
         Ray::Intersection result { 0, { 0.0, 0.0, 0.0 },
-                                   _material };
+                                   material };
 
         double t0,t1;
         glm::dvec3 L = _origin - ray.origin;

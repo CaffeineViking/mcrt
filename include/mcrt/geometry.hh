@@ -8,8 +8,8 @@ namespace mcrt {
 
     class Geometry {
     protected:
-        Material* _material;
-        Geometry(Material* m);
+        Material*  material;
+        Geometry(Material*);
 
     public:
         virtual ~Geometry() = default;

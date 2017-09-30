@@ -5,35 +5,41 @@
 
 namespace mcrt {
     struct Material {
-        enum Type {
-            Diffuse     = 0,
-            Reflective  = 1,
-            Refractive  = 2
+        enum class Type {
+            DIFFUSE,
+            REFLECTIVE,
+            REFRACTIVE
         };
 
         virtual ~Material() = default;
+        Material(Type type, const glm::dvec3& albedo, double refractionIndex)
+            : type { type }, albedo { albedo },
+              refractionIndex { refractionIndex } {  }
 
-        Material(const glm::dvec3& albedo, Type type, double refractionIndex)
-            : albedo { albedo }, type { type}, refractionIndex { refractionIndex } {  }
-
-        glm::dvec3 albedo;
         Type type;
+        glm::dvec3 albedo;
         double refractionIndex;
 
-        glm::dvec3 brdf(const glm::dvec3& normal) const { return brdf(normal, {}, {}); }
-        virtual glm::dvec3 brdf(const glm::dvec3&, const glm::dvec3&, const glm::dvec3&) const = 0;
+        virtual glm::dvec3 brdf(const glm::dvec3&, const glm::dvec3&,
+                                const glm::dvec3&, const glm::dvec3&) const = 0;
     };
 
     struct LambertianMaterial : public Material {
-        using Material::Material;
-        glm::dvec3 brdf(const glm::dvec3&, const glm::dvec3&, const glm::dvec3&) const override;
+        LambertianMaterial(Type type, const glm::dvec3& albedo, double refractionIndex)
+            : Material { type, albedo, refractionIndex} {  }
+
+        glm::dvec3 brdf(const glm::dvec3&, const glm::dvec3&,
+                        const glm::dvec3&, const glm::dvec3&) const override;
     };
 
     struct OrenNayarMaterial : public Material {
-        double sigma;
-        OrenNayarMaterial(const glm::dvec3& color, Type type, double refractionIndex, double sigma)
-            : Material { color, type, refractionIndex }, sigma { sigma } {  }
-        glm::dvec3 brdf(const glm::dvec3&, const glm::dvec3&, const glm::dvec3&) const override;
+        OrenNayarMaterial(Type type, const glm::dvec3& albedo, double refractionIndex, double roughness)
+            : Material { type, albedo, refractionIndex}, roughness { roughness } {  }
+
+        double roughness;
+
+        glm::dvec3 brdf(const glm::dvec3&, const glm::dvec3&,
+                        const glm::dvec3&, const glm::dvec3&) const override;
     };
 }
 

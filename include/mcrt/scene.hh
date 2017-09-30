@@ -33,6 +33,11 @@ namespace mcrt {
                 other.geometries[i] = nullptr;
             }
 
+            for (size_t i { 0 }; i < other.materials.size(); ++i) {
+                materials.push_back(other.materials[i]);
+                other.materials[i] = nullptr;
+            }
+
             return *this;
         }
 
