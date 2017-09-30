@@ -2,6 +2,7 @@
 #define MCRT_LIGHTS_HH
 
 #include <glm/glm.hpp>
+#include "ray.hh"
 
 namespace mcrt {
     struct Light {
@@ -26,8 +27,11 @@ namespace mcrt {
         glm::dvec3 v0;
         glm::dvec3 v1;
         glm::dvec3 v2;
+        glm::dvec3 normal;
+        double area;
 
         glm::dvec3 sample();
+        Ray::Intersection intersect(const Ray&) const;
     };
 }
 

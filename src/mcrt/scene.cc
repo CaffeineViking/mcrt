@@ -19,6 +19,18 @@ namespace mcrt {
                 closestHit = rayHit;
         }
 
+        // Should we check intersections with lights?
+        /*
+        for (Light* light : lights) {
+            AreaLight* areaLight = dynamic_cast<AreaLight*>(light);
+            if (areaLight) {
+                Ray::Intersection rayHit = areaLight->intersect(ray);
+                if (rayHit.distance > 0.0 && rayHit.distance < closestHit.distance)
+                    closestHit = rayHit;
+            }
+        }
+        */
+
         return closestHit;
     }
 
@@ -46,14 +58,9 @@ namespace mcrt {
             for (Light* lightSource : lights) {
                 PointLight* pointLight = dynamic_cast<PointLight*>(lightSource);
                 AreaLight* areaLight = dynamic_cast<AreaLight*>(lightSource);
-                int shadowRayCount{10};
 
-                std::vector<glm::dvec3> lightOrigins;
-                if (pointLight) lightOrigins.push_back(pointLight->origin);
-                else if (areaLight) for (int i=0; i<shadowRayCount; i++) lightOrigins.push_back(areaLight->sample());
-
-                for (const glm::dvec3& origin : lightOrigins) {
-                    glm::dvec3 rayToLightSource = origin - rayHitPosition;
+                if (pointLight) {
+                    glm::dvec3 rayToLightSource = pointLight->origin - rayHitPosition;
                     glm::dvec3 rayToLightNormal { glm::normalize(rayToLightSource) };
 
                     Ray shadowRay { rayHitPosition + rayToLightNormal*Ray::EPSILON,
@@ -63,7 +70,34 @@ namespace mcrt {
                     if (shadowRayHit.distance >= glm::length(rayToLightSource)) {
                         double lambertianFalloff { std::max(0.0, glm::dot(shadowRay.direction, rayHit.normal)) };
                         rayColor += lightSource->color * rayHit.material.color * lambertianFalloff;
+                    } 
+                }
+                else if (areaLight) {
+                    double shadowRayCount{10};
+                    double totalFalloff{};
+                    std::vector<glm::dvec3> lightOrigins;
+                    for (int i=0; i<shadowRayCount; i++) lightOrigins.push_back(areaLight->sample());
+
+                    for (const glm::dvec3& origin : lightOrigins) {
+                        glm::dvec3 rayToLightSource = origin - rayHitPosition;
+                        glm::dvec3 rayToLightNormal { glm::normalize(rayToLightSource) };
+
+                        Ray shadowRay { rayHitPosition + rayToLightNormal*Ray::EPSILON,
+                                glm::normalize(rayToLightSource) };
+
+                        Ray::Intersection shadowRayHit { intersect(shadowRay) };
+                        if (shadowRayHit.distance >= glm::length(rayToLightSource)) {
+                            double lambertianFalloff { std::max(0.0, glm::dot(shadowRay.direction, rayHit.normal)) };
+                            
+                            double cosa = glm::dot(shadowRay.direction, rayHit.normal);
+                            double cosb = glm::dot(-shadowRay.direction, areaLight->normal);
+                            if (cosb < 0.0) cosb = glm::dot(-shadowRay.direction, -areaLight->normal);
+
+                            double geometricTerm = cosa*cosb/shadowRayHit.distance/shadowRayHit.distance;
+                            totalFalloff += lambertianFalloff*geometricTerm;
+                        }
                     }
+                    rayColor +=  areaLight->area * lightSource->color * rayHit.material.color * totalFalloff / shadowRayCount;
                 }
             }
         }
