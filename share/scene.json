@@ -93,12 +93,6 @@
         },
         {
             "geometry": "sphere",
-            "origin": [7.0, 0.0, 0.0],
-            "material": "water",
-            "radius": 1.0
-        },
-        {
-            "geometry": "sphere",
             "origin": [7.0, 3.0, 0.0],
             "material": "mirror",
             "radius": 1.0
@@ -270,6 +264,14 @@
             "vertex-2": [13.0, -5.0, 0.0],
             "vertex-3": [13.0, 5.0, 0.0],
             "material": "yellow"
+        },
+        {
+            "geometry": "mesh",
+            "file": "share/teapot.obj",
+            "position": [7.0, -0.7, 0.0],
+            "material": "orange",
+            "rotate": [-1.57, 2.57, 0.5],
+            "scale": 0.15
         }
     ]
 }
