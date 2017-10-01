@@ -17,7 +17,7 @@ namespace mcrt {
         glm::dvec3 normal { glm::normalize(glm::cross(e1, e2)) };
         if (glm::dot(normal, ray.direction) > 0) normal = -normal;
 
-        Ray::Intersection result {0, normal, {glm::dvec3(0.0), Material::Type::Diffuse, 0.0}};
+        Ray::Intersection result {0, normal, {glm::dvec3(0.0), Material::Type::Diffuse, 0.0},glm::dvec3(0)};
 
         if(det < Ray::EPSILON && det > -Ray::EPSILON) {
             return result;
@@ -38,6 +38,7 @@ namespace mcrt {
 
         result.distance = glm::dot(e2,qvec) * inv_det;
         result.material = _material;
+        result.position = ray.origin + ray.direction * result.distance;
         return result;
     }
 

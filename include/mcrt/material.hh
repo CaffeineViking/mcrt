@@ -8,7 +8,8 @@ namespace mcrt {
         enum Type {
             Diffuse     = 0,
             Reflective  = 1,
-            Refractive  = 2
+            Refractive  = 2,
+            LightSource = 3
         };
 
         glm::dvec3 color;

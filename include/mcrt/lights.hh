@@ -2,9 +2,13 @@
 #define MCRT_LIGHTS_HH
 
 #include <glm/glm.hpp>
-#include "ray.hh"
+#include <random>
+
+#include "mcrt/ray.hh"
+#include "mcrt/scene.hh"
 
 namespace mcrt {
+    class Scene;
     struct Light {
         enum Type {
             PointLight,
@@ -13,12 +17,16 @@ namespace mcrt {
         Light(glm::dvec3);
         virtual ~Light() = 0;
         glm::dvec3 color;
+
+        virtual glm::dvec3 radiance(const Ray::Intersection&, const Scene*) = 0;
     };
 
     struct PointLight : public Light {
         PointLight(glm::dvec3, glm::dvec3);
         ~PointLight() {};
         glm::dvec3 origin;
+
+        glm::dvec3 radiance(const Ray::Intersection&, const Scene*) override;
     };
 
     struct AreaLight : public Light {
@@ -32,6 +40,10 @@ namespace mcrt {
 
         glm::dvec3 sample();
         Ray::Intersection intersect(const Ray&) const;
+        glm::dvec3 radiance(const Ray::Intersection&, const Scene*) override;
+
+    private:
+        std::random_device rd;
     };
 }
 

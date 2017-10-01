@@ -18,6 +18,7 @@ namespace mcrt {
             double distance; // Distance to the surface's point.
             glm::dvec3 normal; // Normal of surface intersection.
             Material material; // Material of a intersect point.
+            glm::dvec3 position; // Surface point position.
         };
 
         double fresnel(const glm::dvec3&, const double) const;

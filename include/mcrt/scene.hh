@@ -7,6 +7,7 @@
 #include "mcrt/geometry.hh"
 
 namespace mcrt {
+    class Light;
     class Scene {
     public:
         Scene() = default;
@@ -35,15 +36,13 @@ namespace mcrt {
         void add(Geometry* geometry);
 
         glm::dvec3 rayTrace(const Ray& ray, const int) const;
-        Ray::Intersection intersect(const Ray& ray) const;
+        Ray::Intersection intersect(const Ray& ray, bool ignoreLight=false, bool ignoreRefractive=false) const;
 
         std::vector<Geometry*>& getGeometries() { return geometries; }
         const std::vector<Geometry*>& getGeometries() const { return geometries; }
 
-        //const std::vector<PointLight>& getPointLights() const { return lights; }
-        //std::vector<PointLight>& getPointLights() { return lights; }
-        const std::vector<Light*>& getPointLights() const { return lights; }
-        std::vector<Light*>& getPointLights() { return lights; }
+        const std::vector<Light*>& getLights() const { return lights; }
+        std::vector<Light*>& getLights() { return lights; }
         const Camera& getCamera() const { return camera; }
         Camera& getCamera() { return camera; }
 

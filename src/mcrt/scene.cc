@@ -6,31 +6,33 @@
 #include <cmath>
 
 namespace mcrt {
-    Ray::Intersection Scene::intersect(const Ray& ray) const {
+    Ray::Intersection Scene::intersect(const Ray& ray, bool ignoreLight, bool ignoreRefractive) const {
         Ray::Intersection closestHit {
             std::numeric_limits<double>::max(),
-            glm::dvec3(0.0),
-            {glm::dvec3(0.0),Material::Type::Diffuse,0.0}
-        };
+                glm::dvec3(0.0),
+                    {glm::dvec3(0.0),Material::Type::Diffuse,0.0},
+                glm::dvec3(0.0)
+                    };
 
         for (const Geometry* geometry : geometries) {
+            if (ignoreRefractive && geometry->getMaterial().type == Material::Type::Refractive)
+                continue;
             Ray::Intersection rayHit = geometry->intersect(ray);
             if (rayHit.distance > 0.0 && rayHit.distance < closestHit.distance)
                 closestHit = rayHit;
         }
 
-        // Should we check intersections with lights?
-        /*
-        for (Light* light : lights) {
-            AreaLight* areaLight = dynamic_cast<AreaLight*>(light);
-            if (areaLight) {
-                Ray::Intersection rayHit = areaLight->intersect(ray);
-                if (rayHit.distance > 0.0 && rayHit.distance < closestHit.distance)
-                    closestHit = rayHit;
+        if (!ignoreLight) {
+            for (Light* light : lights) {
+                AreaLight* areaLight = dynamic_cast<AreaLight*>(light);
+                if (areaLight) {
+                    Ray::Intersection rayHit = areaLight->intersect(ray);
+                    if (rayHit.distance > 0.0 && rayHit.distance < closestHit.distance)
+                        closestHit = rayHit;
+                }
             }
         }
-        */
-
+        
         return closestHit;
     }
 
@@ -56,55 +58,18 @@ namespace mcrt {
         // Hit diffuse object
         if(rayHit.material.type == Material::Type::Diffuse) {
             for (Light* lightSource : lights) {
-                PointLight* pointLight = dynamic_cast<PointLight*>(lightSource);
-                AreaLight* areaLight = dynamic_cast<AreaLight*>(lightSource);
-
-                if (pointLight) {
-                    glm::dvec3 rayToLightSource = pointLight->origin - rayHitPosition;
-                    glm::dvec3 rayToLightNormal { glm::normalize(rayToLightSource) };
-
-                    Ray shadowRay { rayHitPosition + rayToLightNormal*Ray::EPSILON,
-                            glm::normalize(rayToLightSource) };
-
-                    Ray::Intersection shadowRayHit { intersect(shadowRay) };
-                    if (shadowRayHit.distance >= glm::length(rayToLightSource)) {
-                        double lambertianFalloff { std::max(0.0, glm::dot(shadowRay.direction, rayHit.normal)) };
-                        rayColor += lightSource->color * rayHit.material.color * lambertianFalloff;
-                    } 
-                }
-                else if (areaLight) {
-                    double shadowRayCount{10};
-                    double totalFalloff{};
-                    std::vector<glm::dvec3> lightOrigins;
-                    for (int i=0; i<shadowRayCount; i++) lightOrigins.push_back(areaLight->sample());
-
-                    for (const glm::dvec3& origin : lightOrigins) {
-                        glm::dvec3 rayToLightSource = origin - rayHitPosition;
-                        glm::dvec3 rayToLightNormal { glm::normalize(rayToLightSource) };
-
-                        Ray shadowRay { rayHitPosition + rayToLightNormal*Ray::EPSILON,
-                                glm::normalize(rayToLightSource) };
-
-                        Ray::Intersection shadowRayHit { intersect(shadowRay) };
-                        if (shadowRayHit.distance >= glm::length(rayToLightSource)) {
-                            double lambertianFalloff { std::max(0.0, glm::dot(shadowRay.direction, rayHit.normal)) };
-                            
-                            double cosa = glm::dot(shadowRay.direction, rayHit.normal);
-                            double cosb = glm::dot(-shadowRay.direction, areaLight->normal);
-                            if (cosb < 0.0) cosb = glm::dot(-shadowRay.direction, -areaLight->normal);
-
-                            double geometricTerm = cosa*cosb/shadowRayHit.distance/shadowRayHit.distance;
-                            totalFalloff += lambertianFalloff*geometricTerm;
-                        }
-                    }
-                    rayColor +=  areaLight->area * lightSource->color * rayHit.material.color * totalFalloff / shadowRayCount;
-                }
+                rayColor += lightSource->radiance(rayHit, this);
             }
         }
         // Hit specular, mirror-like surface.
         else if(rayHit.material.type == Material::Type::Reflective) {
             Ray reflectionRay { ray.reflect(rayHitPosition, rayHit.normal) };
             rayColor += rayTrace(reflectionRay, depth + 1) * 0.9; // Falloff.
+
+            /*double diffuseContribution{ 0.1 };
+            for (Light* lightSource : lights) {
+                rayColor += lightSource->radiance(rayHit, this) * diffuseContribution;
+                }*/
         }
         // Hit specular, transparent surface.
         else if(rayHit.material.type == Material::Type::Refractive) {
@@ -124,6 +89,19 @@ namespace mcrt {
             else reflectionRay = ray.insideReflect(rayHitPosition, rayHit.normal);
             glm::dvec3 reflectionColor = rayTrace(reflectionRay, depth + 1);
             rayColor += reflectionColor * kr + refractionColor * (1.0 - kr);
+
+            /*double diffuseContribution{ 0.1 };
+            for (Light* lightSource : lights) {
+                rayColor += lightSource->radiance(rayHit, this) * diffuseContribution;
+                }*/
+        }
+        // Hit light source
+        else if(rayHit.material.type == Material::Type::LightSource) {
+            double cosb = glm::dot(-ray.direction, rayHit.normal);
+            if (cosb < 0.0) cosb = glm::dot(-ray.direction, -rayHit.normal);
+
+            double geometricTerm = 1.0/rayHit.distance;
+            rayColor += rayHit.material.color*geometricTerm;
         }
 
         return rayColor;
