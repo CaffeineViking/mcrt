@@ -67,6 +67,8 @@ int main(int argc, char** argv) {
     scene.getCamera().setAspectRatio(renderImage.getAspectRatio());
     scene.getCamera().setFieldOfView(fieldOfView);
 
+    mcrt::Scene::maxRayDepth = parameters.maxRayDepth;
+
     auto renderStart  { std::chrono::steady_clock::now() };
 
     // ====================================================

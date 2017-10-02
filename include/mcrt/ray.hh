@@ -20,7 +20,7 @@ namespace mcrt {
             Material material; // Material of a intersect point.
 
             glm::dvec3 sampleHemisphere() const {
-                
+               return glm::dvec3(0.9);  
             }
         };
 
