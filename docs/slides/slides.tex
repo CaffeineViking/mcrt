@@ -11,10 +11,11 @@
 \usepackage[font={small}, labelfont={color=black}]{caption}
 \usetheme{Rochester}
 
+\usefonttheme[onlymath]{serif}
 \beamertemplatenavigationsymbolsempty
 \title{\LARGE{Global Illumination Using Photon Maps}\\
        \large{\emph{A summary of the paper by Henrik W. Jensen~\cite{jensen1996global}}}}
-\author{\vspace{2ex}\\\textbf{Martin Estegren} \;\;\,\,
+\author{\vspace{2ex}\\\textbf{Martin Estgren} \;\,\;\;\,\,
         \texttt{<mares480@student.liu.se>} \\
         \textbf{Erik S. V. Jansson}\;
         \texttt{<erija578@student.liu.se>} \\~\\
@@ -38,13 +39,302 @@
     numbersep = 3pt
 }
 
+\setbeamerfont{bibliography item}{size=\tiny}
+\setbeamerfont{bibliography entry author}{size=\tiny}
+\setbeamerfont{bibliography entry title}{size=\tiny}
+\setbeamerfont{bibliography entry location}{size=\tiny}
+\setbeamerfont{bibliography entry note}{size=\tiny}
 \setbeamertemplate{footline}[frame number]
 \begin{document}
     \frame{\titlepage}
 
-    % Write presentation slides.
+    \frame{\frametitle{Outline}
+        \begin{itemize}
+            \item Motivation
+            \item Global Illumination
+                \begin{itemize}
+                    \item Rendering Equation
+                    \item Radiosity
+                    \item Whitted Raytracing
+                    \item Path Tracing
+                \end{itemize}
+            \item Photon Mapping
+                \begin{itemize}
+                    \item Photon Tracing
+                    \item Radiance Estimate
+                    \item Photon\; Collection
+                \end{itemize}
+            \item Summary
+            \item Further Studies
+        \end{itemize}
+    }
 
-    \frame{\frametitle{Questions?}}
+    \frame{\frametitle{Motivation}
+        \begin{columns}
+        \column{0.65\textwidth}
+            \begin{itemize}
+                \item We want a global illumination scheme that achieves photorealism as \(N \rightarrow \infty\)
+                \item It should also preferably be noise-free!
+                \item Should also be physically sound model
+                \item Preferably also relat. fast to compute!
+                \vspace{1.0em}
+                \item We'll show a couple of schemes trying to achieve these, where they fall short, and how \emph{photon mapping} can be used.
+            \end{itemize}
+        \column{0.35\textwidth} \begin{center}
+            \includegraphics[height=0.8\textheight]{share/dragon.jpg}
+        \end{center} \end{columns}
+    }
+
+    \frame{\frametitle{Global Illumination}\framesubtitle{Rendering Equation~\cite{kajiya1986rendering}}
+        \[L_o(\vec{x}, \hat{\omega}_o) = L_e(\vec{x}, \hat{\omega}_o) +
+                                         \overbrace{\int_\Omega L_i(\vec{x}, \hat{\omega}_i)
+                                         f_r(\vec{x}, \hat{\omega}_i, \hat{\omega}_o)
+                                         (\hat{n}_{x} \cdot \hat{\omega}_i) \, d\hat{\omega}_i}
+                                         ^{\text{\emph{reflected radiance} \(L_r\) from } \Omega \text{ to } \vec{x} \text{ toward } \hat{\omega}_o}\]
+        \begin{itemize}
+            \item \(L_o(\vec{x}, \hat{\omega}_o)\): total \emph{outgoing radiance} at point \(\vec{x}\) towards a \(\hat{\omega}_o\).
+            \item \(L_e(\vec{x}, \hat{\omega}_o)\): \emph{emitted radiance} contribution from \(\vec{x}\) toward \(\hat{\omega}_o\).
+            \item \(\Omega\): hemisphere around the point \(\vec{x}\) with normal \(\hat{n}_x\) of \(d \hat{\omega}_i\)'s.
+            \item \(L_i(\vec{x}, \hat{\omega}_i)\):\ \emph{incoming radiance} contributions fr.\ \(\hat{\omega}_i\) towards \(\vec{x}\).
+            \item \(f_r(\vec{x}, \hat{\omega}_i, \hat{\omega}_o)\): surface \emph{reflectance properties} at \(\vec{x}\), an BRDF.
+        \end{itemize}
+    }
+
+    \frame{\frametitle{Global Illumination}\framesubtitle{Radiosity~\cite{goral1984modeling}}
+        \begin{columns}
+        \column{0.64\textwidth}
+            Assumes all surfaces are Lambertian reflectors: \(f_r = \rho / \pi\) of discrete size.
+            \[B_i = E_i + \rho_i \sum_{j=1}^n F_{ij} B_j\]
+            \begin{itemize}
+                \item[$+$] Noise free,\, iterative progression
+                \item[$+$] Viewport independent (baking!)
+                \item[$+$] Accurate for Lambertian surface
+                \item[$-$] No specular or glossy reflections
+                \item[$-$] Complexity scales \(\propto\) to triangles
+            \end{itemize}
+        \column{0.36\textwidth} \begin{center}
+            \includegraphics[height=0.8\textheight]{share/radiosity.png}
+        \end{center} \end{columns}
+    }
+
+    \frame{\frametitle{Global Illumination}\framesubtitle{Whitted Raytracing~\cite{whitted1979improved}}
+        \begin{columns}
+        \column{0.64\textwidth}
+            \begin{itemize}
+                \item[$\sim$] Viewport dependent (no baking)
+                \item[$-$] No soft shadows, $\rightarrow$ point lights
+                \item[$+$] Enables fully specular reflections
+                \item[$-$] Uses local model for diffuse surf.
+                \item[$+$] OK to parallelize and implement
+            \end{itemize}
+        \column{0.36\textwidth} \begin{center}
+            \includegraphics[height=0.8\textheight]{share/whitted.png}
+        \end{center} \end{columns}
+    }
+
+            \frame{\frametitle{Global Illumination}\framesubtitle{Path Tracing, MC Raytracer}
+        \begin{columns}
+        \column{0.64\textwidth}
+            \begin{itemize}
+                \item[$+$] Models almost all light transport
+                \item[$+$] Embarrassingly parallel algorithm
+                \item[$-$] High-freq.\, noise if undersampled
+                \item[$-$] Doesn't consider vol.\, interaction
+                \item[$-$] Unfeasible for ``detailed caustics''
+            \end{itemize}
+        \column{0.36\textwidth} \begin{center}
+            \includegraphics[height=0.8\textheight]{share/pathtracing.png}
+        \end{center} \end{columns}
+    }
+
+    \frame{\frametitle{Photon Mapping}
+        \begin{columns}
+        \column{0.64\textwidth}
+            Efficient ray tracing extension that features faster \emph{caustics}, and, \emph{sub-surface scattering}. Trick:\, send \emph{``photons''} from a light source.
+
+            \vspace{1.5em}
+
+            Algorithm is divided into two major passes:
+            \begin{itemize}
+                \item Photon tracing: emit photons carrying flux \(d\Phi\) from light sources towards our scene and stores hits on \emph{photon maps}.
+                \item Photon collection: estimate irradiance at \(\vec{x}\) by integrating over \emph{photon maps}. Either \emph{accurate}, or \emph{approximate} mode.
+            \end{itemize}
+        \column{0.36\textwidth} \begin{center}
+            \includegraphics[height=0.8\textheight]{share/photonmapping.jpg}
+        \end{center} \end{columns}
+    }
+
+    \frame{\frametitle{Photon Tracing}
+
+        Photons are emitted from light source and traced similar to path tracing and terminated on diffuse surfaces.
+
+        \textbf{Caustics} \(\approx L_{i,c}(\vec{x},\hat{\omega}_i)\)
+        \begin{itemize}
+            \item Photons are only emitted towards specular objects
+	    \item Used to directly visualize caustics
+        \end{itemize}
+
+        \textbf{Global} \(\approx L_{i,d}(\vec{x},\hat{\omega}_i)\)
+        \begin{itemize}
+            \item Photons are emitted uniformly over the hemisphere
+            \item Only used as a data structure
+        \end{itemize}
+        
+    }
+
+    \frame{\frametitle{Photon Tracing} \framesubtitle{Photon-Surface Interaction}
+        
+	Surface interaction is determined by russian roulette. 
+        
+        \vspace{1.5em}
+        
+        Assume a uniform real distribution \(\xi \in [0,1]\) and the surface coefficients \(r\) and \(t\):
+        
+        \begin{itemize}
+            \item \( \xi \in [0, r] \) - Reflection of photon 
+            \item \( \xi \in [r, r + t] \) - Transmission of photon 
+            \item \( \xi \in [r + t, 1] \) - Absorption of photon
+        \end{itemize}
+        
+    }
+
+    \frame{\frametitle{Radiance Estimate}
+        
+    The reflected radiance from a point \(\vec{x}\) can be estimated as:
+
+    \begin{align*}
+        &L_r(\vec{x}, \hat\omega_o) \approx \sum_{p = 1}^{n} f_r(\vec{x},\hat\omega_{i,p}, \hat\omega_o)\frac{\Delta\Phi_p(\vec{x},\hat\omega_{i,p})}{\pi r^2}
+    \end{align*}
+
+    Breaking down the estimate:
+    \begin{enumerate}
+        \item Locate the \(n\) nearest photons \(p\) with \emph{flux} \(\Delta\Phi_p\) around \(\vec{x}\)
+        \item Approximate the area containing the photons as \(\pi r^2\) (circle)
+        \item For each photon: Multiply the \textit{BRDF} \(f_r(\vec{x}, \hat\omega_{i,p}, \hat\omega_o)\) with the \textit{flux} divided by the approximate containment area
+    \end{enumerate}      
+    \vspace{1.0em}                
+    
+    Possible optimization: By using a fixed bounding sphere around \(\vec{x}\) instead of the \(n\) nearest photons.  
+    }
+
+    \frame{\frametitle{Photon Collection}
+        After we have our photon maps of the scene, we use distribution raytracing to compute each pixel's average radiance by sampling estimates from the scene: \(L_o(\vec{x}, \hat\omega_o) = L_e(\vec{x}, \hat\omega_o) + L_r(\vec{x}, \hat\omega_o)\). In photon mapping we split \(L_r(\vec{x}, \hat\omega_o)\) into 4 radiance contributions:
+            \begin{align*}
+                &L_r(\vec{x}, \hat\omega_o) = \int_\Omega L_i(\vec{x}, \hat{\omega}_i)
+                                             f_r(\vec{x}, \hat{\omega}_i, \hat{\omega}_o)
+                                             (\hat{n}_{x} \cdot \hat{\omega}_i) \, d\hat{\omega}_i = \\
+                                           &L_{r,l}(\vec{x}, \hat\omega_o) + L_{r,s}(\vec{x}, \hat\omega_o) + L_{r,c}(\vec{x}, \hat\omega_o) + L_{r,d}(\vec{x}, \hat\omega_o)
+            \end{align*}
+        Each of these are evaluated either \emph{accurately} or \emph{approximatively}\ :
+        \begin{itemize}
+            \item Accurate evaluation: when \(\vec{x}\) is seen by an eye directly/close
+            \item Approximate evaluation:\ a importance was reflected diffusely
+        \end{itemize}
+    }
+
+    \frame{\frametitle{Photon Collection}\framesubtitle{Direct Illumination}
+        Represents the reflected radiance at \(\vec{x}\) towards \(\hat\omega_o\) which originated directly from \(\hat\omega_i\), the sources of light found around a hemisphere \(\Omega\).
+        \vspace{1em}
+        \[L_{r,l}(\vec{x}, \hat\omega_o) = \int_\Omega L_{i,l}(\vec{x}, \hat{\omega}_i)
+                                           f_{r,d}(\vec{x}, \hat{\omega}_i, \hat{\omega}_o)
+                                           (\hat{n}_{x} \cdot \hat{\omega}_i) \, d\hat{\omega}_i\]
+        \begin{itemize}
+            \item Accurate evaluation: we would have to launch \emph{shadow rays} in the same way as Monte Carlo raytracing.\ Sample if area light.
+            \item Approximate evaluation: the radiance estimate obtained from our \emph{global photon map}, sum estimated photon flux around \(\vec{x}\).
+        \end{itemize}
+    }
+
+    \frame{\frametitle{Photon Collection}\framesubtitle{Specular and Glossy Reflections}
+        Specular and glossy reflections are handled using the sum over the incoming caustic and diffuse radiance with the specular BRDF \(f_{r,s}\). No approximated variant is needed, we only have a single direction.
+        \vspace{-0.2em}
+        \begin{align*}
+            L_{r,s}(\vec{x}, \hat\omega_o) &= \int_\Omega L_{i,c}(\vec{x}, \hat{\omega}_i)
+                                             f_{r,s}(\vec{x}, \hat{\omega}_i, \hat{\omega}_o)
+                                             (\hat{n}_{x} \cdot \hat{\omega}_i) \, d\hat{\omega}_i \\
+                                           &+ \int_\Omega L_{i,d}(\vec{x}, \hat{\omega}_i)
+                                             f_{r,s}(\vec{x}, \hat{\omega}_i, \hat{\omega}_o)
+                                             (\hat{n}_{x} \cdot \hat{\omega}_i) \, d\hat{\omega}_i
+        \end{align*}
+        \begin{itemize}
+            \item Accurate evaluation: we use Monte Carlo raytracing and \(f_{r,s}\), distributed importance sampling for reflection \& transmission.
+        \end{itemize}
+    }
+
+    \frame{\frametitle{Photon Collection}\framesubtitle{Caustics}
+        Contributions from caustics are never evaluated using Monte Carlo raytracing, since it's very expensive. We use photon maps instead. \(L_{i,c}(\vec{x}, \hat\omega_o)\) is indirect light via specular reflection, or, transmission.
+        \vspace{0.8em}
+        \[L_{r,c}(\vec{x}, \hat\omega_o) = \int_\Omega L_{i,c}(\vec{x}, \hat{\omega}_i)
+                                           f_{r,d}(\vec{x}, \hat{\omega}_i, \hat{\omega}_o)
+                                           (\hat{n}_{x} \cdot \hat{\omega}_i) \, d\hat{\omega}_i\]
+        \begin{itemize}
+            \item Accurate evaluation: we use radiance estimate of the \emph{caustics photon map}. This is why it needs to be a high-resolution map.
+            \item Approximate evaluation: again, we use the global photon map.
+        \end{itemize}
+    }
+
+    \frame{\frametitle{Photon Collection}\framesubtitle{Indirect Diffuse Reflections}
+        Finally, for contributions arriving at \(\vec{x}\) which have bounced around diffusely at least once we integrate over \(L_{i,d}(\vec{x}, \hat\omega_i)\). This gives the visual effects commonly known as ``color bleeding'', as in radiosity.
+        \vspace{0.8em}
+        \[L_{r,d}(\vec{x}, \hat\omega_o) = \int_\Omega L_{i,d}(\vec{x}, \hat{\omega}_i)
+                                           f_{r,d}(\vec{x}, \hat{\omega}_i, \hat{\omega}_o)
+                                           (\hat{n}_{x} \cdot \hat{\omega}_i) \, d\hat{\omega}_i\]
+        \begin{itemize}
+            \item Accurate evaluation: we use Monte Carlo raytracing again for this, and an optimzed sampling distribution according to \(f_{r,d}\).
+            \item Approximate evaluation: will usually contribute quite little to the end-results, so we again use the global radiance estimate.
+        \end{itemize}
+    }
+
+    \frame{\frametitle{Photon Mapping} \framesubtitle{Putting It All Together}
+        \begin{itemize}
+            \item We emit photons from the sources of light, bounce these around the scene while recording flux hitting the surfaces. \begin{itemize}
+                \item[\(-\)] These photon maps are usually stored by using a k-d tree.
+            \end{itemize}
+            \item We can estimate the radiance arriving at any point using these photon maps by picking the k-NN photons' flux \(\Delta\Phi\).
+            \item Finally, we can more efficietly run Monte Carlo raytracing\\ by adaptively choosing an \emph{accurate} or \emph{approximate} mode: \begin{itemize}
+                \item[\(-\)] Accurate: when we see surfaces directly, use path tracing.
+                \item[\(-\)] Approximate: use the estimate given by our photon maps.
+            \end{itemize}
+        \end{itemize}
+    }
+
+    \frame{\frametitle{Photon Mapping}\framesubtitle{Image Samples in~\cite{jensen1996global}}
+        \begin{columns}
+            \column{0.5\textwidth} \begin{center}
+            \includegraphics[width=\textwidth]{share/cognac.jpg}
+        \end{center}
+        \column{0.5\textwidth} \begin{center}
+            \includegraphics[width=\textwidth]{share/cornellbox.jpg}
+        \end{center} \end{columns}
+    }
+
+    \frame{\frametitle{Summary}
+        \begin{columns}
+        \column{0.64\textwidth}
+            In this presentation we have explained:
+            \vspace{1em}
+            \begin{itemize}
+                \item The desirable properties of accurate global illumination algorithms
+                \item Where the existing models fall short
+                \item How photon mapping improves path tracing by using a radiance estimate \begin{itemize}
+                \item[\(-\)] Photon tracing,\; photon collection
+            \end{itemize}
+            \end{itemize}
+            \vspace{1em}
+            We'll now discuss some improvements.
+        \column{0.36\textwidth} \begin{center}
+            \includegraphics[height=0.8\textheight]{share/otherpathtracing.png}
+        \end{center} \end{columns}
+    }
+
+    \frame{\frametitle{Further Studies}
+        \begin{itemize}
+            \item Improved radiance estimate: we add a filter based on the distance which re-weight the contributions from photons.
+            \item Volume photon map: models interactions in participating media. We need a new radiance estimate and a ``BSDF''.
+            \item Photon splatting: instead of storing a photon individually,\\we accumulate the radiance in a texture\, with all the hits.
+        \end{itemize}
+    }
+
+    \frame{\frametitle{Any Questions?}}
     \frame{\frametitle{Bibliography}
         \nocite{*}
         \bibliographystyle{alpha}

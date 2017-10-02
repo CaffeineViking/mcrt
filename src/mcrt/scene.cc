@@ -53,11 +53,13 @@ namespace mcrt {
         lights.push_back(light);
     }
 
+    size_t Scene::maxRayDepth = 10;
+
     glm::dvec3 Scene::rayTrace(const Ray& ray, const int depth = 0) const {
         glm::dvec3 rayColor { 0.0 };
 
         // Make sure we don't bounce forever
-        if(depth >= 10)
+        if(depth >= Scene::maxRayDepth)
             return rayColor;
 
         Ray::Intersection rayHit = intersect(ray);

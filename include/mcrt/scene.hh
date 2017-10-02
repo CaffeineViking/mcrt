@@ -42,6 +42,8 @@ namespace mcrt {
         std::vector<Geometry*>& getGeometries() { return geometries; }
         const std::vector<Geometry*>& getGeometries() const { return geometries; }
 
+        static size_t maxRayDepth;
+
         const std::vector<PointLight>& getPointLights() const { return lights; }
         std::vector<PointLight>& getPointLights() { return lights; }
         const Camera& getCamera() const { return camera; }

@@ -60,5 +60,10 @@ mcrt::Parameters mcrt::ParameterImporter::load(const std::string& file) {
         else std::runtime_error { "Error: no support for this: '" + sampleMethod + "' pattern!" };
     }
 
+    if (parser.find("maxRayDepth") != parser.end()) {
+        size_t maxRayDepth { parser["maxRayDepth"].get<size_t>() };
+        parameters.maxRayDepth = maxRayDepth;
+    }
+
     return parameters;
 }
