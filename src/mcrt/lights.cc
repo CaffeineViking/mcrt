@@ -1,10 +1,10 @@
 #include "mcrt/lights.hh"
 #include <iostream>
 namespace mcrt {
-    Light::Light(glm::dvec3 color) : color(color) {};
+    Light::Light(glm::dvec3 color, double intensity) : color(color), intensity{intensity} {};
     Light::~Light() {}
 
-    PointLight::PointLight(glm::dvec3 origin, glm::dvec3 color) : Light(color), origin(origin) {}
+    PointLight::PointLight(glm::dvec3 origin, glm::dvec3 color, double intensity) : Light(color,intensity), origin(origin) {}
  
     glm::dvec3 PointLight::radiance(const Ray::Intersection& rayHit, const Scene* scene) {
         glm::dvec3 rayToLightSource = origin - rayHit.position;
@@ -14,7 +14,7 @@ namespace mcrt {
                 glm::normalize(rayToLightSource) };
 
         double oclusionDistance = scene->inShadow(shadowRay);
-        if (oclusionDistance >0.0) {
+        if (oclusionDistance > 0.0) {
             double lambertianFalloff { std::max(0.0, glm::dot(shadowRay.direction, rayHit.normal)) };
             return color * rayHit.material.color * lambertianFalloff;
         }
@@ -22,18 +22,15 @@ namespace mcrt {
     }
 
     Ray::Intersection PointLight::intersect(const Ray& ray) const {
-        Ray::Intersection closestHit {
-            std::numeric_limits<double>::max(),
-                glm::dvec3(0.0),
-                {glm::dvec3(0.0),Material::Type::Diffuse,0.0},
-                glm::dvec3(0.0)
-        };
-       return closestHit;
+        Ray::Intersection result {std::numeric_limits<double>::max(), glm::dvec3(0.0),
+            {color, Material::Type::LightSource, 0.0},glm::dvec3(0)};
+
+       return result;
     }
 
     size_t AreaLight::shadowRayCount = 10;
 
-    AreaLight::AreaLight(glm::dvec3 v0, glm::dvec3 v1, glm::dvec3 v2, glm::dvec3 color) : Light(color), v0(v0), v1(v1), v2(v2) 
+    AreaLight::AreaLight(glm::dvec3 v0, glm::dvec3 v1, glm::dvec3 v2, glm::dvec3 color, double intensity) : Light(color,intensity), v0(v0), v1(v1), v2(v2) 
     {
         normal = glm::normalize(glm::cross(v1-v0, v2-v0));
         area = 0.5*glm::length(glm::cross(v1-v0, v2-v0));
@@ -64,7 +61,8 @@ namespace mcrt {
         glm::dvec3 normal { glm::normalize(glm::cross(e1, e2)) };
         if (glm::dot(normal, ray.direction) > 0) normal = -normal;
 
-        Ray::Intersection result {std::numeric_limits<double>::max(), normal, {color, Material::Type::LightSource, 0.0},glm::dvec3(0)};
+        Ray::Intersection result {std::numeric_limits<double>::max(), normal,
+             {color, Material::Type::LightSource, 0.0},glm::dvec3(0)};
 
         if(det < Ray::EPSILON && det > -Ray::EPSILON) {
             return result;
@@ -97,16 +95,18 @@ namespace mcrt {
             glm::dvec3 rayToLightSource = origin - rayHit.position;
             glm::dvec3 rayToLightNormal { glm::normalize(rayToLightSource) };
 
-            Ray shadowRay { rayHit.position + rayToLightNormal*Ray::EPSILON,
+            Ray shadowRay { rayHit.position + rayToLightNormal * Ray::EPSILON,
                     rayToLightNormal };
 
-            // Return distance to light, 0 if ocluded
-            double oclusionDistance = scene->inShadow(shadowRay);
-            if (oclusionDistance > 0.0 && oclusionDistance >= glm::distance(rayHit.position, origin)) {
-                double lambertianFalloff { std::max(0.0, glm::dot(shadowRay.direction, rayHit.normal)) };
-                radiance += color * rayHit.material.color * lambertianFalloff / area;
+
+            // Return distance to light, 0 if occluded
+            double occlusionDistance = scene->inShadow(shadowRay);
+            double shadowRayDistance = std::max(glm::distance(rayHit.position, origin),1.0);
+            if (occlusionDistance > 0.0 && occlusionDistance >= shadowRayDistance) {
+                double lambertianFalloff { std::max(0.0, glm::dot(shadowRay.direction, rayHit.normal)) };                
+                radiance += rayHit.material.color * (lambertianFalloff/(shadowRayDistance*shadowRayDistance));
             }
         }
-        return  radiance / (double)shadowRayCount;
+        return area * color * radiance * intensity / (double)shadowRayCount;
     }
 }

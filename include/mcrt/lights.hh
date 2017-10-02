@@ -14,16 +14,16 @@ namespace mcrt {
             PointLight,
             AreaLight
         };
-        Light(glm::dvec3);
+        Light(glm::dvec3, double);
         virtual ~Light() = 0;
         glm::dvec3 color;
-
+        double intensity;
         virtual glm::dvec3 radiance(const Ray::Intersection&, const Scene*) = 0;
         virtual Ray::Intersection intersect(const Ray&) const = 0;
     };
 
     struct PointLight : public Light {
-        PointLight(glm::dvec3, glm::dvec3);
+        PointLight(glm::dvec3, glm::dvec3, double);
         ~PointLight() {};
         glm::dvec3 origin;
 
@@ -33,7 +33,7 @@ namespace mcrt {
     };
 
     struct AreaLight : public Light {
-        AreaLight(glm::dvec3, glm::dvec3, glm::dvec3, glm::dvec3);
+        AreaLight(glm::dvec3,glm::dvec3, glm::dvec3, glm::dvec3, double);
         ~AreaLight() {};
         glm::dvec3 v0;
         glm::dvec3 v1;

@@ -62,9 +62,10 @@ mcrt::Scene mcrt::SceneImporter::load(const std::string& file) {
                     { light["origin"][0].get<double>(),
                       light["origin"][1].get<double>(),
                       light["origin"][2].get<double>() },
-                    { light["radiance"][0].get<double>(),
-                      light["radiance"][1].get<double>(),
-                      light["radiance"][2].get<double>() }
+                    { light["color"][0].get<double>(),
+                      light["color"][1].get<double>(),
+                      light["color"][2].get<double>()},
+                      light["intensity"].get<double>()
                 });
             }
             else if (lightType == Light::Type::AreaLight) {
@@ -78,9 +79,10 @@ mcrt::Scene mcrt::SceneImporter::load(const std::string& file) {
                         { light["vertex-3"][0].get<double>(),
                           light["vertex-3"][1].get<double>(),
                           light["vertex-3"][2].get<double>() },
-                        { light["radiance"][0].get<double>(),
-                          light["radiance"][1].get<double>(),
-                          light["radiance"][2].get<double>() }
+                        { light["color"][0].get<double>(),
+                          light["color"][1].get<double>(),
+                          light["color"][2].get<double>()},
+                         light["intensity"].get<double>()
                 });
             }
         }

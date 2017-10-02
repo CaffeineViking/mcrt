@@ -75,6 +75,7 @@ namespace mcrt {
 
         // Hit diffuse object
         if(rayHit.material.type == Material::Type::Diffuse) {
+
             for (Light* lightSource : lights) {
 		        rayColor += lightSource->radiance(rayHit,this);	
             }
@@ -105,12 +106,7 @@ namespace mcrt {
         }
         // Hit light source
         else if(rayHit.material.type == Material::Type::LightSource) {
-            //double cosa = glm::dot(ray.direction, rayOrigin.normal);
-            double cosb = glm::dot(-ray.direction, rayHit.normal);
-            if (cosb < 0.0) cosb = glm::dot(-ray.direction, -rayHit.normal);
-
-            double geometricTerm = 1.0/rayHit.distance;
-            rayColor += rayHit.material.color*geometricTerm;
+            rayColor = rayHit.material.color;
         }
 
         return rayColor;
