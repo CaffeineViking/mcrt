@@ -56,14 +56,33 @@ mcrt::Scene mcrt::SceneImporter::load(const std::string& file) {
         nlohmann::json lights { parser["lights"] };
 
         for (auto light : lights[0]) {
-            scene.add(PointLight {
-                { light["origin"][0].get<double>(),
-                  light["origin"][1].get<double>(),
-                  light["origin"][2].get<double>() },
-                { light["radiance"][0].get<double>(),
-                  light["radiance"][1].get<double>(),
-                  light["radiance"][2].get<double>() }
-            });
+            Light::Type lightType {static_cast<Light::Type>(light["type"].get<unsigned>())};
+            if (lightType == Light::Type::PointLight) {
+                scene.add(new PointLight {
+                    { light["origin"][0].get<double>(),
+                      light["origin"][1].get<double>(),
+                      light["origin"][2].get<double>() },
+                    { light["radiance"][0].get<double>(),
+                      light["radiance"][1].get<double>(),
+                      light["radiance"][2].get<double>() }
+                });
+            }
+            else if (lightType == Light::Type::AreaLight) {
+                scene.add(new AreaLight {
+                        { light["vertex-1"][0].get<double>(),
+                          light["vertex-1"][1].get<double>(),
+                          light["vertex-1"][2].get<double>() },
+                        { light["vertex-2"][0].get<double>(),
+                          light["vertex-2"][1].get<double>(),
+                          light["vertex-2"][2].get<double>() },
+                        { light["vertex-3"][0].get<double>(),
+                          light["vertex-3"][1].get<double>(),
+                          light["vertex-3"][2].get<double>() },
+                        { light["radiance"][0].get<double>(),
+                          light["radiance"][1].get<double>(),
+                          light["radiance"][2].get<double>() }
+                });
+            }
         }
     }
 

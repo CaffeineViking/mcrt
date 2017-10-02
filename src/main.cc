@@ -84,6 +84,7 @@ int main(int argc, char** argv) {
     scene.getCamera().setFieldOfView(fieldOfView);
 
     mcrt::Scene::maxRayDepth = parameters.maxRayDepth;
+    mcrt::AreaLight::shadowRayCount = parameters.shadowRayCount;
 
     auto renderStart  { std::chrono::steady_clock::now() };
 

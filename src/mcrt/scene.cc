@@ -9,9 +9,10 @@ namespace mcrt {
     Ray::Intersection Scene::intersect(const Ray& ray) const {
         Ray::Intersection closestHit {
             std::numeric_limits<double>::max(),
-            glm::dvec3(0.0),
-            {glm::dvec3(0.0),Material::Type::Diffuse,0.0}
-        };
+                glm::dvec3(0.0),
+                    {glm::dvec3(0.0),Material::Type::Diffuse,0.0},
+                glm::dvec3(0.0)
+                    };
 
         for (const Geometry* geometry : geometries) {
             Ray::Intersection rayHit = geometry->intersect(ray);
@@ -19,13 +20,19 @@ namespace mcrt {
                 closestHit = rayHit;
         }
 
+        for (Light* lightSource : lights) {
+            Ray::Intersection lightHit = lightSource->intersect(ray);
+            if(lightHit.distance > 0.0 && lightHit.distance < closestHit.distance ){
+                closestHit = lightHit;
+            }
+        }
         return closestHit;
     }
 
-    // Shadow check
-    bool Scene::lightIntersect(const Ray& ray, const PointLight& light) const{
+    double Scene::inShadow(const Ray& ray) const{
 
-        double distance = glm::distance(ray.origin, light.origin);
+        double distance = std::numeric_limits<double>::max();
+
         for(const Geometry* geometry: geometries){
             Ray::Intersection rayHit = geometry->intersect(ray);
 
@@ -40,7 +47,8 @@ namespace mcrt {
             distance = std::min(distance, rayHit.distance);
         }
 
-        return distance >= glm::distance(ray.origin, light.origin);
+        // Return distance to occlusion
+        return distance;
     }
 
     
@@ -49,7 +57,7 @@ namespace mcrt {
         geometries.push_back(geometry);
     }
 
-    void Scene::add(const PointLight& light) {
+    void Scene::add(Light* light) {
         lights.push_back(light);
     }
 
@@ -67,18 +75,8 @@ namespace mcrt {
 
         // Hit diffuse object
         if(rayHit.material.type == Material::Type::Diffuse) {
-            for (const PointLight& lightSource : lights) {
-
-                glm::dvec3 rayToLightSource = lightSource.origin - rayHitPosition;
-                glm::dvec3 rayToLightNormal { glm::normalize(rayToLightSource) };
-
-                Ray shadowRay { rayHitPosition + rayToLightNormal*Ray::EPSILON,
-                                glm::normalize(rayToLightSource) };
-
-                if (lightIntersect(shadowRay,lightSource)) {
-                    double lambertianFalloff { std::max(0.0, glm::dot(shadowRay.direction, rayHit.normal)) };
-                    rayColor += lightSource.color * rayHit.material.color * lambertianFalloff;
-                }
+            for (Light* lightSource : lights) {
+		        rayColor += lightSource->radiance(rayHit,this);	
             }
         }
         // Hit specular, mirror-like surface.
@@ -104,6 +102,15 @@ namespace mcrt {
             else reflectionRay = ray.insideReflect(rayHitPosition, rayHit.normal);
             glm::dvec3 reflectionColor = rayTrace(reflectionRay, depth + 1);
             rayColor += reflectionColor * kr + refractionColor * (1.0 - kr);
+        }
+        // Hit light source
+        else if(rayHit.material.type == Material::Type::LightSource) {
+            //double cosa = glm::dot(ray.direction, rayOrigin.normal);
+            double cosb = glm::dot(-ray.direction, rayHit.normal);
+            if (cosb < 0.0) cosb = glm::dot(-ray.direction, -rayHit.normal);
+
+            double geometricTerm = 1.0/rayHit.distance;
+            rayColor += rayHit.material.color*geometricTerm;
         }
 
         return rayColor;
