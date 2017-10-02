@@ -37,6 +37,7 @@ namespace mcrt {
         glm::dvec3 v2;
         glm::dvec3 normal;
         double area;
+        static size_t shadowRayCount;
 
         glm::dvec3 sample();
         Ray::Intersection intersect(const Ray&) const;

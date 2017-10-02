@@ -60,5 +60,9 @@ mcrt::Parameters mcrt::ParameterImporter::load(const std::string& file) {
         else std::runtime_error { "Error: no support for this: '" + sampleMethod + "' pattern!" };
     }
 
+    if (parser.find("shadowRays") != parser.end()) {
+        parameters.shadowRayCount = parser["shadowRays"].get<size_t>();
+    }
+
     return parameters;
 }

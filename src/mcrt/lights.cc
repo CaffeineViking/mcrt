@@ -21,6 +21,8 @@ namespace mcrt {
         return glm::dvec3(0);
     }
 
+    size_t AreaLight::shadowRayCount = 10;
+
     AreaLight::AreaLight(glm::dvec3 v0, glm::dvec3 v1, glm::dvec3 v2, glm::dvec3 color) : Light(color), v0(v0), v1(v1), v2(v2) 
     {
         normal = glm::normalize(glm::cross(v1-v0, v2-v0));
@@ -77,10 +79,9 @@ namespace mcrt {
     }
 
     glm::dvec3 AreaLight::radiance(const Ray::Intersection& rayHit, const Scene* scene) {
-        double shadowRayCount{10};
         double totalFalloff{};
         std::vector<glm::dvec3> lightOrigins;
-        for (int i=0; i<shadowRayCount; i++) lightOrigins.push_back(sample());
+        for (size_t i=0; i<shadowRayCount; i++) lightOrigins.push_back(sample());
 
         for (const glm::dvec3& origin : lightOrigins) {
             glm::dvec3 rayToLightSource = origin - rayHit.position;
@@ -101,6 +102,6 @@ namespace mcrt {
                 totalFalloff += /*lambertianFalloff**/geometricTerm;
             }
         }
-        return  area * color * rayHit.material.color * totalFalloff / shadowRayCount;
+        return  area * color * rayHit.material.color * totalFalloff / (double)shadowRayCount;
     }
 }

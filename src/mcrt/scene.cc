@@ -65,11 +65,6 @@ namespace mcrt {
         else if(rayHit.material.type == Material::Type::Reflective) {
             Ray reflectionRay { ray.reflect(rayHitPosition, rayHit.normal) };
             rayColor += rayTrace(reflectionRay, depth + 1) * 0.9; // Falloff.
-
-            /*double diffuseContribution{ 0.1 };
-            for (Light* lightSource : lights) {
-                rayColor += lightSource->radiance(rayHit, this) * diffuseContribution;
-                }*/
         }
         // Hit specular, transparent surface.
         else if(rayHit.material.type == Material::Type::Refractive) {
@@ -89,14 +84,10 @@ namespace mcrt {
             else reflectionRay = ray.insideReflect(rayHitPosition, rayHit.normal);
             glm::dvec3 reflectionColor = rayTrace(reflectionRay, depth + 1);
             rayColor += reflectionColor * kr + refractionColor * (1.0 - kr);
-
-            /*double diffuseContribution{ 0.1 };
-            for (Light* lightSource : lights) {
-                rayColor += lightSource->radiance(rayHit, this) * diffuseContribution;
-                }*/
         }
         // Hit light source
         else if(rayHit.material.type == Material::Type::LightSource) {
+            //double cosa = glm::dot(ray.direction, rayOrigin.normal);
             double cosb = glm::dot(-ray.direction, rayHit.normal);
             if (cosb < 0.0) cosb = glm::dot(-ray.direction, -rayHit.normal);
 
