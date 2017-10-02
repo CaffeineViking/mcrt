@@ -33,7 +33,7 @@ namespace mcrt {
 
     size_t Scene::maxRayDepth = 10;
 
-    glm::dvec3 Scene::rayTrace(const Ray& ray, const int depth = 0) const {
+    glm::dvec3 Scene::rayTrace(const Ray& ray, const size_t depth = 0) const {
         glm::dvec3 rayColor { 0.0 };
 
         // Make sure we don't bounce forever

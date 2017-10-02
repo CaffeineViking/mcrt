@@ -34,7 +34,7 @@ namespace mcrt {
         void add(const PointLight& light);
         void add(Geometry* geometry);
 
-        glm::dvec3 rayTrace(const Ray& ray, const int) const;
+        glm::dvec3 rayTrace(const Ray& ray, const size_t) const;
         Ray::Intersection intersect(const Ray& ray) const;
 
         std::vector<Geometry*>& getGeometries() { return geometries; }
