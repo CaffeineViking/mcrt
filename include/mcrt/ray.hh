@@ -4,6 +4,7 @@
 #include <cmath>
 #include <vector>
 #include <limits>
+#include <random>
 
 #include <glm/glm.hpp>
 
@@ -19,9 +20,7 @@ namespace mcrt {
             glm::dvec3 normal; // Normal of surface intersection.
             Material material; // Material of a intersect point.
 
-            glm::dvec3 sampleHemisphere() const {
-               return glm::dvec3(0.9);  
-            }
+            glm::dvec3 sampleHemisphere(const Ray&) const;
         };
 
         double fresnel(const glm::dvec3&, const double) const;
