@@ -4,6 +4,7 @@
 #include <cmath>
 #include <vector>
 #include <limits>
+#include <random>
 
 #include <glm/glm.hpp>
 
@@ -18,6 +19,8 @@ namespace mcrt {
             double distance; // Distance to the surface's point.
             glm::dvec3 normal; // Normal of surface intersection.
             Material material; // Material of a intersect point.
+
+            glm::dvec3 sampleHemisphere(const Ray&) const;
         };
 
         double fresnel(const glm::dvec3&, const double) const;
@@ -52,18 +55,21 @@ inline double mcrt::Ray::fresnel( const glm::dvec3& normal, const double refract
         }
     }
 
+    // Perfect reflection
 inline mcrt::Ray mcrt::Ray::reflect(const glm::dvec3& hitPosition, const glm::dvec3& surfaceNormal) const {
     glm::dvec3 reflection { direction - 2.0*surfaceNormal * glm::dot(direction, surfaceNormal) };
     glm::dvec3 normalizedReflection { glm::normalize(reflection) };
     return { hitPosition + normalizedReflection*EPSILON, normalizedReflection };
 }
 
+    // Perfect refraction from high density to air
 inline mcrt::Ray mcrt::Ray::insideReflect(const glm::dvec3& hitPosition, const glm::dvec3& surfaceNormal) const {
     glm::dvec3 reflection { direction - 2.0*surfaceNormal * glm::dot(direction, surfaceNormal) };
     glm::dvec3 normalizedReflection { glm::normalize(reflection) };
     return { hitPosition + normalizedReflection*-EPSILON, normalizedReflection };
 }
 
+    // Perfect refraction from air to high density
 inline mcrt::Ray mcrt::Ray::refract(const glm::dvec3& hitPosition, const glm::dvec3& surfaceNormal,
                              double refractionIndex) const {
     double cosi = glm::clamp(glm::dot(surfaceNormal, direction), -1.0, 1.0);

@@ -22,6 +22,28 @@ namespace mcrt {
         return closestHit;
     }
 
+    // Shadow check
+    bool Scene::lightIntersect(const Ray& ray, const PointLight& light) const{
+
+        double distance = glm::distance(ray.origin, light.origin);
+        for(const Geometry* geometry: geometries){
+            Ray::Intersection rayHit = geometry->intersect(ray);
+
+            if(rayHit.distance <= 0.0) {
+                continue;
+            }
+
+            // Intersects Refractive surface
+            if(rayHit.material.type == Material::Type::Refractive){
+                continue;
+            }
+            distance = std::min(distance, rayHit.distance);
+        }
+
+        return distance >= glm::distance(ray.origin, light.origin);
+    }
+
+    
     // Will be our resource after this...
     void Scene::add(Geometry* geometry) {
         geometries.push_back(geometry);
@@ -53,8 +75,7 @@ namespace mcrt {
                 Ray shadowRay { rayHitPosition + rayToLightNormal*Ray::EPSILON,
                                 glm::normalize(rayToLightSource) };
 
-                Ray::Intersection shadowRayHit { intersect(shadowRay) };
-                if (shadowRayHit.distance >= glm::length(rayToLightSource)) {
+                if (lightIntersect(shadowRay,lightSource)) {
                     double lambertianFalloff { std::max(0.0, glm::dot(shadowRay.direction, rayHit.normal)) };
                     rayColor += lightSource.color * rayHit.material.color * lambertianFalloff;
                 }
