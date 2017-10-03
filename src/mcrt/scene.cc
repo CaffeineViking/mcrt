@@ -75,7 +75,6 @@ namespace mcrt {
 
         // Hit diffuse object
         if(rayHit.material.type == Material::Type::Diffuse) {
-
             for (Light* lightSource : lights) {
 		        rayColor += lightSource->radiance(rayHit,this);	
             }

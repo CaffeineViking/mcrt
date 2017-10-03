@@ -45,9 +45,6 @@ namespace mcrt {
         glm::dvec3 sample();
         glm::dvec3 radiance(const Ray::Intersection&, const Scene*) override;
         Ray::Intersection intersect(const Ray&) const override;        
-
-    private:
-        std::random_device rd;
     };
 }
 

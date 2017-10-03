@@ -22,7 +22,7 @@ namespace mcrt {
     }
 
     Ray::Intersection PointLight::intersect(const Ray& ray) const {
-        Ray::Intersection result {std::numeric_limits<double>::max(), glm::dvec3(0.0),
+        Ray::Intersection result {0.0, glm::dvec3(0.0),
             {color, Material::Type::LightSource, 0.0},glm::dvec3(0)};
 
        return result;
@@ -40,8 +40,9 @@ namespace mcrt {
         double u;
         double v;
 
-        std::mt19937 gen(rd());
-        std::uniform_real_distribution<> dist(0,1);
+        static std::random_device rd;
+        static std::mt19937 gen(rd());
+        static std::uniform_real_distribution<> dist(0,1);
 
         do {
             u = dist(gen);
@@ -61,7 +62,7 @@ namespace mcrt {
         glm::dvec3 normal { glm::normalize(glm::cross(e1, e2)) };
         if (glm::dot(normal, ray.direction) > 0) normal = -normal;
 
-        Ray::Intersection result {std::numeric_limits<double>::max(), normal,
+        Ray::Intersection result {0.0, normal,
              {color, Material::Type::LightSource, 0.0},glm::dvec3(0)};
 
         if(det < Ray::EPSILON && det > -Ray::EPSILON) {
@@ -103,8 +104,10 @@ namespace mcrt {
             double occlusionDistance = scene->inShadow(shadowRay);
             double shadowRayDistance = std::max(glm::distance(rayHit.position, origin),1.0);
             if (occlusionDistance > 0.0 && occlusionDistance >= shadowRayDistance) {
-                double lambertianFalloff { std::max(0.0, glm::dot(shadowRay.direction, rayHit.normal)) };                
-                radiance += rayHit.material.color * (lambertianFalloff/(shadowRayDistance*shadowRayDistance));
+                double cosa = glm::dot(shadowRay.direction, rayHit.normal);
+                double cosb = std::max(glm::dot(-shadowRay.direction, normal), glm::dot(-shadowRay.direction, -normal)) ;
+                glm::dvec3 brdf = rayHit.material.color/glm::pi<double>();
+                radiance += brdf*cosa*cosb/(shadowRayDistance*shadowRayDistance);
             }
         }
         return area * color * radiance * intensity / (double)shadowRayCount;

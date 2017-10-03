@@ -1,9 +1,9 @@
 {
     "parallelMethod": "openmp",
-    "resolution":  [512, 512],
+    "resolution":  [256, 256],
     "scalingFactor": [1.0, 1.0],
     "interpolation": "bilinear",
-    "supersamples": [4, "random"],
+    "supersamples": [2, "grid"],
     "maxRayDepth": 10,
-    "shadowRays": 15
+    "shadowRays": 10
 }
