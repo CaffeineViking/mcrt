@@ -52,11 +52,17 @@ mcrt::Scene mcrt::SceneImporter::load(const std::string& file) {
         scene.getCamera().lookAt(lookAt, upVector);
     } else throw std::runtime_error { "Error: you must have a camera!" };
 
+    auto stringToLightType = [](const std::string& string) -> Light::Type {
+        if (string == "point") return Light::Type::PointLight;
+        else if (string == "area") return Light::Type::AreaLight;
+        else throw std::runtime_error { "Error: unkown light type!" };
+    };
+
     if (parser.find("lights") != parser.end()) {
         nlohmann::json lights { parser["lights"] };
 
         for (auto light : lights[0]) {
-            Light::Type lightType {static_cast<Light::Type>(light["type"].get<unsigned>())};
+            Light::Type lightType { stringToLightType(light["type"].get<std::string>()) };
             if (lightType == Light::Type::PointLight) {
                 scene.add(new PointLight {
                     { light["origin"][0].get<double>(),

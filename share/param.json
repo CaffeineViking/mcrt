@@ -3,7 +3,7 @@
     "resolution":  [256,  256],
     "scalingFactor": [1.0, 1.0],
     "interpolation": "bilinear",
-    "supersamples": [2, "grid"],
+    "supersamples": [3, "rand"],
     "maxRayDepth": 10,
     "shadowRays": 10
 }
