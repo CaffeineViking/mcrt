@@ -1,7 +1,6 @@
 #include "mcrt/triangle.hh"
 
 namespace mcrt {
-
     Triangle::Triangle(const glm::dvec3& v1, const glm::dvec3& v2, const glm::dvec3& v3, Material* m)
         : Geometry { m }, _v1 { v1 }, _v2 { v2 } , _v3 { v3 }  { }
 
@@ -39,5 +38,4 @@ namespace mcrt {
         result.distance = glm::dot(e2,qvec) * inv_det;
         return result;
     }
-
 }

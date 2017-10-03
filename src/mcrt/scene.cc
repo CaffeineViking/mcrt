@@ -22,6 +22,28 @@ namespace mcrt {
         return closestHit;
     }
 
+    // Shadow check
+    bool Scene::lightIntersect(const Ray& ray, const PointLight& light) const{
+
+        double distance = glm::distance(ray.origin, light.origin);
+        for(const Geometry* geometry: geometries){
+            Ray::Intersection rayHit = geometry->intersect(ray);
+
+            if(rayHit.distance <= 0.0) {
+                continue;
+            }
+
+            // Intersects Refractive surface
+            if(rayHit.material->type == Material::Type::REFRACTIVE){
+                continue;
+            }
+            distance = std::min(distance, rayHit.distance);
+        }
+
+        return distance >= glm::distance(ray.origin, light.origin);
+    }
+
+    // Will be our resource after this...
     void Scene::add(Geometry* geometry) {
         geometries.push_back(geometry);
     }
@@ -34,11 +56,14 @@ namespace mcrt {
         lights.push_back(light);
     }
 
-    glm::dvec3 Scene::rayTrace(const Ray& ray, const int depth = 0) const {
+    size_t Scene::maxRayDepth = 10;
+
+    glm::dvec3 Scene::rayTrace(const Ray& ray, const size_t depth = 0) const {
         glm::dvec3 rayColor { 0.0 };
 
         // Make sure we don't bounce forever
-        if(depth >= 10) return rayColor;
+        if(depth >= Scene::maxRayDepth)
+            return rayColor;
 
         Ray::Intersection rayHit = intersect(ray);
         glm::dvec3 rayHitPosition { ray.origin + ray.direction * rayHit.distance };
@@ -56,8 +81,7 @@ namespace mcrt {
                 Ray shadowRay { rayHitPosition + rayToLightNormal*Ray::EPSILON,
                                 glm::normalize(rayToLightSource) };
 
-                Ray::Intersection shadowRayHit { intersect(shadowRay) };
-                if (shadowRayHit.distance >= glm::length(rayToLightSource)) {
+                if (lightIntersect(shadowRay,lightSource)) {
                     glm::dvec3 surfaceProperty { rayHit.material->brdf(rayHitPosition, rayHit.normal,
                                                                        ray.direction, shadowRay.direction) };
                     double lambertianFalloff { std::max(0.0, glm::dot(shadowRay.direction, rayHit.normal)) };

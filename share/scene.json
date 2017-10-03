@@ -10,14 +10,6 @@
         {
             "origin": [0.0, 0.0, -3.0],
             "radiance": [1.0, 1.0, 1.0]
-        },
-        {
-            "origin": [0.0, 0.0, 3.0],
-            "radiance": [1.0, 1.0, 1.0]
-        },
-        {
-            "origin": [0.0, 3.0, 3.0],
-            "radiance": [1.0, 1.0, 1.0]
         }
     ],
 
@@ -106,25 +98,7 @@
         {
             "geometry": "sphere",
             "origin": [4.0, -2.0, 0.0],
-            "material": "glass",
-            "radius": 1.0
-        },
-        {
-            "geometry": "sphere",
-            "origin": [7.0, 0.0, 0.0],
-            "material": "water",
-            "radius": 0.5
-        },
-        {
-            "geometry": "sphere",
-            "origin": [7.0, 0.0, -2.0],
             "material": "concrete",
-            "radius": 1.0
-        },
-        {
-            "geometry": "sphere",
-            "origin": [7.0, 0.0, 2.0],
-            "material": "red",
             "radius": 1.0
         },
         {
@@ -300,6 +274,14 @@
             "vertex-2": [13.0, -5.0, 0.0],
             "vertex-3": [13.0, 5.0, 0.0],
             "material": "yellow"
+        },
+        {
+            "geometry": "mesh",
+            "file": "share/teapot.obj",
+            "position": [7.0, -0.7, 0.0],
+            "material": "orange",
+            "rotate": [0.0, -1.2, 0.5],
+            "scale": 1.5
         }
     ]
 }

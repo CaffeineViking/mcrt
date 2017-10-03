@@ -3,5 +3,6 @@
     "resolution":  [1024, 1024],
     "scalingFactor": [1.0, 1.0],
     "interpolation": "bilinear",
-    "supersamples": [1,  "grid"]
+    "supersamples": [1, "grid"],
+    "maxRayDepth": 10
 }
