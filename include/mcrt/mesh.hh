@@ -15,7 +15,7 @@ namespace mcrt {
     public:
         Mesh();
         ~Mesh() { for (auto t : _triangles) delete t; }
-        Mesh(const Material&);
+        Mesh(Material*);
 
         void move(glm::dvec3);
         void scale(const double&);
@@ -25,7 +25,7 @@ namespace mcrt {
 
         void updateBoundingSphere();
 
-        void setMaterial(const Material&);
+        void setMaterial(Material*);
         void addTriangle(MeshTriangle*);
         void addTriangle(const glm::dvec3&, const glm::dvec3&, const glm::dvec3&,
                          const glm::dvec3&, const glm::dvec3&, const glm::dvec3&);

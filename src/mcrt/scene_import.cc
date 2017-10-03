@@ -88,7 +88,14 @@ mcrt::Scene mcrt::SceneImporter::load(const std::string& file) {
         }
     }
 
-    std::unordered_map<std::string, Material> palette;
+    std::unordered_map<std::string, Material*> palette;
+
+    auto stringToSurfaceType = [](const std::string& string) -> Material::Type {
+        if (string == "diffuse") return Material::Type::Diffuse;
+        else if (string == "reflective") return Material::Type::Reflective;
+        else if (string == "refractive") return Material::Type::Refractive;
+        else throw std::runtime_error { "Error: unkown surface type!" };
+    };
 
     if (parser.find("materials") != parser.end()) {
         nlohmann::json materials { parser["materials"] };
@@ -97,17 +104,39 @@ mcrt::Scene mcrt::SceneImporter::load(const std::string& file) {
             std::string materialName { material["name"].get<std::string>() };
             if (palette.count(materialName) != 0) continue;
 
-            // Insert our materials to palette.
-            palette[materialName] = Material {
-                {
-                    material["color"][0].get<double>(),
-                    material["color"][1].get<double>(),
-                    material["color"][2].get<double>()
-                },  static_cast<Material::Type>(material["type"].get<unsigned>())
-                 ,  material["refractionIndex"].get<double>()
+            std::string brdfType { material["brdf"].get<std::string>() };
+
+            Material* materialPointer;
+            if (brdfType == "lambertian") {
+                materialPointer = new LambertianMaterial {
+                    stringToSurfaceType(material["type"].get<std::string>()),
+                    {
+                        material["color"][0].get<double>(),
+                        material["color"][1].get<double>(),
+                        material["color"][2].get<double>()
+                    },
+                    material["refractionIndex"].get<double>()
                 };
+            } else if (brdfType == "oren-nayar") {
+                materialPointer = new OrenNayarMaterial {
+                    stringToSurfaceType(material["type"].get<std::string>()),
+                    {
+                        material["color"][0].get<double>(),
+                        material["color"][1].get<double>(),
+                        material["color"][2].get<double>()
+                    },
+
+                    material["refractionIndex"].get<double>(),
+                    material["roughness"].get<double>()
+                };
+            } else throw std::runtime_error { "Error: unknown surface BRDF!" };
+
+            palette[materialName] = materialPointer;
         }
     }
+
+    for (const auto& material : palette)
+        scene.add(material.second);
 
     if (parser.find("surfaces") != parser.end()) {
         nlohmann::json surfaces { parser["surfaces"] };

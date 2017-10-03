@@ -22,8 +22,8 @@ namespace mcrt {
     }
 
 
-    Mesh::Mesh() : Geometry { { { 1.0, 1.0, 1.0 }, Material::Type::Diffuse, 0.0 } } {  }
-    Mesh::Mesh(const Material& m) : Geometry { m } {  }
+    Mesh::Mesh() : Geometry { nullptr } {  }
+    Mesh::Mesh(Material* m) : Geometry { m } {  }
 
     void Mesh::move(glm::dvec3 p) {
         for (std::size_t i = 0; i < _triangles.size(); i++) {
@@ -73,8 +73,8 @@ namespace mcrt {
         _bound = BoundingSphere{origin, radius};
     }
 
-    void Mesh::setMaterial(const Material& m) {
-        _material = m;
+    void Mesh::setMaterial(Material* m) {
+        material = m;
     }
 
     void Mesh::addTriangle(MeshTriangle* t) {
@@ -83,7 +83,7 @@ namespace mcrt {
 
     void Mesh::addTriangle(const glm::dvec3& v0, const glm::dvec3& v1, const glm::dvec3& v2,
                            const glm::dvec3& n0, const glm::dvec3& n1, const glm::dvec3& n2){
-        MeshTriangle* t = new MeshTriangle{v0, v1, v2, n0, n1, n2, _material};
+        MeshTriangle* t = new MeshTriangle{v0, v1, v2, n0, n1, n2, material};
         _triangles.push_back(t);
     }
 
@@ -96,7 +96,7 @@ namespace mcrt {
         if (boundIntersection.distance == 0)
             return boundIntersection;
 
-        Ray::Intersection res{0, glm::dvec3(), _material};
+        Ray::Intersection res{0, glm::dvec3(), material, glm::dvec3{}};
         for (auto t : _triangles) {
             Ray::Intersection i = t->intersect(ray);
             if (i.distance == 0) continue;

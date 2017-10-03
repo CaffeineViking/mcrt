@@ -11,7 +11,12 @@ namespace mcrt {
     class Scene {
     public:
         Scene() = default;
-        ~Scene() { for (auto g : geometries) delete g; }
+
+        ~Scene() {
+            for (auto m : materials)  delete m;
+            for (auto g : geometries) delete g;
+        }
+
         Scene& operator=(const Scene&) = delete;
         Scene(const Scene&) = delete;
 
@@ -29,15 +34,21 @@ namespace mcrt {
                 other.geometries[i] = nullptr;
             }
 
+            for (size_t i { 0 }; i < other.materials.size(); ++i) {
+                materials.push_back(other.materials[i]);
+                other.materials[i] = nullptr;
+            }
+
             return *this;
         }
 
+        void add(Material* material);
         void add(Light* light);
         void add(Geometry* geometry);
 
         glm::dvec3 rayTrace(const Ray& ray, const size_t) const;
         Ray::Intersection intersect(const Ray& ray) const;
-        
+
         double inShadow(const Ray& ray) const;
 
         std::vector<Geometry*>& getGeometries() { return geometries; }
@@ -47,11 +58,12 @@ namespace mcrt {
 
         const std::vector<Light*>& getLights() const { return lights; }
         std::vector<Light*>& getLights() { return lights; }
-        
-	const Camera& getCamera() const { return camera; }
+
+        const Camera& getCamera() const { return camera; }
         Camera& getCamera() { return camera; }
 
     private:
+        std::vector<Material*> materials;
         std::vector<Geometry*> geometries;
         std::vector<Light*> lights;
         Camera camera;

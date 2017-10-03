@@ -14,11 +14,12 @@ namespace mcrt {
             PointLight,
             AreaLight
         };
+
         Light(glm::dvec3, double);
-        virtual ~Light() = 0;
-        glm::dvec3 color;
+        virtual ~Light();
+        Material* material;
         double intensity;
-        virtual glm::dvec3 radiance(const Ray::Intersection&, const Scene*) = 0;
+        virtual glm::dvec3 radiance(const Ray&, const Ray::Intersection&, const Scene*) = 0;
         virtual Ray::Intersection intersect(const Ray&) const = 0;
     };
 
@@ -27,7 +28,7 @@ namespace mcrt {
         ~PointLight() {};
         glm::dvec3 origin;
 
-        glm::dvec3 radiance(const Ray::Intersection&, const Scene*) override;
+        glm::dvec3 radiance(const Ray&, const Ray::Intersection&, const Scene*) override;
         Ray::Intersection intersect(const Ray&) const override;
    
     };
@@ -43,7 +44,7 @@ namespace mcrt {
         static size_t shadowRayCount;
 
         glm::dvec3 sample();
-        glm::dvec3 radiance(const Ray::Intersection&, const Scene*) override;
+        glm::dvec3 radiance(const Ray&, const Ray::Intersection&, const Scene*) override;
         Ray::Intersection intersect(const Ray&) const override;        
     };
 }

@@ -7,7 +7,7 @@
 #include <iostream>
 
 namespace mcrt {
-    Material MeshImporter::_material { Material{{1.0,1.0,1.0}, Material::Type::Diffuse, 0.0} };
+    Material* MeshImporter::_material { nullptr };
 
     Mesh* MeshImporter::load(std::string filename) {
         tinyobj::attrib_t attrib;
@@ -63,7 +63,7 @@ namespace mcrt {
         return mesh;
     }
 
-    void MeshImporter::setMaterial(const Material& m) {
+    void MeshImporter::setMaterial(Material* m) {
         _material = m;
     }
 }

@@ -7,7 +7,7 @@
 namespace mcrt {
     MeshTriangle::MeshTriangle(const glm::dvec3& v1, const glm::dvec3& v2, const glm::dvec3& v3,
                                const glm::dvec3& n1, const glm::dvec3& n2, const glm::dvec3& n3,
-                               const Material& m) : Triangle { v1, v2, v3, m },
+                               Material* m) : Triangle { v1, v2, v3, m },
                                                     _n1{n1}, _n2{n2}, _n3{n3} {  }
 
     Ray::Intersection MeshTriangle::intersect(const Ray& ray) const {

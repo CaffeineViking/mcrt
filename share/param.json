@@ -1,6 +1,6 @@
 {
     "parallelMethod": "openmp",
-    "resolution":  [256, 256],
+    "resolution":  [256,  256],
     "scalingFactor": [1.0, 1.0],
     "interpolation": "bilinear",
     "supersamples": [2, "grid"],

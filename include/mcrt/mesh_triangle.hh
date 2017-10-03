@@ -16,7 +16,7 @@ namespace mcrt {
     public:
         MeshTriangle(const glm::dvec3& v1, const glm::dvec3& v2, const glm::dvec3& v3,
                      const glm::dvec3& n1, const glm::dvec3& n2, const glm::dvec3& n3,
-                     const Material& m);
+                     Material* m);
 
         Ray::Intersection intersect(const Ray& ray) const override;
         void rotate(const glm::dvec3&, double radius);

@@ -12,10 +12,10 @@ namespace mcrt {
     class MeshImporter {
     public:
         static Mesh* load(std::string);
-        static void setMaterial(const Material&);
+        static void setMaterial(Material*);
 
     private:
-        static Material _material;
+        static Material* _material;
     };
 }
 

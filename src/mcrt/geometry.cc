@@ -1,11 +1,10 @@
 #include "mcrt/geometry.hh"
 
 namespace mcrt {
-    Geometry::Geometry(const Material& m): 
-	_material{m}
-    {}
+    Geometry::Geometry(Material* m)
+        : material { m } {  }
 
-    Material Geometry::getMaterial() const {
-        return _material;
+    Material* Geometry::getMaterial() const {
+        return material;
     }
 }

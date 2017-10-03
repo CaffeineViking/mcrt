@@ -12,7 +12,7 @@ namespace mcrt {
         glm::dvec3 _origin;
         double _radius;
     public:
-        Sphere(const glm::dvec3 o, double r, const Material& m);
+        Sphere(const glm::dvec3 o, double r, Material* m);
         Ray::Intersection intersect(const Ray& ray) const override;
     };
 

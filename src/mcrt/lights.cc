@@ -1,12 +1,19 @@
 #include "mcrt/lights.hh"
 #include <iostream>
 namespace mcrt {
-    Light::Light(glm::dvec3 color, double intensity) : color(color), intensity{intensity} {};
-    Light::~Light() {}
+    // Need to allocate material because we use the
+    // intersection ray structure for passing color.
+    Light::Light(glm::dvec3 color, double intensity)
+        : material{new LambertianMaterial{Material::Type::LightSource, color, 0.0}},
+          intensity{intensity} {};
+
+    Light::~Light() {
+        delete material;
+    }
 
     PointLight::PointLight(glm::dvec3 origin, glm::dvec3 color, double intensity) : Light(color,intensity), origin(origin) {}
  
-    glm::dvec3 PointLight::radiance(const Ray::Intersection& rayHit, const Scene* scene) {
+    glm::dvec3 PointLight::radiance(const Ray& ray, const Ray::Intersection& rayHit, const Scene* scene) {
         glm::dvec3 rayToLightSource = origin - rayHit.position;
         glm::dvec3 rayToLightNormal { glm::normalize(rayToLightSource) };
 
@@ -16,15 +23,15 @@ namespace mcrt {
         double oclusionDistance = scene->inShadow(shadowRay);
         if (oclusionDistance > 0.0) {
             double lambertianFalloff { std::max(0.0, glm::dot(shadowRay.direction, rayHit.normal)) };
-            return color * rayHit.material.color * lambertianFalloff;
+            glm::dvec3 reflectance { rayHit.material->brdf(rayHit.position, rayHit.normal,
+                                                           ray.direction, shadowRay.direction) };
+            return material->color * reflectance * lambertianFalloff;
         }
         return glm::dvec3(0);
     }
 
-    Ray::Intersection PointLight::intersect(const Ray& ray) const {
-        Ray::Intersection result {0.0, glm::dvec3(0.0),
-            {color, Material::Type::LightSource, 0.0},glm::dvec3(0)};
-
+    Ray::Intersection PointLight::intersect(const Ray&) const {
+        Ray::Intersection result {0.0, glm::dvec3(0.0), material, glm::dvec3(0.0)};
        return result;
     }
 
@@ -62,8 +69,7 @@ namespace mcrt {
         glm::dvec3 normal { glm::normalize(glm::cross(e1, e2)) };
         if (glm::dot(normal, ray.direction) > 0) normal = -normal;
 
-        Ray::Intersection result {0.0, normal,
-             {color, Material::Type::LightSource, 0.0},glm::dvec3(0)};
+        Ray::Intersection result {0.0, normal, material, glm::dvec3(0.0)};
 
         if(det < Ray::EPSILON && det > -Ray::EPSILON) {
             return result;
@@ -87,7 +93,7 @@ namespace mcrt {
         return result;
     }
 
-    glm::dvec3 AreaLight::radiance(const Ray::Intersection& rayHit, const Scene* scene) {
+    glm::dvec3 AreaLight::radiance(const Ray& ray, const Ray::Intersection& rayHit, const Scene* scene) {
         glm::dvec3 radiance(0.0);
         std::vector<glm::dvec3> lightOrigins;
         for (size_t i=0; i<shadowRayCount; i++) lightOrigins.push_back(sample());
@@ -106,10 +112,11 @@ namespace mcrt {
             if (occlusionDistance > 0.0 && occlusionDistance >= shadowRayDistance) {
                 double cosa = glm::dot(shadowRay.direction, rayHit.normal);
                 double cosb = std::max(glm::dot(-shadowRay.direction, normal), glm::dot(-shadowRay.direction, -normal)) ;
-                glm::dvec3 brdf = rayHit.material.color/glm::pi<double>();
-                radiance += brdf*cosa*cosb/(shadowRayDistance*shadowRayDistance);
+                glm::dvec3 reflectance = rayHit.material->brdf(rayHit.position, rayHit.normal,
+                                                               ray.direction, shadowRay.direction);
+                radiance += reflectance*cosa*cosb/(shadowRayDistance*shadowRayDistance);
             }
         }
-        return area * color * radiance * intensity / (double)shadowRayCount;
+        return area * material->color * radiance * intensity / (double)shadowRayCount;
     }
 }
