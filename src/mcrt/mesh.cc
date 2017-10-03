@@ -96,7 +96,7 @@ namespace mcrt {
         if (boundIntersection.distance == 0)
             return boundIntersection;
 
-        Ray::Intersection res{0, glm::dvec3(), material};
+        Ray::Intersection res{0, glm::dvec3(), material, glm::dvec3{}};
         for (auto t : _triangles) {
             Ray::Intersection i = t->intersect(ray);
             if (i.distance == 0) continue;

@@ -56,23 +56,44 @@ mcrt::Scene mcrt::SceneImporter::load(const std::string& file) {
         nlohmann::json lights { parser["lights"] };
 
         for (auto light : lights[0]) {
-            scene.add(PointLight {
-                { light["origin"][0].get<double>(),
-                  light["origin"][1].get<double>(),
-                  light["origin"][2].get<double>() },
-                { light["radiance"][0].get<double>(),
-                  light["radiance"][1].get<double>(),
-                  light["radiance"][2].get<double>() }
-            });
+            Light::Type lightType {static_cast<Light::Type>(light["type"].get<unsigned>())};
+            if (lightType == Light::Type::PointLight) {
+                scene.add(new PointLight {
+                    { light["origin"][0].get<double>(),
+                      light["origin"][1].get<double>(),
+                      light["origin"][2].get<double>() },
+                    { light["color"][0].get<double>(),
+                      light["color"][1].get<double>(),
+                      light["color"][2].get<double>()},
+                      light["intensity"].get<double>()
+                });
+            }
+            else if (lightType == Light::Type::AreaLight) {
+                scene.add(new AreaLight {
+                        { light["vertex-1"][0].get<double>(),
+                          light["vertex-1"][1].get<double>(),
+                          light["vertex-1"][2].get<double>() },
+                        { light["vertex-2"][0].get<double>(),
+                          light["vertex-2"][1].get<double>(),
+                          light["vertex-2"][2].get<double>() },
+                        { light["vertex-3"][0].get<double>(),
+                          light["vertex-3"][1].get<double>(),
+                          light["vertex-3"][2].get<double>() },
+                        { light["color"][0].get<double>(),
+                          light["color"][1].get<double>(),
+                          light["color"][2].get<double>()},
+                         light["intensity"].get<double>()
+                });
+            }
         }
     }
 
     std::unordered_map<std::string, Material*> palette;
 
     auto stringToSurfaceType = [](const std::string& string) -> Material::Type {
-        if (string == "diffuse") return Material::Type::DIFFUSE;
-        else if (string == "reflective") return Material::Type::REFLECTIVE;
-        else if (string == "refractive") return Material::Type::REFRACTIVE;
+        if (string == "diffuse") return Material::Type::Diffuse;
+        else if (string == "reflective") return Material::Type::Reflective;
+        else if (string == "refractive") return Material::Type::Refractive;
         else throw std::runtime_error { "Error: unkown surface type!" };
     };
 
@@ -90,9 +111,9 @@ mcrt::Scene mcrt::SceneImporter::load(const std::string& file) {
                 materialPointer = new LambertianMaterial {
                     stringToSurfaceType(material["type"].get<std::string>()),
                     {
-                        material["albedo"][0].get<double>(),
-                        material["albedo"][1].get<double>(),
-                        material["albedo"][2].get<double>()
+                        material["color"][0].get<double>(),
+                        material["color"][1].get<double>(),
+                        material["color"][2].get<double>()
                     },
                     material["refractionIndex"].get<double>()
                 };
@@ -100,9 +121,9 @@ mcrt::Scene mcrt::SceneImporter::load(const std::string& file) {
                 materialPointer = new OrenNayarMaterial {
                     stringToSurfaceType(material["type"].get<std::string>()),
                     {
-                        material["albedo"][0].get<double>(),
-                        material["albedo"][1].get<double>(),
-                        material["albedo"][2].get<double>()
+                        material["color"][0].get<double>(),
+                        material["color"][1].get<double>(),
+                        material["color"][2].get<double>()
                     },
 
                     material["refractionIndex"].get<double>(),

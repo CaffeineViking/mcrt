@@ -7,7 +7,7 @@
 
 glm::dvec3 mcrt::LambertianMaterial::brdf(const glm::dvec3&, const glm::dvec3&,
                                           const glm::dvec3&, const glm::dvec3&) const {
-    return albedo / glm::pi<double>();
+    return color / glm::pi<double>();
 }
 
 glm::dvec3 mcrt::OrenNayarMaterial::brdf(const glm::dvec3&, const glm::dvec3& normal,
@@ -17,5 +17,5 @@ glm::dvec3 mcrt::OrenNayarMaterial::brdf(const glm::dvec3&, const glm::dvec3& no
     if (s > 0.0) t = std::max(glm::dot(normal, outgoing), glm::dot(normal, incoming));
     double roughnessFalloff { glm::pi<double>() + roughness*(glm::half_pi<double>() - (2.0/3.0)) };
     double A { 1.0 / roughnessFalloff }, B { roughness / roughnessFalloff };
-    return albedo * (A + B*(s / t));
+    return color * (A + B*(s / t));
 }

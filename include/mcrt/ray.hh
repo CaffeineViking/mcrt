@@ -21,6 +21,7 @@ namespace mcrt {
             Material* material; // Material of a intersect point.
 
             glm::dvec3 sampleHemisphere(const Ray&) const;
+            glm::dvec3 position; // Surface point position.
         };
 
         double fresnel(const glm::dvec3&, const double) const;

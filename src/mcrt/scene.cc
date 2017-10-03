@@ -10,7 +10,8 @@ namespace mcrt {
         Ray::Intersection closestHit {
             std::numeric_limits<double>::max(),
             glm::dvec3(0.0),
-            nullptr
+            nullptr,
+            glm::dvec3(0.0)
         };
 
         for (const Geometry* geometry : geometries) {
@@ -19,13 +20,19 @@ namespace mcrt {
                 closestHit = rayHit;
         }
 
+        for (Light* lightSource : lights) {
+            Ray::Intersection lightHit = lightSource->intersect(ray);
+            if(lightHit.distance > 0.0 && lightHit.distance < closestHit.distance ){
+                closestHit = lightHit;
+            }
+        }
         return closestHit;
     }
 
-    // Shadow check
-    bool Scene::lightIntersect(const Ray& ray, const PointLight& light) const{
+    double Scene::inShadow(const Ray& ray) const{
 
-        double distance = glm::distance(ray.origin, light.origin);
+        double distance = std::numeric_limits<double>::max();
+
         for(const Geometry* geometry: geometries){
             Ray::Intersection rayHit = geometry->intersect(ray);
 
@@ -34,13 +41,14 @@ namespace mcrt {
             }
 
             // Intersects Refractive surface
-            if(rayHit.material->type == Material::Type::REFRACTIVE){
+            if(rayHit.material->type == Material::Type::Refractive){
                 continue;
             }
             distance = std::min(distance, rayHit.distance);
         }
 
-        return distance >= glm::distance(ray.origin, light.origin);
+        // Return distance to occlusion
+        return distance;
     }
 
     // Will be our resource after this...
@@ -52,7 +60,7 @@ namespace mcrt {
         materials.push_back(material);
     }
 
-    void Scene::add(const PointLight& light) {
+    void Scene::add(Light* light) {
         lights.push_back(light);
     }
 
@@ -68,33 +76,20 @@ namespace mcrt {
         Ray::Intersection rayHit = intersect(ray);
         glm::dvec3 rayHitPosition { ray.origin + ray.direction * rayHit.distance };
 
-        // We didn't hit anything when intersecting it goes off to infinity.
-        if (rayHit.material == nullptr) return glm::dvec3 { 0.0, 0.0, 0.0 };
+        // We have hit nothing or something like that I guess.....
+        if (rayHit.material == nullptr) return glm::dvec3 { 0.0 };
 
-        if(rayHit.material->type == Material::Type::DIFFUSE) {
-
-            for (const PointLight& lightSource : lights) {
-
-                glm::dvec3 rayToLightSource = lightSource.origin - rayHitPosition;
-                glm::dvec3 rayToLightNormal { glm::normalize(rayToLightSource) };
-
-                Ray shadowRay { rayHitPosition + rayToLightNormal*Ray::EPSILON,
-                                glm::normalize(rayToLightSource) };
-
-                if (lightIntersect(shadowRay,lightSource)) {
-                    glm::dvec3 surfaceProperty { rayHit.material->brdf(rayHitPosition, rayHit.normal,
-                                                                       ray.direction, shadowRay.direction) };
-                    double lambertianFalloff { std::max(0.0, glm::dot(shadowRay.direction, rayHit.normal)) };
-                    rayColor += lightSource.color * surfaceProperty * lambertianFalloff;
-                }
+        if(rayHit.material->type == Material::Type::Diffuse) {
+            for (Light* lightSource : lights) {
+                rayColor += lightSource->radiance(ray, rayHit, this);
             }
 
-        } else if(rayHit.material->type == Material::Type::REFLECTIVE) {
+        } else if(rayHit.material->type == Material::Type::Reflective) {
 
             Ray reflectionRay { ray.reflect(rayHitPosition, rayHit.normal) };
             rayColor += rayTrace(reflectionRay, depth + 1) * 0.9; // Falloff.
 
-        } else if(rayHit.material->type == Material::Type::REFRACTIVE) {
+        } else if(rayHit.material->type == Material::Type::Refractive) {
 
             double kr = ray.fresnel(rayHit.normal, rayHit.material->refractionIndex);
             bool outside = glm::dot(ray.direction, rayHit.normal) < 0.0;
@@ -113,6 +108,8 @@ namespace mcrt {
             glm::dvec3 reflectionColor = rayTrace(reflectionRay, depth + 1);
             rayColor += reflectionColor * kr + refractionColor * (1.0 - kr);
 
+        } else if(rayHit.material->type == Material::Type::LightSource) {
+            rayColor = rayHit.material->color;
         }
 
         return rayColor;

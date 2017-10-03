@@ -8,85 +8,97 @@
 
     "lights": [
         {
-            "origin": [0.0, 0.0, -3.0],
-            "radiance": [1.0, 1.0, 1.0]
-        }
+            "type": 1,
+            "vertex-1": [1.0, 4.999, 4.0],
+            "vertex-2": [1.0, 4.999, -4.0],
+            "vertex-3": [9.0, 4.999, -4.0],
+            "color": [1.0, 1.0, 1.0],
+            "intensity": 1.0
+        },
+        {
+            "type": 1,
+            "vertex-1": [1.0, 4.999, 4.0],
+            "vertex-2": [9.0, 4.999, -4.0],
+            "vertex-3": [9.0, 4.999, 4.0],
+            "color": [1.0,1.0,1.0],
+            "intensity": 1.0
+        }      
     ],
 
     "materials": [
         {
             "name": "white",
-            "albedo": [1.0, 1.0, 1.0],
+            "color": [1.0, 1.0, 1.0],
             "type": "diffuse",
             "brdf": "lambertian",
             "refractionIndex": 0.0
         },
         {
             "name": "orange",
-            "albedo": [0.964, 0.317, 0.113],
+            "color": [0.964, 0.317, 0.113],
             "type": "diffuse",
             "brdf": "lambertian",
             "refractionIndex": 0.0
         },
         {
             "name": "yellow",
-            "albedo": [1.000, 0.705, 0.000],
+            "color": [1.000, 0.705, 0.000],
             "type": "diffuse",
             "brdf": "lambertian",
             "refractionIndex": 0.0
         },
         {
             "name": "blue",
-            "albedo": [0.000, 0.650, 0.929],
+            "color": [0.000, 0.650, 0.929],
             "type": "diffuse",
             "brdf": "lambertian",
             "refractionIndex": 0.0
         },
         {
             "name": "green",
-            "albedo": [0.498, 0.721, 0.000],
+            "color": [0.498, 0.721, 0.000],
             "type": "diffuse",
             "brdf": "lambertian",
             "refractionIndex": 0.0
         },
         {
             "name": "marine",
-            "albedo": [0.050, 0.172, 0.329],
+            "color": [0.050, 0.172, 0.329],
             "type": "diffuse",
             "brdf": "lambertian",
             "refractionIndex": 0.0
         },
         {
             "name": "red",
-            "albedo": [0.909, 0.372, 0.360],
+            "color": [0.909, 0.372, 0.360],
             "type": "diffuse",
             "brdf": "lambertian",
             "refractionIndex": 0.0
         },
         {
             "name": "mirror",
-            "albedo": [1.00, 1.0, 1.0],
+            "color": [1.00, 1.0, 1.0],
             "type": "reflective",
             "brdf": "lambertian",
             "refractionIndex": 0.0
         },
         {
             "name": "glass",
-            "albedo": [1.00, 1.0, 1.0],
+            "color": [1.00, 1.0, 1.0],
             "type": "refractive",
             "brdf": "lambertian",
             "refractionIndex": 1.5
         },
         {
             "name": "water",
-            "albedo": [1.00, 1.0, 1.0],
+            "color": [1.00, 1.0, 1.0],
             "type": "refractive",
             "brdf": "lambertian",
             "refractionIndex": 1.3
         },
         {
             "name": "concrete",
-            "albedo": [0.498, 0.721, 0.000],
+            "color": [0.498, 0.721, 0.000],
             "type": "diffuse",
             "brdf": "oren-nayar",
             "roughness": 0.8,
@@ -97,15 +109,15 @@
     "surfaces": [
         {
             "geometry": "sphere",
-            "origin": [4.0, -2.0, 0.0],
-            "material": "concrete",
-            "radius": 1.0
+            "origin": [5.0, -3.5, 1.0],
+            "material": "mirror",
+            "radius": 1.5
         },
         {
             "geometry": "sphere",
-            "origin": [7.0, 3.0, 0.0],
-            "material": "mirror",
-            "radius": 1.0
+            "origin": [8.0, -3.5, -2.0],
+            "material": "glass",
+            "radius": 1.5
         },
         {
             "geometry": "triangle",
@@ -266,22 +278,14 @@
             "vertex-1": [13.0, 5.0, 0.0],
             "vertex-2": [10.0, 5.0, -6.0],
             "vertex-3": [10.0, -5.0, -6.0],
-            "material": "yellow"
+            "material": "mirror"
         },
         {
             "geometry": "triangle",
             "vertex-1": [10.0, -5.0, -6.0],
             "vertex-2": [13.0, -5.0, 0.0],
             "vertex-3": [13.0, 5.0, 0.0],
-            "material": "yellow"
-        },
-        {
-            "geometry": "mesh",
-            "file": "share/teapot.obj",
-            "position": [7.0, -0.7, 0.0],
-            "material": "orange",
-            "rotate": [0.0, -1.2, 0.5],
-            "scale": 1.5
+            "material": "mirror"
         }
     ]
 }
