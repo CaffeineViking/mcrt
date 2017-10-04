@@ -113,14 +113,21 @@ int main(int argc, char** argv) {
                 // Finally, raytrace through the scene and get the pixel irradiance.
                 glm::dvec3 colorPixelSample { scene.rayTrace(rayFromViewPlane, 0) };
                 // Since this is just one sample, it should only contribute a bit...
-                renderImage.pixel(x, y) += colorPixelSample / samplesPerPixel;
+                renderImage.pixel(x, y) += colorPixelSample; // We average it later.
 
             }
 
         }
 
-        if (parameters.progressiveRendering) // Previews our render.
-            mcrt::ImageExporter::save(renderImage, renderImagePath);
+        // Preview the current rendered image.
+        if (parameters.progressiveRendering) {
+            mcrt::Image previewImage { renderImage }; // Makes copy for this.
+            // We average out the current samples we have taken from the scene.
+            previewImage.filterByColor([i](const mcrt::Color<double>& sample) {
+                return sample / static_cast<double>(i + 1);
+            });
+            mcrt::ImageExporter::save(previewImage, renderImagePath);
+        }
 
         // ---------------------------------------------------------
 
@@ -140,9 +147,15 @@ int main(int argc, char** argv) {
                                  << renderTimeInSeconds << " seconds."
                                  << std::endl;
 
+    // Finally, averages out the color by taking into account the sampling we have done.
+    renderImage.filterByColor([samplesPerPixel](const mcrt::Color<double>& pixelColor) {
+        return pixelColor / static_cast<double>(samplesPerPixel);
+    });
+
     size_t scaledWidth  = parameters.resolutionWidth  * parameters.scalingFactorX,
            scaledHeight = parameters.resolutionHeight * parameters.scalingFactorY;
     renderImage.resize(scaledWidth, scaledHeight, parameters.interpolationMethod);
+
     mcrt::ImageExporter::save(renderImage, renderImagePath); // A resized variant.
     std::cout << "Rendered to: '" << renderImagePath << "'." << std::endl;
     return 0;

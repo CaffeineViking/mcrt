@@ -25,6 +25,7 @@ namespace mcrt {
 
         // Filters using data from a pixel.
         template<typename F> void filter(F);
+        template<typename F> void filterByColor(F);
         // Filters using data from the neighborhood of a
         // pixel. Data is orderd clockwise around pixel.
         template<typename F> void filterNeighborhood(F);
@@ -54,6 +55,13 @@ namespace mcrt {
         size_t width, height; // 24 bpp in our case.
         std::vector<Color<double>> pixelData;
     };
+
+    template<typename F>
+    void Image::filterByColor(F filter) {
+        for (size_t y { 0 }; y < height; ++y)
+            for (size_t x { 0 }; x < width; ++x)
+                pixel(x, y) = filter(pixel(x, y));
+    }
 
     template<typename F>
     void Image::filter(F filter) {
