@@ -64,6 +64,10 @@ int main(int argc, char** argv) {
                               parameters.resolutionHeight };
     const mcrt::Camera& sceneCamera { scene.getCamera() };
 
+    // Save a black image to start off with...
+    renderImage.clear({ 0.0, 0.0, 0.0, 0.0 });
+    mcrt::ImageExporter::save(renderImage, renderImagePath);
+
     // Combine settings from the scenes and trace parameters.
     double fieldOfView { scene.getCamera().getFieldOfView() };
     scene.getCamera().setAspectRatio(renderImage.getAspectRatio());
@@ -74,49 +78,55 @@ int main(int argc, char** argv) {
 
     auto renderStart  { std::chrono::steady_clock::now() };
 
-    // ====================================================
+    // ===================== Ray Tracing Step ======================
 
-    size_t rowsRendered { 0 }; // Shared resource.
-    const double rowCount = renderImage.getHeight();
+    size_t pixelSamplesTaken { 0 }; // Shared resource.
+    const size_t imagePixels { renderImage.getSize() };
     double samplesPerPixel = parameters.samplesPerPixel;
+    double totalPixelSamples { samplesPerPixel * imagePixels };
     const glm::dvec3 eyePoint { sceneCamera.getEyePosition() };
 
-    #pragma omp parallel for schedule(dynamic) if (openmp)
-    for (size_t y = 0; y < renderImage.getHeight(); ++y) {
-        double renderProgress = rowsRendered / rowCount;
+    for (size_t i = 0; i < samplesPerPixel; ++i) {
 
-        #pragma omp critical
-        printProgress("Ray tracing: ",
-                      renderProgress);
-        #pragma omp atomic
-        ++rowsRendered;
+        // ----------------------- Ray Trace -----------------------
 
-        // ------------------------------------------------
+        #pragma omp parallel for schedule(dynamic) if (openmp)
+        for (size_t y = 0; y < renderImage.getHeight(); ++y) {
 
-        for (size_t x = 0; x < renderImage.getWidth(); ++x) {
-            std::vector<glm::dvec3> pixelColors;
-            pixelColors.reserve(parameters.samplesPerPixel);
-            // Below is the interval in the pixel where we can get further pp samples.
-            auto samplingPlane = sceneCamera.getPixelSamplingPlane(renderImage, x, y);
-            for (size_t i = 0; i < parameters.samplesPerPixel; ++i) {
-                // Choose some location for us to sample in the pixel plane.
+            #pragma omp critical
+            printProgress("Ray tracing: ", pixelSamplesTaken /
+                                           totalPixelSamples);
+            #pragma omp atomic
+            pixelSamplesTaken += renderImage.getWidth();
+
+            for (size_t x = 0; x < renderImage.getWidth(); ++x) {
+
+                // Below is the interval in the pixel where we can get further pp samples.
+                auto samplingPlane = sceneCamera.getPixelSamplingPlane(renderImage, x, y);
+
+                // Here we actually fetch the next sampling position to take.
                 glm::dvec3 viewPlanePoint { sampler.next(samplingPlane, i) };
+                // Find our where in the scene our eye's pixel sample is looking at...
                 glm::dvec3 rayDirection { glm::normalize(viewPlanePoint - eyePoint) };
                 mcrt::Ray rayFromViewPlane { viewPlanePoint, rayDirection };
-                pixelColors.push_back(scene.rayTrace(rayFromViewPlane, 0));
+
+                // Finally, raytrace through the scene and get the pixel irradiance.
+                glm::dvec3 colorPixelSample { scene.rayTrace(rayFromViewPlane, 0) };
+                // Since this is just one sample, it should only contribute a bit...
+                renderImage.pixel(x, y) += colorPixelSample / samplesPerPixel;
+
             }
 
-            // Here we sum contributions from each sample and then average the color's values.
-            glm::dvec3 pixelColorSum = std::accumulate(pixelColors.begin(), pixelColors.end(),
-                                                       glm::dvec3 { 0.0, 0.0, 0.0 });
-            glm::dvec3 meanPixelColor { pixelColorSum / samplesPerPixel };
-            renderImage.pixel(x, y) = meanPixelColor;
         }
 
-        // ------------------------------------------------
+        if (parameters.progressiveRendering) // Previews our render.
+            mcrt::ImageExporter::save(renderImage, renderImagePath);
+
+        // ---------------------------------------------------------
+
     }
 
-    // ====================================================
+    // =============================================================
 
     auto renderFinish { std::chrono::steady_clock::now() };
 
@@ -133,7 +143,7 @@ int main(int argc, char** argv) {
     size_t scaledWidth  = parameters.resolutionWidth  * parameters.scalingFactorX,
            scaledHeight = parameters.resolutionHeight * parameters.scalingFactorY;
     renderImage.resize(scaledWidth, scaledHeight, parameters.interpolationMethod);
-    mcrt::ImageExporter::save(renderImage, renderImagePath);
+    mcrt::ImageExporter::save(renderImage, renderImagePath); // A resized variant.
     std::cout << "Rendered to: '" << renderImagePath << "'." << std::endl;
     return 0;
 }
