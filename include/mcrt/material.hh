@@ -13,29 +13,31 @@ namespace mcrt {
         };
 
         virtual ~Material() = default;
-        Material(Type type, const glm::dvec3& color, double refractionIndex)
+        Material(Type type, const glm::dvec3& color, double refractionIndex, double reflectionRate)
             : type { type }, color { color },
-              refractionIndex { refractionIndex } {  }
+              refractionIndex { refractionIndex },
+              reflectionRate { reflectionRate } {  }
 
         Type type;
         glm::dvec3 color;
         double refractionIndex;
+        double reflectionRate;
 
         virtual glm::dvec3 brdf(const glm::dvec3&, const glm::dvec3&,
                                 const glm::dvec3&, const glm::dvec3&) const = 0;
     };
 
     struct LambertianMaterial : public Material {
-        LambertianMaterial(Type type, const glm::dvec3& color, double refractionIndex)
-            : Material { type, color, refractionIndex} {  }
+        LambertianMaterial(Type type, const glm::dvec3& color, double refractionIndex, double reflectionRate)
+            : Material { type, color, refractionIndex, reflectionRate } {  }
 
         glm::dvec3 brdf(const glm::dvec3&, const glm::dvec3&,
                         const glm::dvec3&, const glm::dvec3&) const override;
     };
 
     struct OrenNayarMaterial : public Material {
-        OrenNayarMaterial(Type type, const glm::dvec3& color, double refractionIndex, double roughness)
-            : Material { type, color, refractionIndex}, roughness { roughness } {  }
+        OrenNayarMaterial(Type type, const glm::dvec3& color, double refractionIndex, double reflectionRate, double roughness)
+            : Material { type, color, refractionIndex, reflectionRate }, roughness { roughness } {  }
 
         double roughness;
 

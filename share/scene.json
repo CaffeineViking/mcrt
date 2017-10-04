@@ -31,70 +31,80 @@
             "color": [1.0, 1.0, 1.0],
             "type": "diffuse",
             "brdf": "lambertian",
-            "refractionIndex": 0.0
+            "refractionIndex": 0.0,
+            "reflectionRate": 0.75
         },
         {
             "name": "orange",
             "color": [0.964, 0.317, 0.113],
             "type": "diffuse",
             "brdf": "lambertian",
-            "refractionIndex": 0.0
+            "refractionIndex": 0.0,
+            "reflectionRate": 0.75
         },
         {
             "name": "yellow",
             "color": [1.000, 0.705, 0.000],
             "type": "diffuse",
             "brdf": "lambertian",
-            "refractionIndex": 0.0
+            "refractionIndex": 0.0,
+            "reflectionRate": 0.75
         },
         {
             "name": "blue",
             "color": [0.000, 0.650, 0.929],
             "type": "diffuse",
             "brdf": "lambertian",
-            "refractionIndex": 0.0
+            "refractionIndex": 0.0,
+            "reflectionRate": 0.75
         },
         {
             "name": "green",
             "color": [0.498, 0.721, 0.000],
             "type": "diffuse",
             "brdf": "lambertian",
-            "refractionIndex": 0.0
+            "refractionIndex": 0.0,
+            "reflectionRate": 0.75
         },
         {
             "name": "marine",
             "color": [0.050, 0.172, 0.329],
             "type": "diffuse",
             "brdf": "lambertian",
-            "refractionIndex": 0.0
+            "refractionIndex": 0.0,
+            "reflectionRate": 0.75
         },
         {
             "name": "red",
             "color": [0.909, 0.372, 0.360],
             "type": "diffuse",
             "brdf": "lambertian",
-            "refractionIndex": 0.0
+            "refractionIndex": 0.0,
+            "reflectionRate": 0.75
         },
         {
             "name": "mirror",
             "color": [1.00, 1.0, 1.0],
             "type": "reflective",
             "brdf": "lambertian",
-            "refractionIndex": 0.0
+            "refractionIndex": 0.0,
+            "reflectionRate": 1.0
         },
         {
             "name": "glass",
             "color": [1.00, 1.0, 1.0],
             "type": "refractive",
             "brdf": "lambertian",
-            "refractionIndex": 1.5
+            "refractionIndex": 1.5,
+            "reflectionRate": 1.0
         },
         {
             "name": "water",
             "color": [1.00, 1.0, 1.0],
             "type": "refractive",
             "brdf": "lambertian",
-            "refractionIndex": 1.3
+            "refractionIndex": 1.3,
+            "reflectionRate": 1.0
         },
         {
             "name": "concrete",
@@ -102,7 +112,8 @@
             "type": "diffuse",
             "brdf": "oren-nayar",
             "roughness": 0.8,
-            "refractionIndex": 0.0
+            "refractionIndex": 0.0,
+            "reflectionRate": 0.75
         }
     ],
 
