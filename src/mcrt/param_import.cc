@@ -11,6 +11,12 @@ mcrt::Parameters mcrt::ParameterImporter::load(const std::string& file) {
 
     Parameters parameters;
 
+    if (parser.find("progressiveRendering") != parser.end()) {
+        size_t progressive { parser["progressiveRendering"].get<size_t>() };
+        if (progressive > 0) parameters.progressiveRendering = true;
+        else parameters.progressiveRendering = false;
+    }
+
     if (parser.find("parallelMethod") != parser.end()) {
         std::string parallel { parser["parallelMethod"].get<std::string>() };
         if (parallel == "none") parameters.parallelFramework = Parameters::ParallelFramework::NONE;

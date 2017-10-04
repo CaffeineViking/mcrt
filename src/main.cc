@@ -64,6 +64,10 @@ int main(int argc, char** argv) {
                               parameters.resolutionHeight };
     const mcrt::Camera& sceneCamera { scene.getCamera() };
 
+    // Save a black image to start off with...
+    renderImage.clear({ 0.0, 0.0, 0.0, 0.0 });
+    mcrt::ImageExporter::save(renderImage, renderImagePath);
+
     // Combine settings from the scenes and trace parameters.
     double fieldOfView { scene.getCamera().getFieldOfView() };
     scene.getCamera().setAspectRatio(renderImage.getAspectRatio());
@@ -74,7 +78,7 @@ int main(int argc, char** argv) {
 
     auto renderStart  { std::chrono::steady_clock::now() };
 
-    // ================== Ray Tracing Step ====================
+    // ===================== Ray Tracing Step ======================
 
     size_t pixelSamplesTaken { 0 }; // Shared resource.
     const size_t imagePixels { renderImage.getSize() };
@@ -84,7 +88,7 @@ int main(int argc, char** argv) {
 
     for (size_t i = 0; i < samplesPerPixel; ++i) {
 
-        // -------------------- Ray Trace ---------------------
+        // ----------------------- Ray Trace -----------------------
 
         #pragma omp parallel for schedule(dynamic) if (openmp)
         for (size_t y = 0; y < renderImage.getHeight(); ++y) {
@@ -115,11 +119,14 @@ int main(int argc, char** argv) {
 
         }
 
-        // ----------------------------------------------------
+        if (parameters.progressiveRendering) // Previews our render.
+            mcrt::ImageExporter::save(renderImage, renderImagePath);
+
+        // ---------------------------------------------------------
 
     }
 
-    // ========================================================
+    // =============================================================
 
     auto renderFinish { std::chrono::steady_clock::now() };
 
@@ -136,7 +143,7 @@ int main(int argc, char** argv) {
     size_t scaledWidth  = parameters.resolutionWidth  * parameters.scalingFactorX,
            scaledHeight = parameters.resolutionHeight * parameters.scalingFactorY;
     renderImage.resize(scaledWidth, scaledHeight, parameters.interpolationMethod);
-    mcrt::ImageExporter::save(renderImage, renderImagePath);
+    mcrt::ImageExporter::save(renderImage, renderImagePath); // A resized variant.
     std::cout << "Rendered to: '" << renderImagePath << "'." << std::endl;
     return 0;
 }
