@@ -80,6 +80,12 @@ namespace mcrt {
         if (rayHit.material == nullptr) return glm::dvec3 { 0.0 };
 
         if(rayHit.material->type == Material::Type::Diffuse) {
+            glm::dvec3 reflectionDir = rayHit.sampleHemisphere(ray);
+            if (glm::length(reflectionDir) > 0.0) {
+                Ray reflectionRay { rayHit.position + reflectionDir*Ray::EPSILON, reflectionDir };
+                glm::dvec3 brdf = rayHit.material->brdf(rayHit.position, rayHit.normal, reflectionDir, -ray.direction);
+                rayColor += rayTrace(ray, depth + 1) * brdf * glm::pi<double>() / rayHit.material->reflectionRate;
+            }
             for (Light* lightSource : lights) {
                 rayColor += lightSource->radiance(ray, rayHit, this);
             }

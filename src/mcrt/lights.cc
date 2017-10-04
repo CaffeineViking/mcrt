@@ -4,7 +4,7 @@ namespace mcrt {
     // Need to allocate material because we use the
     // intersection ray structure for passing color.
     Light::Light(glm::dvec3 color, double intensity)
-        : material{new LambertianMaterial{Material::Type::LightSource, color, 0.0}},
+        : material{new LambertianMaterial{Material::Type::LightSource, color, 0.0, 0.0}},
           intensity{intensity} {};
 
     Light::~Light() {

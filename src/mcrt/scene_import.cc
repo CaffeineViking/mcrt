@@ -111,28 +111,28 @@ mcrt::Scene mcrt::SceneImporter::load(const std::string& file) {
             if (palette.count(materialName) != 0) continue;
 
             std::string brdfType { material["brdf"].get<std::string>() };
+            glm::dvec3 color {
+                material["color"][0].get<double>(),
+                material["color"][1].get<double>(),
+                material["color"][2].get<double>()
+            };
+            double refractionIndex { material["refractionIndex"].get<double>() };
+            double reflectionRate { material["reflectionRate"].get<double>() };
 
             Material* materialPointer;
             if (brdfType == "lambertian") {
                 materialPointer = new LambertianMaterial {
                     stringToSurfaceType(material["type"].get<std::string>()),
-                    {
-                        material["color"][0].get<double>(),
-                        material["color"][1].get<double>(),
-                        material["color"][2].get<double>()
-                    },
-                    material["refractionIndex"].get<double>()
+                    color,
+                    refractionIndex,
+                    reflectionRate
                 };
             } else if (brdfType == "oren-nayar") {
                 materialPointer = new OrenNayarMaterial {
                     stringToSurfaceType(material["type"].get<std::string>()),
-                    {
-                        material["color"][0].get<double>(),
-                        material["color"][1].get<double>(),
-                        material["color"][2].get<double>()
-                    },
-
-                    material["refractionIndex"].get<double>(),
+                    color,
+                    refractionIndex,
+                    reflectionRate,
                     material["roughness"].get<double>()
                 };
             } else throw std::runtime_error { "Error: unknown surface BRDF!" };
