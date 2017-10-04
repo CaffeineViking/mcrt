@@ -40,7 +40,7 @@ namespace mcrt {
         // to do any sort of conversion magic. It's bytes!
         std::vector<Color<double>>& getPixelData();
         std::vector<Color<unsigned char>> getNormalizedPixelData() const;
-        
+
         // Wrapper when not changing, i.e read-only of the pixel data.
         const std::vector<Color<double>>& getPixelData() const;
 

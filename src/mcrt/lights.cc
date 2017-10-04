@@ -23,9 +23,9 @@ namespace mcrt {
         double oclusionDistance = scene->inShadow(shadowRay);
         if (oclusionDistance > 0.0) {
             double lambertianFalloff { std::max(0.0, glm::dot(shadowRay.direction, rayHit.normal)) };
-            glm::dvec3 reflectance { rayHit.material->brdf(rayHit.position, rayHit.normal,
-                                                           ray.direction, shadowRay.direction) };
-            return material->color * reflectance * lambertianFalloff;
+            glm::dvec3 brdf { rayHit.material->brdf(rayHit.position, rayHit.normal,
+                                                   -ray.direction, shadowRay.direction) };
+            return material->color * brdf * lambertianFalloff;
         }
         return glm::dvec3(0);
     }
@@ -112,9 +112,9 @@ namespace mcrt {
             if (occlusionDistance > 0.0 && occlusionDistance >= shadowRayDistance) {
                 double cosa = glm::dot(shadowRay.direction, rayHit.normal);
                 double cosb = std::max(glm::dot(-shadowRay.direction, normal), glm::dot(-shadowRay.direction, -normal)) ;
-                glm::dvec3 reflectance = rayHit.material->brdf(rayHit.position, rayHit.normal,
-                                                               ray.direction, shadowRay.direction);
-                radiance += reflectance*cosa*cosb/(shadowRayDistance*shadowRayDistance);
+                glm::dvec3 brdf = rayHit.material->brdf(rayHit.position, rayHit.normal,
+                                                               -ray.direction, shadowRay.direction);
+                radiance += brdf*cosa*cosb/(shadowRayDistance*shadowRayDistance);
             }
         }
         return area * material->color * radiance * intensity / (double)shadowRayCount;
