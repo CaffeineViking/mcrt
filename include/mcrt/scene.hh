@@ -51,6 +51,9 @@ namespace mcrt {
 
         double inShadow(const Ray& ray) const;
 
+        std::vector<Material*>& getMaterials() { return materials; }
+        const std::vector<Material*>& getMaterials() const { return materials; }
+
         std::vector<Geometry*>& getGeometries() { return geometries; }
         const std::vector<Geometry*>& getGeometries() const { return geometries; }
 
