@@ -1,4 +1,9 @@
-config="debug"
+config="release"
+
+files="share/render.png"
+scene="share/scene.json"
+param="share/param.json"
+
 all: FORCE
 	premake5 gmake
 	make -j8 -C build config=${config}
@@ -9,12 +14,12 @@ run: FORCE
 render: FORCE
 	premake5 gmake
 	make -j8 -C build mcrt config=${config}
-	bin/mcrt share/render.png share/scene.json share/param.json
+	bin/mcrt ${files} ${scene} ${param}
 view-render: FORCE
 	premake5 gmake
 	make -j8 -C build mcrt config=${config}
 	sleep 2s && feh --force-aliasing -R2 -F share/render.png &
-	bin/mcrt share/render.png share/scene.json share/param.json
+	bin/mcrt ${files} ${scene} ${param}
 
 profile: FORCE
 	premake5 gmake
@@ -46,5 +51,4 @@ distclean: clean
 	rm -f docs/slides/slides.pdf
 FORCE:
 
-# Clarifies gmake that these aren't any real dependencies...
-.PHONY: all run render view-render docs slides tags clean distclean
+.PHONY: all run render view-render profile view-profile docs slides tags clean distclean
