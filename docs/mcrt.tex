@@ -13,6 +13,7 @@
 \usepackage{listings}
 \usepackage{booktabs}
 \usepackage{mathtools}
+\usepackage{subcaption}
 \usepackage{algorithmic}
 \usepackage{graphicx}
 \usepackage{courier}
@@ -60,6 +61,30 @@ labelfont=bf,singlelinecheck=off,labelsep=space}
     \newpage \tableofcontents \clearpage
 
     \section{Introduction} \label{sec:introduction}
+
+        Several fields of industry use \emph{computer graphics} to generate and display synthetic images on a screen; e.g.\ the entertainment industry uses \emph{raytracers} for \emph{rendering} animated movies while \emph{rasterizers} usually are the technology powering real-time video games. Of course, it's also widely used in the engineering and scientific disciplines for visualizing field data, which even have their own sub-field called \emph{scientific visualization}. Since it is such a wide field, we'll only be focusing on the \emph{rendering problem}: the task of converting one \emph{scene description} to an \emph{image} of it. We'll see that it's both challenging and fun to solve!
+
+        Rendering can usually be done in one of two ways, called the \emph{rasterization} and \emph{raytracing} techniques, or, by using some hybrid of those. \emph{Rasterization} is when we geometrically project a scene, composed of primitives, onto an image plane (our camera) and then color the pixels based on a \emph{local lighting model}. Meaning, objects in a scene are \emph{shaded} only based on position, material properties, viewpoint direction, and light source information; never on other objects. Rasterization is very fast since there is hardware dedicated to these operations, and each of these is independent of each other: \emph{embarrassingly parallel}.
+
+    \newpage
+
+    \begin{figure}[ht]
+        \centering
+        \label{fig:cornell_box}
+        \begin{subfigure}{0.48\linewidth}
+            \centering
+            \label{fig:cornell_box_local_illumination}
+            \includegraphics[width=\linewidth]{share/cornell_local_illumination.png}
+            \caption{local illumination}
+        \end{subfigure} \hfill
+        \begin{subfigure}{0.48\linewidth}
+            \centering
+            \label{fig:cornell_box_global_illumination}
+            \includegraphics[width=\linewidth]{share/cornell_global_illumination.png}
+            \caption{global illumination}
+        \end{subfigure}
+        \caption{Two renders of the famous \emph{Cornell box} in our raytracer; comparing both illumination models.}
+    \end{figure}
 
     \subsection{Global\, Illumination} \label{sec:global_illumination}
 
