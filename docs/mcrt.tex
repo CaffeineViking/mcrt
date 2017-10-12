@@ -93,9 +93,14 @@ labelfont=bf,singlelinecheck=off,labelsep=space}
     \subsection{Radiosity} \label{sec:radiosity}
 
     \subsection{Whitted Raytracing} \label{sec:whitted_raytracing}
+    In the Whitted ray tracing method initial rays are emitted from the camera into the scene. The rays will intersect with objects and new reflective and/or refractive rays are spawned. In this method it is assumed that we have perfect reflections and refractions. The direction of a refracted ray is computed with Snell's law given the refractive indices of the materials at the intersection point.
+
+    Reflecting and refracting rays will build up a tree of rays. When all rays have terminated the radiance at each intersection point is computed from the leaf nodes back up to the root node (camera). The radiance from the child rays of an intersection point contribute to the total radiance leaving the intersection point. Shadow rays is sent from each intersection point to the light sources to know if the point is in shadow. If the shadow ray reaches the light source the point is not in shadow and the light source therefore contribute to the total radiance. 
 
     \subsection{Path Tracing} \label{sec:path_tracing}
+    The path tracing method works in a similar way to Whitted raytracing but the reflections and refractions is not always perfect. Instead, when a ray intersects with an object it will be reflected in a random direction from the intersection point. The rays will be recursivly reflect until they intersect with a light source. Since some rays never hit a light source another condition to terminate is needed. The soulution is Russian roulette, where rays have a probability of terminating at an intersection point. This will give an unbiased result.
 
+    A tree will be built and recursed just as before adding contribution from the child nodes and from the light sources with a local lighting model. 
     \subsection{Photon Mapping} \label{sec:photon_mapping}
 
     \clearpage
