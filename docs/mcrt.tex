@@ -62,11 +62,13 @@ labelfont=bf,singlelinecheck=off,labelsep=space}
 
     \section{Introduction} \label{sec:introduction}
 
-        Several fields of industry use \emph{computer graphics} to generate and display synthetic images on a screen; e.g.\ the entertainment industry uses \emph{raytracers} for \emph{rendering} animated movies while \emph{rasterizers} usually are the technology powering real-time video games. Of course, it's also widely used in the engineering and scientific disciplines for visualizing field data, which even have their own sub-field called \emph{scientific visualization}. Since it is such a wide field, we'll only be focusing on the \emph{rendering problem}: the task of converting one \emph{scene description} to an \emph{image} of it. We'll see that it's both challenging and fun to solve!
+        Several fields of industry use \emph{computer graphics} to generate and display synthetic images on a screen; e.g.\ the entertainment industry uses \emph{raytracers} for \emph{rendering} animated movies while \emph{rasterizers} usually are the technology powering real-time video games. Of course, it's also widely used in the engineering and scientific disciplines for visualizing field data, which even have their own sub-field called \emph{scientific visualization}. Since it is such a wide field, we'll only be focusing on the \emph{rendering problem}: the task of converting one \emph{scene description} to an \emph{image} of it.
 
-        Rendering can usually be done in one of two ways, called the \emph{rasterization} and \emph{raytracing} techniques, or, by using some hybrid of those. \emph{Rasterization} is when we geometrically project a scene, composed of primitives, onto an image plane (our camera) and then color the pixels based on a \emph{local lighting model}. Meaning, objects in a scene are \emph{shaded} only based on position, material properties, viewpoint direction, and light source information; never on other objects. Rasterization is very fast since there is hardware dedicated to these operations, and each of these is independent of each other: \emph{embarrassingly parallel}.
+        Rendering can usually be done in one of two ways, called the \emph{rasterization} and \emph{raytracing} techniques, or, by using some hybrid of these. \emph{Rasterization} is when we geometrically project a scene, composed of primitives, onto an image plane (our camera) and then color the pixels based on a \emph{local lighting model}. Meaning, objects in a scene are \emph{shaded} only based on position, material properties, viewpoint direction, and light source information; never on other objects. Rasterization is very fast since there is hardware dedicated to these operations, and each of these is independent of each other, in other words, it's an \emph{embarrassingly parallel} problem. \emph{Raytracing} on the other hand shoots \emph{rays} from the pixels in the \emph{camera viewplane} and finds \emph{intersections} with geometry in the scene. These rays bounce around the scene by \emph{specular reflection} or \emph{specular transmission}, until it finds a \emph{diffuse surface}, which then \emph{absorbs} it. It's a process by recursion, which approximates \emph{irradiance} falling onto a pixel. Since it takes into account other objects, it's technique based on a \emph{global illumination model}. Unfortunately, raytracing doesn't have full hardware support, but is still fast since it's also an embarrassingly parallel task (e.g. do for each pixel).
 
-    \newpage
+        In this report we'll describe all the party tricks we've used to implement our \emph{Monte Carlo raytracer} from scratch. It simulates all \emph{light transport} effects for \emph{perfectly diffuse} and \emph{perfectly specular} surfaces. We've also implemented \emph{photon mapping} to speed up our convergence rate for higher quality \emph{caustics}. Arbitrary \emph{triangle meshes} can also be rendered and use \emph{bounding volumes} to ignore low-effort intersection tests. Lastly, we also support \emph{quadric geometry}. All of our scene is specified by using a JSON format.
+
+        \cref{sec:introduction} continues with an overview of the field. \cref{sec:theory_and_method} breaks apart our raytracer and explains each part in turn along with any relevant theory. In \cref{sec:results_and_benchmark} we play around with our raytracer's knobs to see if they affect the final results, and more importantly, the running time. We try to see if there is a balanced trade-off between quality and speed. There we'll also show some renders of a couple of scenes made with our raytracer. \cref{sec:discussion_and_outlook} concludes the report by critically looking at our results and giving insight into what could have been done next.
 
     \begin{figure}[ht]
         \centering
@@ -90,14 +92,18 @@ labelfont=bf,singlelinecheck=off,labelsep=space}
 
     \subsection{Rendering Equation} \label{sec:rendering_equation}
 
+    \newpage
+
     \subsection{Radiosity} \label{sec:radiosity}
 
     \subsection{Whitted Raytracing} \label{sec:whitted_raytracing}
+
     In the Whitted ray tracing method initial rays are emitted from the camera into the scene. The rays will intersect with objects and new reflective and/or refractive rays are spawned. In this method it is assumed that we have perfect reflections and refractions. The direction of a refracted ray is computed with Snell's law given the refractive indices of the materials at the intersection point.
 
     Reflecting and refracting rays will build up a tree of rays. When all rays have terminated the radiance at each intersection point is computed from the leaf nodes back up to the root node (camera). The radiance from the child rays of an intersection point contribute to the total radiance leaving the intersection point. Shadow rays is sent from each intersection point to the light sources to know if the point is in shadow. If the shadow ray reaches the light source the point is not in shadow and the light source therefore contribute to the total radiance. 
 
     \subsection{Path Tracing} \label{sec:path_tracing}
+
     The path tracing method works in a similar way to Whitted raytracing but the reflections and refractions is not always perfect. Instead, when a ray intersects with an object it will be reflected in a random direction from the intersection point. The rays will be recursivly reflect until they intersect with a light source. Since some rays never hit a light source another condition to terminate is needed. The soulution is Russian roulette, where rays have a probability of terminating at an intersection point. This will give an unbiased result.
 
     A tree will be built and recursed just as before adding contribution from the child nodes and from the light sources with a local lighting model. 
