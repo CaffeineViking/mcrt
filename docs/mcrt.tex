@@ -72,7 +72,6 @@ labelfont=bf,singlelinecheck=off,labelsep=space}
 
     \begin{figure}[ht]
         \centering
-        \label{fig:cornell_box}
         \begin{subfigure}{0.48\linewidth}
             \centering
             \label{fig:cornell_box_local_illumination}
@@ -86,16 +85,19 @@ labelfont=bf,singlelinecheck=off,labelsep=space}
             \caption{global illumination}
         \end{subfigure}
         \caption{Two renders of the famous \emph{Cornell box} in our raytracer; comparing both illumination models.}
+        \label{fig:cornell_box}
     \end{figure}
+
+    \vspace{-1.5em}
 
     \subsection{Global\, Illumination} \label{sec:global_illumination}
 
+    A rendering technique is deemed to be \emph{photorealistic} if, after full convergance, it exactly mimics reality. One of the most important ingredients for achieving photorealism is \emph{global illumination}. We can compare \emph{local illumination} and \emph{global illumination} by looking at \cref{fig:cornell_box}. Notice that GI (global illumination) has \emph{color bleeding}, \emph{hard and soft shadows} and \emph{caustics}. These phenomena are not possible in a local model without resorting to e.g. \emph{shadow mapping} technique.
+
     \subsection{Rendering Equation} \label{sec:rendering_equation}
 
-        A model describing most light transport phenomena is the \emph{rendering equation}, shown below, presented by \emph{James Kajiya}~\cite{kajiya1986rendering}. All of the rendering schemes are attempts at solving it. We present in the coming sections the most well known rendering techniques.
-
-        \begin{align*}
-            \mathcal{L}_o(\vec{x}, \hat{\omega}_o) &= \mathcal{L}_e(\vec{x}, \hat{\omega}_o) +\\
+        A model describing most light transport phenomena is the \emph{rendering equation}, shown below, presented by \emph{James Kajiya}~\cite{kajiya1986rendering}. All of the rendering schemes are attempts at solving it. We present in the coming sections the most well known rendering techniques. \begin{align*}
+            \mathcal{L}_o(\vec{x}, \hat{\omega}_o) &= \mathcal{L}_e(\vec{x}, \hat{\omega}_o) \; +\\
                                                    &+ \int_\Omega \mathcal{L}_i(\vec{x}, \hat{\omega}_i)
                                                       f_r(\vec{x}, \hat{\omega}_i, \hat{\omega}_o)
                                                       (\hat{n}_{x} \cdot \hat{\omega}_i) \, d\hat{\omega}_i
@@ -105,12 +107,10 @@ labelfont=bf,singlelinecheck=off,labelsep=space}
 
     \subsection{Radiosity} \label{sec:radiosity}
     
-    \textit{Radiosity} for computer graphics builds on the concept of calculating how light is transferred between patches of the scene in an iterative process with, for each iterations we solve the equation:
-
-\begin{equation}
-B_i = E_i + \rho_i \sum_{j=1}^{n} F_{ij} B_j
-\end{equation}
-where \(B_i\) is the \textit{radiosity} of patch \(i\), \(\rho_i\) is the \textit{reflectivity} of patch \(i\), and the sum is between each patch in the scene and the patch \(i\) with \(F_{ij} \) the formfactor (geometric term) between \(i\) and \(j\).
+    \textit{Radiosity} for computer graphics builds on the concept of calculating how light is transferred between patches of the scene in an iterative process with, for each iterations we solve the equation: \begin{equation*}
+        B_i = E_i + \rho_i \sum_{j=1}^{n} F_{ij} B_j
+    \end{equation*}
+    where \(B_i\) is the \textit{radiosity} of patch \(i\), \(\rho_i\) is the \textit{reflectivity} of patch \(i\), and the sum is between each patch in the scene and the patch \(i\) with \(F_{ij} \) the formfactor (geometric term) between \(i\) and \(j\).
 
 Iterating on the above equations, a discrete approximation of the \textit{rendering equation} is achieved for perfect labertian surfaces as the patch size goes infinitesimal and the iterations tends to infinity. Some advantages of radiosity over GI techniques that takes into account specular light is that it calculates the radiosity of the full scene and not just based on the camera viewport, making it useful when baking lightmaps with the scene.     
 
