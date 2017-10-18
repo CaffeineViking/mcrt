@@ -68,7 +68,7 @@ labelfont=bf,singlelinecheck=off,labelsep=space}
 
         In this report we'll describe all the party tricks we've used to implement our \emph{Monte Carlo raytracer} from scratch. It simulates all \emph{light transport} effects for \emph{perfectly diffuse} and \emph{perfectly specular} surfaces. We've also implemented \emph{photon mapping} to speed up our convergence rate for higher quality \emph{caustics}. Arbitrary \emph{triangle meshes} can also be rendered and use \emph{bounding volumes} to ignore low-effort intersection tests. Lastly, we also support \emph{quadric geometry}. All of our scene is specified by using a JSON format.
 
-        \cref{sec:introduction} continues with an overview of the field. \cref{sec:theory_and_method} breaks apart our raytracer and explains each part in turn along with any relevant theory. In \cref{sec:results_and_benchmark} we play around with our raytracer's knobs to see if they affect the final results, and more importantly, the running time. We try to see if there is a balanced trade-off between quality and speed. There we'll also show some renders of a couple of scenes made with our raytracer. \cref{sec:discussion_and_outlook} concludes the report by critically looking at our results and giving insight into what could have been done next.
+        We continue \cref{sec:introduction} by giving a brief overview of the field and introducing desirable properties for achieving \emph{photorealism} with a model describing it. We then take a excursion through the most notable rendering schemes to solve the \emph{rendering equation}. In \cref{sec:theory_and_method} we break apart our raytracer bit-by-bit and explain each part in turn, along with any relevant theory necessary. We then play around with our raytracer's knobs in \cref{sec:results_and_benchmark} to see if they affect the final render, and more importantly, the rendering time. We'll try to see if there is a balanced trade-off between render quality and speed. After all this, \cref{sec:discussion_and_outlook} concludes the report by critically looking at our implementation and results and also giving insight into what could be improved further.
 
     \begin{figure}[ht]
         \centering
@@ -91,6 +91,15 @@ labelfont=bf,singlelinecheck=off,labelsep=space}
     \subsection{Global\, Illumination} \label{sec:global_illumination}
 
     \subsection{Rendering Equation} \label{sec:rendering_equation}
+
+        A model describing most light transport phenomena is the \emph{rendering equation}, shown below, presented by \emph{James Kajiya}~\cite{kajiya1986rendering}. All of the rendering schemes are attempts at solving it. We present in the coming sections the most well known rendering techniques.
+
+        \begin{align*}
+            \mathcal{L}_o(\vec{x}, \hat{\omega}_o) &= \mathcal{L}_e(\vec{x}, \hat{\omega}_o) +\\
+                                                   &+ \int_\Omega \mathcal{L}_i(\vec{x}, \hat{\omega}_i)
+                                                      f_r(\vec{x}, \hat{\omega}_i, \hat{\omega}_o)
+                                                      (\hat{n}_{x} \cdot \hat{\omega}_i) \, d\hat{\omega}_i
+        \end{align*}
 
     \newpage
 
