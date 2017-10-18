@@ -14,6 +14,9 @@
 #include "mcrt/supersample.hh"
 #include "mcrt/image_export.hh"
 
+#include "mcrt/photon.hh"
+#include "mcrt/photon_map.hh"
+
 #include "mcrt/material.hh"
 
 int usage(int argc, char** argv) {
@@ -77,6 +80,15 @@ int main(int argc, char** argv) {
     mcrt::AreaLight::shadowRayCount = parameters.shadowRayCount;
 
     auto renderStart  { std::chrono::steady_clock::now() };
+
+    // ===================== Photon Maps Step ======================
+
+    const std::vector<mcrt::Photon> photons {
+    };
+
+    const mcrt::PhotonMap photonMap { photons };
+
+    // =============================================================
 
     // ===================== Ray Tracing Step ======================
 
