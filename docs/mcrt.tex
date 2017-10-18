@@ -126,6 +126,13 @@ Iterating on the above equations, a discrete approximation of the \textit{render
 
     A tree will be built and recursed just as before adding contribution from the child nodes and from the light sources with a local lighting model. 
     \subsection{Photon Mapping} \label{sec:photon_mapping}
+    
+    One of the main problems with \textit{path tracing} is that it usually takes very long to converge to a noise-less image. To speed up the convergence H. Jensen propposed an algorithm where rays with low importance are approximated using a spatial map of how the light sources in the scene deposits flux. These data-structures are called \textit{Photon maps} and significantly spped up convergence of a typical \textit{path tracer}.
+
+    \textit{Photon mapping} is done in two passes. The first pass is done before the \textit{path tracer} as a pre-processing step where photons are emitted from light sources and bounced around the scene in a way similar to the typical \textit{path tracer} and saved to a balanced kd-tree whenever they terminate. The second pass is done in conjunction with the \textit{path tracer} where rays with low importance are approximated by photons stored around the terminating scene-intersection. The number of photons to consider is either calculated by a bounding sphere of fixed size or a sphere expanded until it encompases  a fixed number of photons. These photons are then used to approixmate radiance at the intersection point. 
+
+In some cases a higher resolusion secondary \textit{photon map} is used to show caustics effects since these are very expensive to do in regular \textit{path tracing}. In this case, photons are only emitted towards specular objects in the scene and in much greater numbers compared to the regular \textit{photon map}.
+
 
     \clearpage
 
