@@ -81,13 +81,13 @@ namespace mcrt {
 
         if(rayHit.material->type == Material::Type::Diffuse) {
             // We terminate path 
+            photons[currentPhoton];
         } else if(rayHit.material->type == Material::Type::Reflective) {
 
             Ray reflectionRay { ray.reflect(rayHitPosition, rayHit.normal) };
             photonTrace(reflectionRay, depth + 1);
 
         } else if(rayHit.material->type == Material::Type::Refractive) {
-
             double kr = ray.fresnel(rayHit.normal, rayHit.material->refractionIndex);
             bool outside = glm::dot(ray.direction, rayHit.normal) < 0.0;
 
@@ -107,9 +107,30 @@ namespace mcrt {
         } else if(rayHit.material->type == Material::Type::LightSource) {
             return;
         }
-
         return ;
  
+    }
+    
+    const std::vector<Photon>& Scene::gatherPhotons() {
+        currentPhoton = 0;
+        photons.reserve(Scene::MAX_PHOTONS);    
+        double totalLightArea = 0.0;
+        for(Light* l: lights) {
+            totalLightArea += dynamic_cast<AreaLight*>(l)->area;
+        }    
+
+        for(Light* l: lights) {
+            AreaLight* al = dynamic_cast<AreaLight*>(l);
+            const double ratio = al->area / totalLightArea;
+            const unsigned numPhotons = ratio * Scene::MAX_PHOTONS;
+            
+            // Create photons for this area light
+            for(unsigned i = 0; i < numPhotons; ++i) {
+                Ray path { al->sample(), al->sampleHemisphere()};
+                photonTrace(path);
+                ++currentPhoton;
+            }
+        }
     }
 
     glm::dvec3 Scene::rayTrace(const Ray& ray, const size_t depth = 0) const {

@@ -51,8 +51,9 @@ namespace mcrt {
         Ray::Intersection intersect(const Ray& ray) const;
 
         double inShadow(const Ray& ray) const;
-	
-	void photonTrace(const Ray& ray, const size_t) const;
+	    
+        const std::vector<Photon>& gatherPhotons();
+        void photonTrace(const Ray& ray, const size_t) const;
 
         std::vector<Material*>& getMaterials() { return materials; }
         const std::vector<Material*>& getMaterials() const { return materials; }
@@ -73,6 +74,8 @@ namespace mcrt {
         std::vector<Geometry*> geometries;
         std::vector<Light*> lights;
         std::vector<Photon> photons;
+        unsigned currentPhoton;
+        static const unsigned MAX_PHOTONS = 10000000; 
 	Camera camera;
     };
 }
