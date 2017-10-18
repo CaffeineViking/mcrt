@@ -95,6 +95,15 @@ labelfont=bf,singlelinecheck=off,labelsep=space}
     \newpage
 
     \subsection{Radiosity} \label{sec:radiosity}
+    
+    Radiosity for computer graphics builds on the concept of calculating how light is transferred between patches of the scene in an iterative process with, for each iterations we solve the equation:
+
+\begin{equation}
+B_i = E_i + \rho_i \sum_{j=1}^{n} F_{ij} B_j
+\end{equation}
+where \(B_i\) is the radiosity of patch \(i\), \(\rho_i\) is the \textit{reflectivity} of patch \(i\), and the sum is between each patch in the scene and the patch \(i\) with \(F_{ij} \) the formfactor (geometric term) between \(i\) and \(j\).
+
+Iterating on the above equations, a discrete approximation of the \textit{rendering equation} is achieved for perfect labertian surfaces as the patch size goes infinitesimal and the iterations tends to infinity. Some advantages of radiosity over GI techniques that takes into account specular light is that it calculates the radiosity of the full scene and not just based on the camera viewport, making it useful when baking lightmaps with the scene.     
 
     \subsection{Whitted Raytracing} \label{sec:whitted_raytracing}
 
