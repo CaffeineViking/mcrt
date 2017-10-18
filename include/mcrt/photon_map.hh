@@ -15,12 +15,27 @@ namespace mcrt {
 
         void rebalance();
         void insert(const Photon&);
-        void remove(const Photon&);
+        void remove(size_t pindex);
 
-        std::vector<Photon*> nearestNeighbors(size_t) const;
-        std::vector<Photon*> inside(const BoundingSphere&) const;
+        std::vector<Photon*> insideSphere(const BoundingSphere&) const;
+        std::vector<Photon*> nearestNeighbors(const glm::dvec3&, size_t) const;
 
     private:
+        struct KdNode {
+            enum Axis {
+                X = 0,
+                Y = 1,
+                Z = 2
+            } axis;
+
+            double axisSplit;
+
+            KdNode *left   { nullptr },
+                   *right  { nullptr };
+
+            Photon* photon { nullptr };
+        };
+
         std::vector<Photon> photons;
     };
 }

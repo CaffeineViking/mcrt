@@ -4,13 +4,15 @@ void mcrt::PhotonMap::rebalance() {
 }
 
 void mcrt::PhotonMap::insert(const Photon& photon) {
+    photons.push_back(photon);
 }
 
-void mcrt::PhotonMap::remove(const Photon& photon) {
+void mcrt::PhotonMap::remove(size_t index) {
+    photons.erase(photons.begin() + index);
 }
 
-std::vector<Photon*> mcrt::PhotonMap::nearestNeighbors(size_t k) const {
+std::vector<mcrt::Photon*> mcrt::PhotonMap::insideSphere(const BoundingSphere& sphere) const {
 }
 
-std::vector<Photon*> mcrt::PhotonMap::inside(const BoundingSphere& sphere) const {
+std::vector<mcrt::Photon*> mcrt::PhotonMap::nearestNeighbors(const glm::dvec3& around, size_t amount) const {
 }
