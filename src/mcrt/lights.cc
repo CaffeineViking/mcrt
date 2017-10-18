@@ -21,12 +21,13 @@ namespace mcrt {
                 glm::normalize(rayToLightSource) };
 
         double oclusionDistance = scene->inShadow(shadowRay);
-        if (oclusionDistance > 0.0) {
+        if (oclusionDistance > glm::length(rayToLightSource)) {
             double lambertianFalloff { std::max(0.0, glm::dot(shadowRay.direction, rayHit.normal)) };
             glm::dvec3 brdf { rayHit.material->brdf(rayHit.position, rayHit.normal,
                                                    -ray.direction, shadowRay.direction) };
             return material->color * brdf * lambertianFalloff;
         }
+
         return glm::dvec3(0);
     }
 
