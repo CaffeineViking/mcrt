@@ -5,6 +5,7 @@
 #include "mcrt/lights.hh"
 #include "mcrt/camera.hh"
 #include "mcrt/geometry.hh"
+#include "mcrt/photon.hh"
 
 namespace mcrt {
     class Light;
@@ -50,6 +51,9 @@ namespace mcrt {
         Ray::Intersection intersect(const Ray& ray) const;
 
         double inShadow(const Ray& ray) const;
+	    
+        const std::vector<Photon>& gatherPhotons();
+        void photonTrace(const Ray& ray, const size_t) const;
 
         std::vector<Material*>& getMaterials() { return materials; }
         const std::vector<Material*>& getMaterials() const { return materials; }
@@ -69,7 +73,10 @@ namespace mcrt {
         std::vector<Material*> materials;
         std::vector<Geometry*> geometries;
         std::vector<Light*> lights;
-        Camera camera;
+        std::vector<Photon> photons;
+        unsigned currentPhoton;
+        static const unsigned MAX_PHOTONS = 10000000; 
+	Camera camera;
     };
 }
 
