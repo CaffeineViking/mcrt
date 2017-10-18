@@ -66,6 +66,52 @@ namespace mcrt {
 
     size_t Scene::maxRayDepth = 10;
 
+    // Store the resulting photons in the photons vector.
+    void  Scene::photonTrace(const Ray& ray, const size_t depth = 0) const {
+
+        // Make sure we don't bounce forever
+        if(depth >= Scene::maxRayDepth)
+            return;
+
+        Ray::Intersection rayHit = intersect(ray);
+        glm::dvec3 rayHitPosition { ray.origin + ray.direction * rayHit.distance };
+
+        // We have hit nothing or something like that I guess.....
+        if (rayHit.material == nullptr) return;
+
+        if(rayHit.material->type == Material::Type::Diffuse) {
+            // We terminate path 
+        } else if(rayHit.material->type == Material::Type::Reflective) {
+
+            Ray reflectionRay { ray.reflect(rayHitPosition, rayHit.normal) };
+            photonTrace(reflectionRay, depth + 1);
+
+        } else if(rayHit.material->type == Material::Type::Refractive) {
+
+            double kr = ray.fresnel(rayHit.normal, rayHit.material->refractionIndex);
+            bool outside = glm::dot(ray.direction, rayHit.normal) < 0.0;
+
+            if(kr < 1.0) { // Check if ray isn't completely parallel to graze.
+                Ray refractionRay { ray.refract(rayHitPosition, rayHit.normal,
+                                                rayHit.material->refractionIndex) };
+                photonTrace(refractionRay,depth + 1);
+                return;
+            }
+
+            Ray reflectionRay; // If we need to invert the bias if we are inside.
+            if (outside) reflectionRay = ray.reflect(rayHitPosition, rayHit.normal);
+            else reflectionRay = ray.insideReflect(rayHitPosition, rayHit.normal);
+            photonTrace(reflectionRay, depth + 1);
+            return;
+
+        } else if(rayHit.material->type == Material::Type::LightSource) {
+            return;
+        }
+
+        return ;
+ 
+    }
+
     glm::dvec3 Scene::rayTrace(const Ray& ray, const size_t depth = 0) const {
         glm::dvec3 rayColor { 0.0 };
 
