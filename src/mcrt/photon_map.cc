@@ -48,7 +48,7 @@ void mcrt::PhotonMap::KdNode::construct(std::vector<const Photon*>& photons) {
     processed += 2;
     double progress { getProgress() };
     if (progress - cachedProgress >= 0.01) {
-        if (progress != 1.0)
+        if (progress < 1.0)
             printProgress("Balance k-d: ",
                           progress);
         cachedProgress = progress;
