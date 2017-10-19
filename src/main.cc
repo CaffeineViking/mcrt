@@ -110,6 +110,10 @@ int main(int argc, char** argv) {
 
     const mcrt::PhotonMap photonMap { photons };
 
+    std::ofstream photonMapFile { "share/photons.csv" };
+    photonMap.print(photonMapFile);
+    photonMapFile.close();
+
     // =============================================================
 
     // ===================== Ray Tracing Step ======================

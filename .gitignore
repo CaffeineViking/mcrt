@@ -6,6 +6,7 @@ share/*.png
 share/*.ppm
 share/*.svg
 share/*.out
+share/*.csv
 
 # Compiled Object files
 *.slo

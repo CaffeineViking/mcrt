@@ -40,14 +40,14 @@ namespace mcrt {
         void remove(size_t pindex);
 
         void print(std::ostream&) const;
-        void print(std::ostream&, const std::vector<Photon*>&) const;
+        void print(std::ostream&, const std::vector<const Photon*>&) const;
 
         bool isBalanced() const { return rebalanced; }
-        std::vector<Photon*> neighbors(const glm::dvec3&, size_t);
+        std::vector<const Photon*> neighbors(const glm::dvec3&, size_t) const;
 
     private:
         struct KdNode {
-            enum Axis {
+            enum Axis : char {
                 X = 0,
                 Y = 1,
                 Z = 2
@@ -64,6 +64,12 @@ namespace mcrt {
 
                 photon = nullptr;
             }
+
+            // Recursively builds the kd-tree until it's done.
+            void construct(const std::vector<const Photon*>&);
+            // Helper functions for finding out the median by sorting it.
+            const Photon* median(const std::vector<const Photon*>&) const;
+            void sort(std::vector<const Photon*>&);
 
             KdNode *left   { nullptr },
                    *right  { nullptr };
