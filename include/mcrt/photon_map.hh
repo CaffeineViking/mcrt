@@ -65,15 +65,24 @@ namespace mcrt {
                 photon = nullptr;
             }
 
-            // Recursively builds the kd-tree until it's done.
-            void construct(const std::vector<const Photon*>&);
-            // Helper functions for finding out the median by sorting it.
-            const Photon* median(const std::vector<const Photon*>&) const;
-            void sort(std::vector<const Photon*>&);
+            // Recursively builds a kd-tree until done.
+            void construct(std::vector<const Photon*>&);
 
-            KdNode *left   { nullptr },
-                   *right  { nullptr };
-            Photon* photon { nullptr };
+            // Finds the photon's median index position by an axis.
+            size_t median(const std::vector<const Photon*>&) const;
+            void sort(std::vector<const Photon*>&);
+            Axis getNextAxis() const;
+
+            static std::size_t total;
+            static std::size_t processed;
+            static double cachedProgress;
+            static double getProgress() {
+                return processed / (double) total;
+            }
+
+            KdNode *left         { nullptr },
+                   *right        { nullptr };
+            const Photon* photon { nullptr };
         };
 
         KdNode* root { nullptr };

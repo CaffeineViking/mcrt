@@ -1,6 +1,6 @@
 {
     "progressiveRendering": 1,
-    "parallelMethod": "openmp",
+    "parallelMethod": "none",
     "resolution":  [256,  256],
     "scalingFactor": [1.0, 1.0],
     "interpolation": "bilinear",
