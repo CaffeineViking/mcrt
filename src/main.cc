@@ -5,6 +5,10 @@
 #include <numeric>
 #include <iomanip>
 
+#include <random>
+#include <fstream>
+#include <algorithm>
+
 #include "mcrt/param_import.hh"
 #include "mcrt/scene_import.hh"
 #include "mcrt/parameter.hh"
@@ -83,8 +87,26 @@ int main(int argc, char** argv) {
 
     // ===================== Photon Maps Step ======================
 
-    const std::vector<mcrt::Photon> photons {
-    };
+    // Randomly generate position, incoming direction and color in test.
+    const std::vector<mcrt::Photon> photons = [](double min, double max,
+                                                 std::size_t amount) {
+        std::mt19937 rng { std::random_device {  }() };
+        std::uniform_real_distribution<double> vdist { -1.0, 1.0 };
+        std::uniform_real_distribution<double> cdist { 0.0,  1.0 };
+        std::uniform_real_distribution<double> pdist { min,  max };
+        std::vector<mcrt::Photon> photons;
+        photons.reserve(amount);
+        std::generate_n(std::back_inserter(photons), amount, [&rng, &vdist,
+                                                              &cdist, &pdist]() {
+            return mcrt::Photon {
+                     { pdist(rng), pdist(rng), pdist(rng) },
+                     { vdist(rng), vdist(rng), vdist(rng) },
+                     { cdist(rng), cdist(rng), cdist(rng) }
+            };
+        });
+
+        return photons;
+    }(-5.0, +5.0, 64);
 
     const mcrt::PhotonMap photonMap { photons };
 
