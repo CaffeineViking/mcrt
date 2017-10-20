@@ -4,6 +4,6 @@
 #include <string>
 
 void printProgress(const std::string& task, double progress,
-                   size_t characters = 70);
+                   size_t characters = 50);
 
 #endif

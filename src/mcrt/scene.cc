@@ -1,11 +1,13 @@
 #include "mcrt/scene.hh"
-#include "mcrt/photon.hh"
 
 #include <glm/glm.hpp>
 #include <limits>
 #include <vector>
 #include <cmath>
 #include <algorithm>
+
+#include "mcrt/photon.hh"
+#include "mcrt/progress.hh"
 
 namespace mcrt {
     Ray::Intersection Scene::intersect(const Ray& ray) const {
@@ -144,6 +146,9 @@ namespace mcrt {
             totalLightArea += dynamic_cast<AreaLight*>(l)->area;
         }
 
+        std::size_t totalPhotons { 0 };
+        double cachedProgress  { 0.0 };
+
         for(Light* l: lights) {
             AreaLight* al = dynamic_cast<AreaLight*>(l);
             const double ratio = al->area / totalLightArea;
@@ -154,10 +159,21 @@ namespace mcrt {
            while(photons < numPhotons) {
                 Ray path { al->sample(), al->sampleHemisphere()};
                 if(photonTrace(path, 0)){
+                    ++totalPhotons;
                     ++photons;
+                }
+
+                double progress = totalPhotons / (double) photonAmount;
+                if (progress - cachedProgress >= 0.01) {
+                    cachedProgress = progress;
+                    printProgress("Photon maps: ",
+                                  progress);
                 }
            }
         }
+
+        printProgress("Photon maps: ", 1.0);
+        std::cout << std::endl;
 
         return photons;
     }
