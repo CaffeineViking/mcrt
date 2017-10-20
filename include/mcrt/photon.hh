@@ -1,6 +1,7 @@
 #ifndef MCRT_PHOTON_HH
 #define MCRT_PHOTON_HH
 
+#include <iostream>
 #include <glm/glm.hpp>
 
 namespace mcrt {
@@ -9,6 +10,10 @@ namespace mcrt {
         glm::dvec3 incoming;
         glm::dvec3 color;
     };
+
 }
+
+std::ostream& operator<<(std::ostream&,
+                  const mcrt::Photon&);
 
 #endif
