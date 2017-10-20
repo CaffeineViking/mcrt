@@ -85,14 +85,13 @@ namespace mcrt {
                 return i1.distance < i2.distance;
             });
 
-        
         for(unsigned i = 0; i < intersections.size(); ++i) {
             glm::dvec3 rayHitPosition { ray.origin + ray.direction * intersections.at(i).distance };            
             Photon photon {rayHitPosition,  ray.direction, intersections.at(i).material->color, i != 0};
             photons.push_back(photon);
         }
     }
-    
+
     // Store the resulting photons in the photons vector.
     bool Scene::photonTrace(const Ray& ray, const size_t depth = 0) {
 
@@ -134,26 +133,24 @@ namespace mcrt {
             return false;
         }
 
-        
         return false;
- 
     }
-    
-    const std::vector<Photon>& Scene::gatherPhotons() {
+
+    const std::vector<Photon>& Scene::gatherPhotons(std::size_t photonAmount) {
         currentPhoton = 0;
-        photons.reserve(Scene::MAX_PHOTONS);    
+        photons.reserve(photonAmount);
         double totalLightArea = 0.0;
         for(Light* l: lights) {
             totalLightArea += dynamic_cast<AreaLight*>(l)->area;
-        }    
+        }
 
         for(Light* l: lights) {
             AreaLight* al = dynamic_cast<AreaLight*>(l);
             const double ratio = al->area / totalLightArea;
-            const unsigned numPhotons = ratio * Scene::MAX_PHOTONS;
-            std::cout << numPhotons << std::endl;
+            const unsigned numPhotons = ratio * photonAmount;
             // Create photons for this area light
            unsigned photons = 0;
+
            while(photons < numPhotons) {
                 Ray path { al->sample(), al->sampleHemisphere()};
                 if(photonTrace(path, 0)){
@@ -161,6 +158,7 @@ namespace mcrt {
                 }
            }
         }
+
         return photons;
     }
 

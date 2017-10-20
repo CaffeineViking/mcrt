@@ -111,7 +111,7 @@ void mcrt::PhotonMap::print(std::ostream& output) const {
 }
 
 void mcrt::PhotonMap::print(std::ostream& output, const std::vector<const Photon*>& otherPhotons) const {
-    output << "x,y,z,vx,vy,vz,r,g,b\n";
+    output << "x,y,z,vx,vy,vz,r,g,b,shadow\n";
     for (const auto& photon : photons) {
         output << photon.position.x << ',' << photon.position.y << ',' << photon.position.z << ',';
         output << photon.incoming.x << ',' << photon.incoming.y << ',' << photon.incoming.z << ',';
@@ -124,8 +124,9 @@ void mcrt::PhotonMap::print(std::ostream& output, const std::vector<const Photon
             }
         }
 
-        if (photonFound) output << 0.4 << ',' << 0.4 << ',' << 0.4 << std::endl;
-        else             output << 0.8 << ',' << 0.8 << ',' << 0.8 << std::endl;
+        if (photonFound) output << 0.4 << ',' << 0.4 << ',' << 0.4 << ',';
+        else             output << 0.8 << ',' << 0.8 << ',' << 0.8 << ',';
+        output << photon.shadow << std::endl;
     }
 }
 

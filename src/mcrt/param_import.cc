@@ -70,9 +70,13 @@ mcrt::Parameters mcrt::ParameterImporter::load(const std::string& file) {
         size_t maxRayDepth { parser["maxRayDepth"].get<size_t>() };
         parameters.maxRayDepth = maxRayDepth;
     }
-    
+
     if (parser.find("shadowRays") != parser.end()) {
         parameters.shadowRayCount = parser["shadowRays"].get<size_t>();
+    }
+
+    if (parser.find("photonAmount") != parser.end()) {
+        parameters.photonAmount = parser["photonAmount"].get<size_t>();
     }
 
     return parameters;

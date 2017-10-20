@@ -1,4 +1,5 @@
 {
+    "photonAmount": 32000,
     "progressiveRendering": 1,
     "parallelMethod": "none",
     "resolution":  [256,  256],

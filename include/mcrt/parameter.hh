@@ -17,6 +17,7 @@ namespace mcrt {
         size_t samplesPerPixel { 1 };
         size_t maxRayDepth { 10 };
         size_t shadowRayCount { 1 };
+        size_t photonAmount { 100000 };
         bool progressiveRendering { false };
     };
 }
