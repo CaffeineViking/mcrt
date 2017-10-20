@@ -5,6 +5,7 @@
 #include <limits>
 #include <vector>
 #include <cmath>
+#include <algorithm>
 
 namespace mcrt {
     Ray::Intersection Scene::intersect(const Ray& ray) const {
@@ -67,8 +68,33 @@ namespace mcrt {
 
     size_t Scene::maxRayDepth = 10;
 
+
+    void Scene::getPhotons(const Ray& ray){
+
+        std::vector<Ray::Intersection> intersections;
+
+        for (const Geometry* geometry : geometries) {
+            Ray::Intersection rayHit = geometry->intersect(ray);
+            if (rayHit.distance > 0.0 )
+              intersections.push_back(rayHit);
+        }
+
+        std::sort(intersections.begin(), intersections.end(), []
+            (const Ray::Intersection& i1, const Ray::Intersection& i2) -> bool
+            {
+                return i1.distance < i2.distance;
+            });
+
+        
+        for(unsigned i = 0; i < intersections.size(); ++i) {
+            glm::dvec3 rayHitPosition { ray.origin + ray.direction * intersections.at(i).distance };            
+            Photon photon {rayHitPosition,  ray.direction, intersections.at(i).material->color, i != 0};
+            photons.push_back(photon);
+        }
+    }
+    
     // Store the resulting photons in the photons vector.
-    bool Scene::photonTrace(const Ray& ray, mcrt::Photon& photon, const size_t depth = 0) {
+    bool Scene::photonTrace(const Ray& ray, const size_t depth = 0) {
 
         // Make sure we don't bounce forever
         if(depth >= Scene::maxRayDepth)
@@ -82,14 +108,12 @@ namespace mcrt {
 
         if(rayHit.material->type == Material::Type::Diffuse) {
             // We terminate path
-            photon.position = rayHitPosition;
-            photon.incoming = ray.direction;
-            photon.color = rayHit.material->color;
+            getPhotons(ray);
             return true;
         } else if(rayHit.material->type == Material::Type::Reflective) {
 
             Ray reflectionRay { ray.reflect(rayHitPosition, rayHit.normal) };
-            return photonTrace(reflectionRay, photon, depth + 1);
+            return photonTrace(reflectionRay, depth + 1);
 
         } else if(rayHit.material->type == Material::Type::Refractive) {
             double kr = ray.fresnel(rayHit.normal, rayHit.material->refractionIndex);
@@ -98,13 +122,13 @@ namespace mcrt {
             if(kr < 1.0) { // Check if ray isn't completely parallel to graze.
                 Ray refractionRay { ray.refract(rayHitPosition, rayHit.normal,
                                                 rayHit.material->refractionIndex) };
-                return photonTrace(refractionRay, photon, depth + 1);
+                return photonTrace(refractionRay, depth + 1);
             }
 
             Ray reflectionRay; // If we need to invert the bias if we are inside.
             if (outside) reflectionRay = ray.reflect(rayHitPosition, rayHit.normal);
             else reflectionRay = ray.insideReflect(rayHitPosition, rayHit.normal);
-            return photonTrace(reflectionRay, photon, depth + 1);
+            return photonTrace(reflectionRay, depth + 1);
 
         } else if(rayHit.material->type == Material::Type::LightSource) {
             return false;
@@ -129,14 +153,13 @@ namespace mcrt {
             const unsigned numPhotons = ratio * Scene::MAX_PHOTONS;
             std::cout << numPhotons << std::endl;
             // Create photons for this area light
-            for(unsigned i = 0; i < numPhotons; ++i) {
+           unsigned photons = 0;
+           while(photons < numPhotons) {
                 Ray path { al->sample(), al->sampleHemisphere()};
-                mcrt::Photon p {glm::dvec3(0.0), glm::dvec3(0.0), glm::dvec3(0.0)};
-                if(photonTrace(path, p, 0))
-                    photons.push_back(p);
-                else
-                    --i;
-            }
+                if(photonTrace(path, 0)){
+                    ++photons;
+                }
+           }
         }
         return photons;
     }

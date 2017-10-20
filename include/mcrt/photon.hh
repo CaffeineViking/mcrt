@@ -9,6 +9,7 @@ namespace mcrt {
         glm::dvec3 position;
         glm::dvec3 incoming;
         glm::dvec3 color;
+        bool shadow;
     };
 
 }

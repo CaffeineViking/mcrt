@@ -101,11 +101,12 @@ void mcrt::PhotonMap::remove(size_t index) {
 }
 
 void mcrt::PhotonMap::print(std::ostream& output) const {
-    output << "x,y,z,vx,vy,vz,r,g,b\n";
+    output << "x,y,z,vx,vy,vz,r,g,b,shadow\n";
     for (const auto& photon : photons) {
         output << photon.position.x << ',' << photon.position.y << ',' << photon.position.z << ',';
         output << photon.incoming.x << ',' << photon.incoming.y << ',' << photon.incoming.z << ',';
-        output << photon.color.r << ',' << photon.color.g << ',' << photon.color.b << std::endl;
+        output << photon.color.r << ',' << photon.color.g << ',' << photon.color.b << ",";
+        output << photon.shadow << std::endl;
     }
 }
 
