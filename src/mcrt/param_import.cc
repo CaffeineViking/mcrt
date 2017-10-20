@@ -79,5 +79,11 @@ mcrt::Parameters mcrt::ParameterImporter::load(const std::string& file) {
         parameters.photonAmount = parser["photonAmount"].get<size_t>();
     }
 
+    if (parser.find("photonMap") != parser.end()) {
+        size_t photonMap { parser["photonMap"].get<size_t>() };
+        if (photonMap > 0) parameters.photonMap = true;
+        else parameters.photonMap = false;
+    }
+
     return parameters;
 }

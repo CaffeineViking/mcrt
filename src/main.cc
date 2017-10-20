@@ -84,6 +84,9 @@ int main(int argc, char** argv) {
         photonMapFile.close();
     }
 
+    // TODO: remove me later.
+    return 0;
+
     // =============================================================
 
     // ===================== Ray Tracing Step ======================

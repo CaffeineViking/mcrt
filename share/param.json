@@ -1,4 +1,5 @@
 {
+    "photonMap": 1,
     "photonAmount": 32000,
     "progressiveRendering": 1,
     "parallelMethod": "openmp",

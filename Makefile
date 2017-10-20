@@ -1,7 +1,7 @@
 config="release"
 
 files="share/render.png"
-scene="share/scene.json"
+scene="share/cornell.json"
 param="share/param.json"
 
 all: FORCE
