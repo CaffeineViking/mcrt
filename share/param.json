@@ -1,6 +1,6 @@
 {
     "photonMap": 1,
-    "photonAmount": 32000,
+    "photonAmount": 100000,
     "progressiveRendering": 1,
     "parallelMethod": "openmp",
     "resolution":  [256,  256],
