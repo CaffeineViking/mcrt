@@ -4,10 +4,6 @@
 #include <vector>
 #include <numeric>
 
-#include <random>
-#include <fstream>
-#include <algorithm>
-
 #include "mcrt/param_import.hh"
 #include "mcrt/scene_import.hh"
 #include "mcrt/parameter.hh"
@@ -77,15 +73,6 @@ int main(int argc, char** argv) {
     };
 
     const mcrt::PhotonMap photonMap { photons };
-
-    if (photons.size() <= 100000) { // Becomes very large :)
-        std::ofstream photonMapFile { "share/photons.csv" };
-        photonMap.print(photonMapFile);
-        photonMapFile.close();
-    }
-
-    // TODO: remove me later.
-    return 0;
 
     // =============================================================
 
