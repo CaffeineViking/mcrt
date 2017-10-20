@@ -1,0 +1,267 @@
+{
+    "camera": {
+        "fieldOfView": 39.31,
+        "origin": [11120, 10920, -32000],
+        "lookAt": [11120, 10920, -31999],
+        "up": [0.0, 1.0, 0.0]
+    },
+
+    "lights": [
+        {
+            "type": "area",
+            "vertex-1": [13720, 21919, 9080],
+            "vertex-2": [13720, 21919, 13280],
+            "vertex-3": [8520,  21919, 13280],
+            "color": [1.0, 1.0, 1.0],
+            "intensity": 1.0
+        },
+        {
+            "type": "area",
+            "vertex-1": [13720, 21919, 9080],
+            "vertex-2": [8520,  21919, 13280],
+            "vertex-3": [8520,  21919, 9080],
+            "color": [1.0,1.0,1.0],
+            "intensity": 1.0
+        }
+    ],
+
+    "materials": [
+        {
+            "name": "white",
+            "color": [1.0, 1.0, 1.0],
+            "type": "diffuse",
+            "brdf": "lambertian",
+            "refractionIndex": 0.0,
+            "reflectionRate": 0.75
+        },
+        {
+            "name": "red",
+            "color": [1.0, 0.0, 0.0],
+            "type": "diffuse",
+            "brdf": "lambertian",
+            "refractionIndex": 0.0,
+            "reflectionRate": 0.75
+        },
+        {
+            "name": "green",
+            "color": [0.0, 1.0, 0.0],
+            "type": "diffuse",
+            "brdf": "lambertian",
+            "refractionIndex": 0.0,
+            "reflectionRate": 0.75
+        }
+    ],
+
+    "surfaces": [
+        {
+            "geometry": "triangle",
+            "vertex-1": [22112, 0, 0],
+            "vertex-2": [0,     0, 0],
+            "vertex-3": [0, 0, 22368],
+            "material": "white"
+        },
+        {
+            "geometry": "triangle",
+            "vertex-1": [22112, 0, 0],
+            "vertex-2": [0,     0, 22368],
+            "vertex-3": [21984, 0, 22368],
+            "material": "white"
+        },
+        {
+            "geometry": "triangle",
+            "vertex-1": [22240, 21920, 0],
+            "vertex-2": [22240, 21920, 22360],
+            "vertex-3": [0,     21920, 22360],
+            "material": "white"
+        },
+        {
+            "geometry": "triangle",
+            "vertex-1": [22240, 21920, 0],
+            "vertex-2": [0,     21920, 22360],
+            "vertex-3": [0,     21920, 0],
+            "material": "white"
+        },
+        {
+            "geometry": "triangle",
+            "vertex-1": [21960, 0, 22360],
+            "vertex-2": [0, 0, 22360],
+            "vertex-3": [0, 21920, 22360],
+            "material": "white"
+        },
+        {
+            "geometry": "triangle",
+            "vertex-1": [21960,     0, 22360],
+            "vertex-2": [0,     21920, 22360],
+            "vertex-3": [22240, 21920, 22360],
+            "material": "white"
+        },
+        {
+            "geometry": "triangle",
+            "vertex-1": [0, 0, 22360],
+            "vertex-2": [0, 0,     0],
+            "vertex-3": [0, 21920, 0],
+            "material": "green"
+        },
+        {
+            "geometry": "triangle",
+            "vertex-1": [0,     0, 22360],
+            "vertex-2": [0, 21920,     0],
+            "vertex-3": [0, 21920, 22360],
+            "material": "green"
+        },
+        {
+            "geometry": "triangle",
+            "vertex-1": [22080, 0, 0],
+            "vertex-2": [21960, 0, 22360],
+            "vertex-3": [22240, 21920, 22360],
+            "material": "red"
+        },
+        {
+            "geometry": "triangle",
+            "vertex-1": [22080, 0, 0],
+            "vertex-2": [22240, 21920, 22360],
+            "vertex-3": [22240, 21920, 0],
+            "material": "red"
+        },
+        {
+            "geometry": "triangle",
+            "vertex-1": [5200, 6600, 2600],
+            "vertex-2": [3280, 6600, 9000],
+            "vertex-3": [9600, 6600, 10880],
+            "material": "white"
+        },
+        {
+            "geometry": "triangle",
+            "vertex-1": [5200, 6600, 2600],
+            "vertex-2": [9600, 6600, 10880],
+            "vertex-3": [11600, 6600, 4560],
+            "material": "white"
+        },
+        {
+            "geometry": "triangle",
+            "vertex-1": [11600, 0, 4560],
+            "vertex-2": [11600, 6600, 4560],
+            "vertex-3": [9600, 6600, 10880],
+            "material": "white"
+        },
+        {
+            "geometry": "triangle",
+            "vertex-1": [11600, 0, 4560],
+            "vertex-2": [9600, 6600, 10880],
+            "vertex-3": [9600, 0, 10880],
+            "material": "white"
+        },
+        {
+            "geometry": "triangle",
+            "vertex-1": [5200, 0, 2600],
+            "vertex-2": [5200, 6600, 2600],
+            "vertex-3": [11600, 6600, 4560],
+            "material": "white"
+        },
+        {
+            "geometry": "triangle",
+            "vertex-1": [5200, 0, 2600],
+            "vertex-2": [11600, 6600, 4560],
+            "vertex-3": [11600, 0, 4560],
+            "material": "white"
+        },
+        {
+            "geometry": "triangle",
+            "vertex-1": [3280, 0, 9000],
+            "vertex-2": [3280, 6600, 9000],
+            "vertex-3": [5200, 6600, 2600],
+            "material": "white"
+        },
+        {
+            "geometry": "triangle",
+            "vertex-1": [3280, 0, 9000],
+            "vertex-2": [5200, 6600, 2600],
+            "vertex-3": [5200, 0, 2600],
+            "material": "white"
+        },
+        {
+            "geometry": "triangle",
+            "vertex-1": [9600, 0, 10880],
+            "vertex-2": [9600, 6600, 10880],
+            "vertex-3": [3280, 6600, 9000],
+            "material": "white"
+        },
+        {
+            "geometry": "triangle",
+            "vertex-1": [9600, 0, 10880],
+            "vertex-2": [3280, 6600, 9000],
+            "vertex-3": [3280, 0, 9000],
+            "material": "white"
+        },
+        {
+            "geometry": "triangle",
+            "vertex-1": [16920, 13200, 9880],
+            "vertex-2": [10600, 13200, 11840],
+            "vertex-3": [12560, 13200, 18240],
+            "material": "white"
+        },
+        {
+            "geometry": "triangle",
+            "vertex-1": [16920, 13200, 9880],
+            "vertex-2": [12560, 13200, 18240],
+            "vertex-3": [18880, 13200, 16240],
+            "material": "white"
+        },
+        {
+            "geometry": "triangle",
+            "vertex-1": [16920, 0, 9880],
+            "vertex-2": [16920, 13200, 9880],
+            "vertex-3": [18880, 13200, 16240],
+            "material": "white"
+        },
+        {
+            "geometry": "triangle",
+            "vertex-1": [16920, 0, 9880],
+            "vertex-2": [18880, 13200, 16240],
+            "vertex-3": [18880, 0, 16240],
+            "material": "white"
+        },
+        {
+            "geometry": "triangle",
+            "vertex-1": [18880, 0, 16240],
+            "vertex-2": [18880, 13200, 16240],
+            "vertex-3": [12560, 13200, 18240],
+            "material": "white"
+        },
+        {
+            "geometry": "triangle",
+            "vertex-1": [18880, 0, 16240],
+            "vertex-2": [12560, 13200, 18240],
+            "vertex-3": [12560, 0, 18240],
+            "material": "white"
+        },
+        {
+            "geometry": "triangle",
+            "vertex-1": [12560, 0, 18240],
+            "vertex-2": [12560, 13200, 18240],
+            "vertex-3": [10600, 13200, 11840],
+            "material": "white"
+        },
+        {
+            "geometry": "triangle",
+            "vertex-1": [12560, 0, 18240],
+            "vertex-2": [10600, 13200, 11840],
+            "vertex-3": [10600, 0, 11840],
+            "material": "white"
+        },
+        {
+            "geometry": "triangle",
+            "vertex-1": [10600, 0, 11840],
+            "vertex-2": [10600, 13200, 11840],
+            "vertex-3": [16920, 13200, 9880],
+            "material": "white"
+        },
+        {
+            "geometry": "triangle",
+            "vertex-1": [10600, 0, 11840],
+            "vertex-2": [16920, 13200, 9880],
+            "vertex-3": [16920, 0, 9880],
+            "material": "white"
+        }
+    ]
+}

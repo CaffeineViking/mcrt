@@ -3,18 +3,24 @@
 #include <iostream>
 #include <vector>
 #include <numeric>
-#include <iomanip>
+
+#include <random>
+#include <fstream>
+#include <algorithm>
 
 #include "mcrt/param_import.hh"
 #include "mcrt/scene_import.hh"
 #include "mcrt/parameter.hh"
 #include "mcrt/scene.hh"
 
+#include "mcrt/photon.hh"
+#include "mcrt/photon_map.hh"
+
 #include "mcrt/image.hh"
+#include "mcrt/material.hh"
 #include "mcrt/supersample.hh"
 #include "mcrt/image_export.hh"
-
-#include "mcrt/material.hh"
+#include "mcrt/progress.hh"
 
 int usage(int argc, char** argv) {
     if (argc < 2) std::cerr << "Error: need the path to render scenes to!" << std::endl;
@@ -22,20 +28,6 @@ int usage(int argc, char** argv) {
               << "IMAGE [SCENE] [PARAMETER]"
               << std::endl;
     return 1;
-}
-
-void printProgress(const std::string& task, double progress, size_t characters = 70) {
-    std::cout << task << "[";
-    size_t position = progress * characters;
-    for (size_t i { 0 }; i < characters; ++i) {
-        if (i < position) std::cout << "=";
-        else if (i > position) std::cout << " ";
-        else std::cout << ">";
-    } std::cout << "] ";
-
-    size_t percent = progress * 100.0;
-    std::cout << percent << " %\r";
-    std::cout.flush();
 }
 
 int main(int argc, char** argv) {
@@ -78,6 +70,41 @@ int main(int argc, char** argv) {
 
     auto renderStart  { std::chrono::steady_clock::now() };
 
+    // ===================== Photon Maps Step ======================
+
+    // Randomly generate position, incoming direction and color in test.
+   // const std::vector<mcrt::Photon> photons = [](double min, double max,
+   //                                              std::size_t amount) {
+   //     std::mt19937 rng { std::random_device {  }() };
+   //     std::uniform_real_distribution<double> vdist { -1.0, 1.0 };
+   //     std::uniform_real_distribution<double> cdist { 0.0,  1.0 };
+   //     std::uniform_real_distribution<double> pdist { min,  max };
+   //     std::vector<mcrt::Photon> photons;
+   //     photons.reserve(amount);
+   //     std::generate_n(std::back_inserter(photons), amount, [&rng, &vdist,
+   //                                                           &cdist, &pdist]() {
+   //         return mcrt::Photon {
+   //                  { pdist(rng), pdist(rng), pdist(rng) },
+   //                  { vdist(rng), vdist(rng), vdist(rng) },
+   //                  { cdist(rng), cdist(rng), cdist(rng) }
+   //         };
+   //     });
+
+   //     return photons;
+   // }(-5.0, +5.0, 4096);
+    
+    const std::vector<mcrt::Photon> photons = scene.gatherPhotons();
+    std::cout << photons.size() << std::endl;
+    const mcrt::PhotonMap photonMap { photons };
+
+    if (photons.size() < 10000000) { // Don't fucking do it man!
+        std::ofstream photonMapFile { "share/photons.csv" };
+        photonMap.print(photonMapFile);
+        photonMapFile.close();
+    }
+
+    // =============================================================
+
     // ===================== Ray Tracing Step ======================
 
     size_t pixelSamplesTaken { 0 }; // Shared resource.
@@ -85,7 +112,8 @@ int main(int argc, char** argv) {
     double samplesPerPixel = parameters.samplesPerPixel;
     double totalPixelSamples { samplesPerPixel * imagePixels };
     const glm::dvec3 eyePoint { sceneCamera.getEyePosition() };
-
+    
+    
     for (size_t i = 0; i < samplesPerPixel; ++i) {
 
         // ----------------------- Ray Trace -----------------------
@@ -113,14 +141,21 @@ int main(int argc, char** argv) {
                 // Finally, raytrace through the scene and get the pixel irradiance.
                 glm::dvec3 colorPixelSample { scene.rayTrace(rayFromViewPlane, 0) };
                 // Since this is just one sample, it should only contribute a bit...
-                renderImage.pixel(x, y) += colorPixelSample / samplesPerPixel;
+                renderImage.pixel(x, y) += colorPixelSample; // We average it later.
 
             }
 
         }
 
-        if (parameters.progressiveRendering) // Previews our render.
-            mcrt::ImageExporter::save(renderImage, renderImagePath);
+        // Preview the current rendered image.
+        if (parameters.progressiveRendering) {
+            mcrt::Image previewImage { renderImage }; // Makes copy for this.
+            // We average out the current samples we have taken from the scene.
+            previewImage.filterByColor([i](const mcrt::Color<double>& sample) {
+                return sample / static_cast<double>(i + 1);
+            });
+            mcrt::ImageExporter::save(previewImage, renderImagePath);
+        }
 
         // ---------------------------------------------------------
 
@@ -140,9 +175,15 @@ int main(int argc, char** argv) {
                                  << renderTimeInSeconds << " seconds."
                                  << std::endl;
 
+    // Finally, averages out the color by taking into account the sampling we have done.
+    renderImage.filterByColor([samplesPerPixel](const mcrt::Color<double>& pixelColor) {
+        return pixelColor / static_cast<double>(samplesPerPixel);
+    });
+
     size_t scaledWidth  = parameters.resolutionWidth  * parameters.scalingFactorX,
            scaledHeight = parameters.resolutionHeight * parameters.scalingFactorY;
     renderImage.resize(scaledWidth, scaledHeight, parameters.interpolationMethod);
+
     mcrt::ImageExporter::save(renderImage, renderImagePath); // A resized variant.
     std::cout << "Rendered to: '" << renderImagePath << "'." << std::endl;
     return 0;

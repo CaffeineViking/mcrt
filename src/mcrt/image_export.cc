@@ -65,7 +65,8 @@ void mcrt::FarbfeldImageExporter::save(const Image& image, const std::string& fi
 
 void mcrt::PngImageExporter::save(const Image& image, const std::string& file) {
     auto data = image.getNormalizedPixelData();
-    std::vector<unsigned char>& imageData = (std::vector<unsigned char>&) (data);
+    // Converts the double vector data to some sort of byte representation for saving to a file.
+    std::vector<unsigned char>& imageData = reinterpret_cast<std::vector<unsigned char>&>(data);
     unsigned errorCode { lodepng::encode(file, imageData, image.getWidth(),
                                                           image.getHeight()) };
     if (errorCode) throw std::runtime_error { lodepng_error_text(errorCode) };

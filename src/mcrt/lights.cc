@@ -1,5 +1,8 @@
 #include "mcrt/lights.hh"
 #include <iostream>
+#include <glm/gtx/rotate_vector.hpp> 
+#include <glm/gtc/constants.hpp>
+
 namespace mcrt {
     // Need to allocate material because we use the
     // intersection ray structure for passing color.
@@ -21,12 +24,13 @@ namespace mcrt {
                 glm::normalize(rayToLightSource) };
 
         double oclusionDistance = scene->inShadow(shadowRay);
-        if (oclusionDistance > 0.0) {
+        if (oclusionDistance > glm::length(rayToLightSource)) {
             double lambertianFalloff { std::max(0.0, glm::dot(shadowRay.direction, rayHit.normal)) };
             glm::dvec3 brdf { rayHit.material->brdf(rayHit.position, rayHit.normal,
                                                    -ray.direction, shadowRay.direction) };
             return material->color * brdf * lambertianFalloff;
         }
+
         return glm::dvec3(0);
     }
 
@@ -42,8 +46,28 @@ namespace mcrt {
         normal = glm::normalize(glm::cross(v1-v0, v2-v0));
         area = 0.5*glm::length(glm::cross(v1-v0, v2-v0));
     }
- 
-    glm::dvec3 AreaLight::sample() {     
+     
+    glm::dvec3 AreaLight::sampleHemisphere() const {
+       static std::random_device rd; 
+       static std::mt19937 gen(rd());
+       static std::uniform_real_distribution<double> dis(0.0, 1.0);
+
+
+       // Uses the cosine-weighted sampling over the
+       // hemisphere for filter out unimportant rays.
+       double phi = dis(gen) * glm::pi<double>() * 2.0;
+       double theta = std::asin(std::sqrt(dis(gen)));
+
+       glm::dvec3 v1 = glm::normalize(sample() - sample());
+       glm::dvec3 v2 = glm::normalize(glm::cross(v1,normal));
+       
+       const glm::dvec3 azimuthRotation = glm::rotate(v1, phi, normal);
+       const glm::dvec3 inclinationRotation = glm::rotate(v1, theta, v2);
+       const glm::dvec3 outgoing = glm::normalize(azimuthRotation + inclinationRotation);
+       return outgoing;
+    }
+
+    glm::dvec3 AreaLight::sample() const{     
         double u;
         double v;
 
