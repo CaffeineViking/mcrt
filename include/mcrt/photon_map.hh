@@ -10,6 +10,10 @@ namespace mcrt {
     class PhotonMap final {
     public:
         PhotonMap() = default;
+        PhotonMap(std::size_t amount) {
+            photons.reserve(amount);
+        }
+
         PhotonMap(const std::vector<Photon>& photons)
             : photons { photons } { rebalance(); }
 

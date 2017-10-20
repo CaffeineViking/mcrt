@@ -88,9 +88,9 @@ namespace mcrt {
             });
 
         for(unsigned i = 0; i < intersections.size(); ++i) {
-            glm::dvec3 rayHitPosition { ray.origin + ray.direction * intersections.at(i).distance };            
+            glm::dvec3 rayHitPosition { ray.origin + ray.direction * intersections.at(i).distance };
             Photon photon {rayHitPosition,  ray.direction, intersections.at(i).material->color, i != 0};
-            photons.push_back(photon);
+            photonMap.insert(photon);
         }
     }
 
@@ -138,21 +138,24 @@ namespace mcrt {
         return false;
     }
 
-    const std::vector<Photon>& Scene::gatherPhotons(std::size_t photonAmount) {
+    void Scene::gatherPhotons(std::size_t photonAmount) {
         currentPhoton = 0;
-        photons.reserve(photonAmount);
+
+        double cachedProgress = 0.0;
+        std::size_t totalPhotons = 0;
         double totalLightArea = 0.0;
+
         for(Light* l: lights) {
             totalLightArea += dynamic_cast<AreaLight*>(l)->area;
         }
 
-        std::size_t totalPhotons { 0 };
-        double cachedProgress  { 0.0 };
+        photonMap = PhotonMap { photonAmount };
 
         for(Light* l: lights) {
             AreaLight* al = dynamic_cast<AreaLight*>(l);
             const double ratio = al->area / totalLightArea;
             const unsigned numPhotons = ratio * photonAmount;
+
             // Create photons for this area light
            unsigned photons = 0;
 
@@ -175,7 +178,7 @@ namespace mcrt {
         printProgress("Photon maps: ", 1.0);
         std::cout << std::endl;
 
-        return photons;
+        photonMap.rebalance();
     }
 
     glm::dvec3 Scene::rayTrace(const Ray& ray, const size_t depth = 0) const {

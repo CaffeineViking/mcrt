@@ -66,15 +66,9 @@ int main(int argc, char** argv) {
 
     auto renderStart  { std::chrono::steady_clock::now() };
 
-    // ===================== Photon Maps Step ======================
+    // ==================== Photon Gather Step =====================
 
-    const std::vector<mcrt::Photon> photons {
-        scene.gatherPhotons(parameters.photonAmount)
-    };
-
-    const mcrt::PhotonMap photonMap { photons };
-
-    // =============================================================
+    scene.gatherPhotons(parameters.photonAmount); // Traces photons.
 
     // ===================== Ray Tracing Step ======================
 
