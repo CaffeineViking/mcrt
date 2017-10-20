@@ -2,7 +2,7 @@
 # Plots the Photon Map
 
 library(rgl)
-
+par(bg = 'blue')
 args <- commandArgs(trailingOnly=TRUE)
 data <- read.csv(args[1], header=TRUE)
 with(data, plot3d(x, y, z, col=rgb(r, g, b, 1,

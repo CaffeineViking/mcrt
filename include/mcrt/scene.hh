@@ -53,7 +53,7 @@ namespace mcrt {
         double inShadow(const Ray& ray) const;
 	    
         const std::vector<Photon>& gatherPhotons();
-        void photonTrace(const Ray& ray, const size_t) const;
+        bool photonTrace(const Ray& ray, Photon&, const size_t);
 
         std::vector<Material*>& getMaterials() { return materials; }
         const std::vector<Material*>& getMaterials() const { return materials; }
@@ -75,7 +75,7 @@ namespace mcrt {
         std::vector<Light*> lights;
         std::vector<Photon> photons;
         unsigned currentPhoton;
-        static const unsigned MAX_PHOTONS = 10000000; 
+        static const unsigned MAX_PHOTONS = 100000; 
 	Camera camera;
     };
 }

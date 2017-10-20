@@ -68,25 +68,28 @@ namespace mcrt {
     size_t Scene::maxRayDepth = 10;
 
     // Store the resulting photons in the photons vector.
-    void  Scene::photonTrace(const Ray& ray, const size_t depth = 0) const {
+    bool Scene::photonTrace(const Ray& ray, mcrt::Photon& photon, const size_t depth = 0) {
 
         // Make sure we don't bounce forever
         if(depth >= Scene::maxRayDepth)
-            return;
+            return false;
 
         Ray::Intersection rayHit = intersect(ray);
         glm::dvec3 rayHitPosition { ray.origin + ray.direction * rayHit.distance };
 
         // We have hit nothing or something like that I guess.....
-        if (rayHit.material == nullptr) return;
+        if (rayHit.material == nullptr) return false;
 
         if(rayHit.material->type == Material::Type::Diffuse) {
-            // We terminate path 
-            photons[currentPhoton];
+            // We terminate path
+            photon.position = rayHitPosition;
+            photon.incoming = ray.direction;
+            photon.color = rayHit.material->color;
+            return true;
         } else if(rayHit.material->type == Material::Type::Reflective) {
 
             Ray reflectionRay { ray.reflect(rayHitPosition, rayHit.normal) };
-            photonTrace(reflectionRay, depth + 1);
+            return photonTrace(reflectionRay, photon, depth + 1);
 
         } else if(rayHit.material->type == Material::Type::Refractive) {
             double kr = ray.fresnel(rayHit.normal, rayHit.material->refractionIndex);
@@ -95,20 +98,20 @@ namespace mcrt {
             if(kr < 1.0) { // Check if ray isn't completely parallel to graze.
                 Ray refractionRay { ray.refract(rayHitPosition, rayHit.normal,
                                                 rayHit.material->refractionIndex) };
-                photonTrace(refractionRay,depth + 1);
-                return;
+                return photonTrace(refractionRay, photon, depth + 1);
             }
 
             Ray reflectionRay; // If we need to invert the bias if we are inside.
             if (outside) reflectionRay = ray.reflect(rayHitPosition, rayHit.normal);
             else reflectionRay = ray.insideReflect(rayHitPosition, rayHit.normal);
-            photonTrace(reflectionRay, depth + 1);
-            return;
+            return photonTrace(reflectionRay, photon, depth + 1);
 
         } else if(rayHit.material->type == Material::Type::LightSource) {
-            return;
+            return false;
         }
-        return ;
+
+        
+        return false;
  
     }
     
@@ -124,15 +127,17 @@ namespace mcrt {
             AreaLight* al = dynamic_cast<AreaLight*>(l);
             const double ratio = al->area / totalLightArea;
             const unsigned numPhotons = ratio * Scene::MAX_PHOTONS;
-            
+            std::cout << numPhotons << std::endl;
             // Create photons for this area light
             for(unsigned i = 0; i < numPhotons; ++i) {
                 Ray path { al->sample(), al->sampleHemisphere()};
-                photonTrace(path);
-                ++currentPhoton;
+                mcrt::Photon p {glm::dvec3(0.0), glm::dvec3(0.0), glm::dvec3(0.0)};
+                if(photonTrace(path, p, 0))
+                    photons.push_back(p);
+                else
+                    --i;
             }
         }
-
         return photons;
     }
 

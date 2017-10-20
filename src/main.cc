@@ -73,29 +73,31 @@ int main(int argc, char** argv) {
     // ===================== Photon Maps Step ======================
 
     // Randomly generate position, incoming direction and color in test.
-    const std::vector<mcrt::Photon> photons = [](double min, double max,
-                                                 std::size_t amount) {
-        std::mt19937 rng { std::random_device {  }() };
-        std::uniform_real_distribution<double> vdist { -1.0, 1.0 };
-        std::uniform_real_distribution<double> cdist { 0.0,  1.0 };
-        std::uniform_real_distribution<double> pdist { min,  max };
-        std::vector<mcrt::Photon> photons;
-        photons.reserve(amount);
-        std::generate_n(std::back_inserter(photons), amount, [&rng, &vdist,
-                                                              &cdist, &pdist]() {
-            return mcrt::Photon {
-                     { pdist(rng), pdist(rng), pdist(rng) },
-                     { vdist(rng), vdist(rng), vdist(rng) },
-                     { cdist(rng), cdist(rng), cdist(rng) }
-            };
-        });
+   // const std::vector<mcrt::Photon> photons = [](double min, double max,
+   //                                              std::size_t amount) {
+   //     std::mt19937 rng { std::random_device {  }() };
+   //     std::uniform_real_distribution<double> vdist { -1.0, 1.0 };
+   //     std::uniform_real_distribution<double> cdist { 0.0,  1.0 };
+   //     std::uniform_real_distribution<double> pdist { min,  max };
+   //     std::vector<mcrt::Photon> photons;
+   //     photons.reserve(amount);
+   //     std::generate_n(std::back_inserter(photons), amount, [&rng, &vdist,
+   //                                                           &cdist, &pdist]() {
+   //         return mcrt::Photon {
+   //                  { pdist(rng), pdist(rng), pdist(rng) },
+   //                  { vdist(rng), vdist(rng), vdist(rng) },
+   //                  { cdist(rng), cdist(rng), cdist(rng) }
+   //         };
+   //     });
 
-        return photons;
-    }(-5.0, +5.0, 4096);
-
+   //     return photons;
+   // }(-5.0, +5.0, 4096);
+    
+    const std::vector<mcrt::Photon> photons = scene.gatherPhotons();
+    std::cout << photons.size() << std::endl;
     const mcrt::PhotonMap photonMap { photons };
 
-    if (photons.size() < 4097) { // Don't fucking do it man!
+    if (photons.size() < 10000000) { // Don't fucking do it man!
         std::ofstream photonMapFile { "share/photons.csv" };
         photonMap.print(photonMapFile);
         photonMapFile.close();
@@ -110,7 +112,8 @@ int main(int argc, char** argv) {
     double samplesPerPixel = parameters.samplesPerPixel;
     double totalPixelSamples { samplesPerPixel * imagePixels };
     const glm::dvec3 eyePoint { sceneCamera.getEyePosition() };
-
+    
+    
     for (size_t i = 0; i < samplesPerPixel; ++i) {
 
         // ----------------------- Ray Trace -----------------------
