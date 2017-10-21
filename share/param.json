@@ -8,5 +8,6 @@
     "interpolation": "bilinear",
     "supersamples": [7, "grid"],
     "maxRayDepth": 8,
-    "shadowRays": 4
+    "shadowRays": 4,
+    "photonNeighbors": 4
 }
