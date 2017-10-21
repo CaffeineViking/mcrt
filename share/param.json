@@ -9,5 +9,5 @@
     "supersamples": [7, "grid"],
     "maxRayDepth": 8,
     "shadowRays": 4,
-    "photonNeighbors": 4
+    "photonEstimationRadius": 4
 }
