@@ -62,7 +62,7 @@ namespace mcrt {
         const std::vector<Geometry*>& getGeometries() const { return geometries; }
 
         static size_t maxRayDepth;
-        static size_t photonNeighbors;
+        static double photonEstimationRadius;
 
         const std::vector<Light*>& getLights() const { return lights; }
         std::vector<Light*>& getLights() { return lights; }
@@ -77,8 +77,8 @@ namespace mcrt {
         PhotonMap photonMap;
 
         unsigned currentPhoton;
-        bool photonTrace(const Ray& ray, const size_t);
-        void getPhotons(const Ray& ray);
+        bool photonTrace(const Ray& ray, const glm::dvec3&, const size_t);
+        void getPhotons(const Ray& ray, const glm::dvec3&);
 
         Camera camera;
     };
