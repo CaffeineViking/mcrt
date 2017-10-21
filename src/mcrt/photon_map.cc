@@ -38,8 +38,7 @@ void mcrt::PhotonMap::KdNode::construct(std::vector<const Photon*>& photons) {
     if (photons.size() == 1) {
         photon = photons[0];
         return;
-    } else if (photons.empty())
-        return; // Impossible?!
+    }
 
     sort(photons); // Sort along an split axis.
     std::size_t medianPhoton = median(photons);
@@ -57,14 +56,14 @@ void mcrt::PhotonMap::KdNode::construct(std::vector<const Photon*>& photons) {
     std::size_t leftSize { medianPhoton };
     std::size_t rightSize { photons.size() - leftSize  - 1 };
 
-    {
+    if (leftSize != 0) {
         std::vector<const Photon*> leftPhotons(leftSize);
         std::copy(photons.cbegin(), photons.cbegin() + medianPhoton, leftPhotons.begin());
         left = new KdNode { getNextAxis() };
         left->construct(leftPhotons);
     }
 
-    {
+    if (rightSize != 0) {
         std::vector<const Photon*> rightPhotons(rightSize);
         std::copy(photons.cbegin() + medianPhoton + 1, photons.cend(), rightPhotons.begin());
         right = new KdNode { getNextAxis() };
@@ -86,8 +85,26 @@ void mcrt::PhotonMap::KdNode::sort(std::vector<const Photon*>& photons) {
     });
 }
 
+// Since k-d cycle (everywhere I've seen anyway) the split in a modular way.
 mcrt::PhotonMap::KdNode::Axis mcrt::PhotonMap::KdNode::getNextAxis() const {
     return static_cast<Axis>((static_cast<char>(axis) + 1) % 3);
+}
+
+// Beam into the k-d node regions trying to find photons which are inside a given sphere.
+void mcrt::PhotonMap::KdNode::around(const glm::dvec3& sphereOrigin, double sphereRadius,
+                                     std::vector<const Photon*>& photonsInSphere) const {
+    double axisRadius { photon->position[axis] - sphereOrigin[axis] };
+    if (axisRadius * axisRadius <= sphereRadius * sphereRadius) {
+        if (left  != nullptr) left->around(sphereOrigin,  sphereRadius, photonsInSphere);
+        if (right != nullptr) right->around(sphereOrigin, sphereRadius, photonsInSphere);
+        if (glm::distance(sphereOrigin, photon->position) <= sphereRadius) {
+            photonsInSphere.push_back(photon);
+        }
+    } else if (left != nullptr  && photon->position[axis] >  sphereOrigin[axis]) {
+        left->around(sphereOrigin, sphereRadius, photonsInSphere);
+    } else if (right != nullptr && photon->position[axis] <= sphereOrigin[axis]) {
+        right->around(sphereOrigin, sphereRadius, photonsInSphere);
+    }
 }
 
 void mcrt::PhotonMap::insert(const Photon& photon) {
@@ -101,12 +118,12 @@ void mcrt::PhotonMap::remove(size_t index) {
 }
 
 void mcrt::PhotonMap::print(std::ostream& output) const {
-    output << "x,y,z,vx,vy,vz,r,g,b,shadow\n";
+    output << "x,y,z,vx,vy,vz,r,g,b\n";
     for (const auto& photon : photons) {
         output << photon.position.x << ',' << photon.position.y << ',' << photon.position.z << ',';
         output << photon.incoming.x << ',' << photon.incoming.y << ',' << photon.incoming.z << ',';
-        output << photon.color.r << ',' << photon.color.g << ',' << photon.color.b << ",";
-        output << photon.shadow << std::endl;
+        if (photon.shadow) output << 0.0 << ',' << 0.0 << ',' << 0.0 << std::endl;
+        else output << photon.color.r << ',' << photon.color.g << ',' << photon.color.b << std::endl;
     }
 }
 
@@ -124,14 +141,16 @@ void mcrt::PhotonMap::print(std::ostream& output, const std::vector<const Photon
             }
         }
 
-        if (photonFound) output << 0.4 << ',' << 0.4 << ',' << 0.4 << std::endl;
-        else             output << 0.8 << ',' << 0.8 << ',' << 0.8 << std::endl;
+        if (photonFound) output << 0.0 << ',' << 0.0 << ',' << 0.0 << std::endl;
+        else             output << 0.6 << ',' << 0.6 << ',' << 0.6 << std::endl;
     }
 }
 
-std::vector<const mcrt::Photon*> mcrt::PhotonMap::neighbors(const glm::dvec3& around, size_t k) const {
-    if (rebalanced == false) std::cerr << "Warning! Photon map hasn't been re-balanced!?" << std::endl;
-    return {  };
+std::vector<const mcrt::Photon*> mcrt::PhotonMap::around(const glm::dvec3& origin, double radius) const {
+    if (rebalanced == false) std::cerr << "Stop! A photon map hasn't been re-balanced yet!" << std::endl;
+    std::vector<const Photon*> photons;
+    root->around(origin, radius, photons);
+    return photons; // around out spheres.
 }
 
 std::ostream& operator<<(std::ostream& output, const mcrt::PhotonMap& photonMap) {

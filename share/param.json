@@ -1,6 +1,8 @@
 {
+    "photonMap": 1,
+    "photonAmount": 100000,
     "progressiveRendering": 1,
-    "parallelMethod": "none",
+    "parallelMethod": "openmp",
     "resolution":  [256,  256],
     "scalingFactor": [1.0, 1.0],
     "interpolation": "bilinear",

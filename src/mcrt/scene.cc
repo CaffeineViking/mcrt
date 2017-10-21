@@ -8,6 +8,9 @@
 #include <cmath>
 #include <algorithm>
 
+#include "mcrt/photon.hh"
+#include "mcrt/progress.hh"
+
 namespace mcrt {
     Ray::Intersection Scene::intersect(const Ray& ray) const {
         Ray::Intersection closestHit {
@@ -86,14 +89,13 @@ namespace mcrt {
                 return i1.distance < i2.distance;
             });
 
-        
         for(unsigned i = 0; i < intersections.size(); ++i) {
-            glm::dvec3 rayHitPosition { ray.origin + ray.direction * intersections.at(i).distance };            
+            glm::dvec3 rayHitPosition { ray.origin + ray.direction * intersections.at(i).distance };
             Photon photon {rayHitPosition,  ray.direction, intersections.at(i).material->color, i != 0};
-            photons.push_back(photon);
+            photonMap.insert(photon);
         }
     }
-    
+
     // Store the resulting photons in the photons vector.
     bool Scene::photonTrace(const Ray& ray, const size_t depth = 0) {
 
@@ -135,34 +137,50 @@ namespace mcrt {
             return false;
         }
 
-        
         return false;
- 
     }
-    
-    const std::vector<Photon>& Scene::gatherPhotons() {
+
+    void Scene::gatherPhotons(std::size_t photonAmount) {
         currentPhoton = 0;
-        photons.reserve(Scene::MAX_PHOTONS);    
+
+        double cachedProgress = 0.0;
+        std::size_t totalPhotons = 0;
         double totalLightArea = 0.0;
+
         for(Light* l: lights) {
             totalLightArea += dynamic_cast<AreaLight*>(l)->area;
-        }    
+        }
+
+        photonMap = PhotonMap { photonAmount };
 
         for(Light* l: lights) {
             AreaLight* al = dynamic_cast<AreaLight*>(l);
             const double ratio = al->area / totalLightArea;
-            const unsigned numPhotons = ratio * Scene::MAX_PHOTONS;
-            std::cout << numPhotons << std::endl;
+            const unsigned numPhotons = ratio * photonAmount;
+
             // Create photons for this area light
            unsigned photons = 0;
+
            while(photons < numPhotons) {
                 Ray path { al->sample(), al->sampleHemisphere()};
                 if(photonTrace(path, 0)){
+                    ++totalPhotons;
                     ++photons;
+                }
+
+                double progress = totalPhotons / (double) photonAmount;
+                if (progress - cachedProgress >= 0.01) {
+                    cachedProgress = progress;
+                    printProgress("Photon maps: ",
+                                  progress);
                 }
            }
         }
-        return photons;
+
+        printProgress("Photon maps: ", 1.0);
+        std::cout << std::endl;
+
+        photonMap.rebalance();
     }
 
     glm::dvec3 Scene::rayTrace(const Ray& ray, const size_t depth = 0) const {

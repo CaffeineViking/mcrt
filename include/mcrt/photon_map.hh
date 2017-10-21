@@ -10,6 +10,10 @@ namespace mcrt {
     class PhotonMap final {
     public:
         PhotonMap() = default;
+        PhotonMap(std::size_t amount) {
+            photons.reserve(amount);
+        }
+
         PhotonMap(const std::vector<Photon>& photons)
             : photons { photons } { rebalance(); }
 
@@ -43,7 +47,7 @@ namespace mcrt {
         void print(std::ostream&, const std::vector<const Photon*>&) const;
 
         bool isBalanced() const { return rebalanced; }
-        std::vector<const Photon*> neighbors(const glm::dvec3&, size_t) const;
+        std::vector<const Photon*> around(const glm::dvec3&, double) const;
 
     private:
         struct KdNode {
@@ -72,6 +76,9 @@ namespace mcrt {
             size_t median(const std::vector<const Photon*>&) const;
             void sort(std::vector<const Photon*>&);
             Axis getNextAxis() const;
+
+            // Add all possible points inside a sphere to the given vector of photons.
+            void around(const glm::dvec3&, double, std::vector<const Photon*>&) const;
 
             static std::size_t total;
             static std::size_t processed;
