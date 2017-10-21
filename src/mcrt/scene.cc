@@ -178,6 +178,7 @@ namespace mcrt {
         printProgress("Photon maps: ", 1.0);
         std::cout << std::endl;
 
+        photonMapEnabled = true;
         photonMap.rebalance();
     }
 

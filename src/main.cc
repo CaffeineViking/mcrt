@@ -68,7 +68,8 @@ int main(int argc, char** argv) {
 
     // ==================== Photon Gather Step =====================
 
-    scene.gatherPhotons(parameters.photonAmount); // Traces photons.
+    if (parameters.photonMap) // Trade-off between speed and memory.
+        scene.gatherPhotons(parameters.photonAmount); // Photon map.
 
     // ===================== Ray Tracing Step ======================
 

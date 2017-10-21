@@ -72,11 +72,13 @@ namespace mcrt {
     private:
         std::vector<Material*> materials;
         std::vector<Geometry*> geometries;
+        bool photonMapEnabled { false };
         std::vector<Light*> lights;
         PhotonMap photonMap;
 
         unsigned currentPhoton;
         bool photonTrace(const Ray& ray, const size_t);
+        bool hasPhotonMap() { return photonMapEnabled;}
         void getPhotons(const Ray& ray);
 
         Camera camera;
