@@ -3,7 +3,7 @@
     "photonAmount": 100000,
     "progressiveRendering": 1,
     "parallelMethod": "openmp",
-    "resolution":  [256,  256],
+    "resolution":  [320,  320],
     "scalingFactor": [1.0, 1.0],
     "interpolation": "bilinear",
     "supersamples": [7, "grid"],

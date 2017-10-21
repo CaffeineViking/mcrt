@@ -82,6 +82,7 @@ namespace mcrt {
         bool photonTrace(const Ray& ray, const glm::dvec3&, const size_t);
         void getPhotons(const Ray& ray, const glm::dvec3&);
         bool hasPhotonMap() { return photonMapEnabled;}
+        bool radianceEstimationPossible(const std::vector<const Photon*>&) const;
 
         Camera camera;
     };
