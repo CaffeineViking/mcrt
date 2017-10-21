@@ -6,6 +6,7 @@
 #include "mcrt/camera.hh"
 #include "mcrt/geometry.hh"
 #include "mcrt/photon.hh"
+#include "mcrt/photon_map.hh"
 
 namespace mcrt {
     class Light;
@@ -61,6 +62,7 @@ namespace mcrt {
         const std::vector<Geometry*>& getGeometries() const { return geometries; }
 
         static size_t maxRayDepth;
+        static size_t photonNeighbors;
 
         const std::vector<Light*>& getLights() const { return lights; }
         std::vector<Light*>& getLights() { return lights; }

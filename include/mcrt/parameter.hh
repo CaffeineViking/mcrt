@@ -18,6 +18,7 @@ namespace mcrt {
         size_t maxRayDepth { 10 };
         size_t shadowRayCount { 1 };
         bool progressiveRendering { false };
+        size_t photonNeighbors { 10 };
     };
 }
 

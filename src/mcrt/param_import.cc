@@ -75,5 +75,9 @@ mcrt::Parameters mcrt::ParameterImporter::load(const std::string& file) {
         parameters.shadowRayCount = parser["shadowRays"].get<size_t>();
     }
 
+    if (parser.find("photonNeighbors") != parser.end()) {
+        parameters.photonNeighbors = parser["photonNeighbors"].get<size_t>();
+    }
+
     return parameters;
 }
