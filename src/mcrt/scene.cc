@@ -206,12 +206,11 @@ namespace mcrt {
 
             glm::dvec3 color{0};
             double radius{0};
-            static PhotonMap photonMap { photons };
             bool radianceEstimationPossible = false;
 
             // Use photon map to estimate radiance from direct lighting
             if (radianceEstimationPossible) {
-                for (const Photon* photon : photonMap.neighbors(rayHit.position, photonNeighbors)) {
+                for (const Photon* photon : photonMap.around(rayHit.position, photonNeighbors)) {
                     double distance = glm::distance(rayHit.position, photon->position);
                     radius = std::max(radius, distance);
                     glm::dvec3 brdf = rayHit.material->brdf(rayHit.position, rayHit.normal, -photon->incoming, -ray.direction);
