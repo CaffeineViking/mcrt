@@ -3,11 +3,11 @@
     "photonAmount": 100000,
     "progressiveRendering": 1,
     "parallelMethod": "openmp",
-    "resolution":  [320,  320],
+    "resolution":  [256,  256],
     "scalingFactor": [1.0, 1.0],
     "interpolation": "bilinear",
     "supersamples": [7, "grid"],
     "maxRayDepth": 8,
     "shadowRays": 4,
-    "photonEstimationRadius": 4
+    "photonEstimationRadius": 0.2
 }

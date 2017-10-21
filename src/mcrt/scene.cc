@@ -210,18 +210,17 @@ namespace mcrt {
             }
 
             glm::dvec3 color{0};
-            double k{1};
             const std::vector<const Photon*> photons = photonMap.around(rayHit.position, photonEstimationRadius);
 
             // Use photon map to estimate radiance from direct lighting
             if (radianceEstimationPossible(photons)) {
                 for (const Photon* photon : photons) {
                     double distance = glm::distance(rayHit.position, photon->position);
-                    double w = std::max(0.0, 1.0 - distance/(k*photonEstimationRadius));
-                    glm::dvec3 brdf = rayHit.material->brdf(rayHit.position, rayHit.normal, photon->incoming, -ray.direction);
+                    double w = std::max(0.0, 1.0 - distance/photonEstimationRadius);
+                    glm::dvec3 brdf = rayHit.material->brdf(rayHit.position, rayHit.normal, -photon->incoming, -ray.direction);
                     color += brdf * photon->color * w;
                 }
-                rayColor += color / ((1 - 2/(3*k)) * glm::pi<double>() * (photonEstimationRadius*photonEstimationRadius));
+                rayColor += color / ((1 - 2/3) * glm::pi<double>() * (photonEstimationRadius*photonEstimationRadius));
             }
             // Photon mapping conditions not met, use MC raytracing instead
             else {
@@ -262,6 +261,7 @@ namespace mcrt {
     }
 
     bool Scene::radianceEstimationPossible(const std::vector<const Photon*>& photons) const {
+        if (!hasPhotonMap()) return false;
         if (photons.size() < 10) return false;
         for (const Photon* photon : photons) if (photon->shadow) return false;
 
