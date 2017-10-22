@@ -1,6 +1,4 @@
 {
-    "photonMap": 1,
-    "photonAmount": 100000,
     "progressiveRendering": 1,
     "parallelMethod": "openmp",
     "resolution":  [256,  256],
@@ -9,5 +7,8 @@
     "supersamples": [7, "grid"],
     "maxRayDepth": 8,
     "shadowRays": 4,
-    "photonEstimationRadius": 0.2
+
+    "photonMap": 1,
+    "photonAmount": 100000,
+    "photonEstimationRadius": 0.5
 }
