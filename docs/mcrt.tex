@@ -138,30 +138,32 @@ In some cases a higher resolusion secondary \textit{photon map} is used to show 
 
     \section{Theory and Method} \label{sec:theory_and_method}
 
-    \subsection{Scene} \label{sec:scene}
-    
-    \subsection{BRDF} \label{sec:brdf}
-    \subsubsection{Lambertian} \label{sec:lambertian}
-    \subsubsection{Oren-Nayar} \label{sec:oren-nayar}
-    
-    \subsection{Intersections} \label{sec:ray_intersection}
-    \subsubsection{Ray-Sphere Intersection} \label{sec:ray_sphere_intersection}
-    \subsubsection{Ray-Triangle Intersection} \label{sec:ray_triangle_intersection}
+        \subsection{Scene Description} \label{sec:scene_description}
 
-    \subsection{Direct Light} \label{sec:direct_light}
-    \subsubsection{Point Light} \label{sec:point_light}
-    \subsubsection{Area Light} \label{sec:area_light}
-    
-    \subsection{Indirect Light} \label{sec:indirect_light}
-    \subsubsection{Reflection} \label{sec:reflection}
-    \subsubsection{Refraction} \label{sec:refraction}
-    \subsubsection{Russian Roulette} \label{sec:russian_roulette}
-    
-    \subsection{Anti-aliasing} \label{sec:anti-aliasing}
+        \subsection{Ray-Surface Intersections} \label{sec:ray-surface_intersections}
+            \subsubsection{Parametric Sphere} \label{sec:parametric_sphere}
+            \subsubsection{Triangle Polygon} \label{sec:triangle_polygon}
+            \subsubsection{Triangle Mesh} \label{sec:triangle_mesh}
 
-    \subsection{Photon Mapping} \label{sec:photon_mapping}
+        \subsection{Surface Properties} \label{sec:surface_properties}
+            \subsubsection{Lambertian Model} \label{sec:lambertian_model}
+            \subsubsection{Oren-Nayar Model} \label{sec:oren-nayar_model}
 
-    
+        \subsection{Direct Light Contributions} \label{sec:direct_light_contributions}
+            \subsubsection{Point Light Source} \label{sec:point_light_source}
+            \subsubsection{Area Light Source} \label{sec:area_light_source}
+            \subsubsection{Monte Carlo Method} \label{sec:monte_carlo_method}
+
+        \subsection{Indirect Light Contributions} \label{sec:indirect_light_contributions}
+            \subsubsection{Specular Reflection} \label{sec:specular_reflection}
+            \subsubsection{Specular Refraction} \label{sec:specular_refraction}
+            \subsubsection{Diffuse Reflection} \label{sec:diffuse_refraction}
+            \subsubsection{Russian Roulette} \label{sec:russian_roulette}
+
+        \subsection{Photon Mapping} \label{sec:photon_mapping}
+
+        \subsection{Anti-Aliasing} \label{sec:anti-aliasing}
+
     \section{Results and Benchmark} \label{sec:results_and_benchmark}
 
     \section{Discussion and Outlook} \label{sec:discussion_and_outlook}
