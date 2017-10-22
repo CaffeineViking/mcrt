@@ -63,7 +63,7 @@ labelfont=bf,singlelinecheck=off,labelsep=space}
 
         Several fields of industry use \emph{computer graphics} to generate and display synthetic images on a screen; e.g.\ the entertainment industry uses \emph{raytracers} for \emph{rendering} animated movies while \emph{rasterizers} usually are the technology powering real-time video games. Of course, it's also widely used in the engineering and scientific disciplines for visualizing field data, which even have their own sub-field called \emph{scientific visualization}. Since it is such a wide field, we'll only be focusing on the \emph{rendering problem}: the task of converting one \emph{scene description} to an \emph{image} of it.
 
-        Rendering can usually be done in one of two ways, called the \emph{rasterization} and \emph{raytracing} techniques, or, by using some hybrid of these. \emph{Rasterization} is when we geometrically project a scene, composed of primitives, onto an image plane (our camera) and then color the pixels based on a \emph{local lighting model}. Meaning, objects in a scene are \emph{shaded} only based on position, material properties, viewpoint direction, and light source information; never on other objects. Rasterization is very fast since there is hardware dedicated to these operations, and each of these is independent of each other, in other words, it's an \emph{embarrassingly parallel} problem. \emph{Raytracing} on the other hand shoots \emph{rays} from the pixels in the \emph{camera viewplane} and finds \emph{intersections} with geometry in the scene. These rays bounce around the scene by \emph{specular reflection} or \emph{specular transmission}, until it finds a \emph{diffuse surface}, which then \emph{absorbs} it. It's a process by recursion, which approximates \emph{irradiance} falling onto a pixel. Since it takes into account other objects, it's technique based on a \emph{global illumination model}. Unfortunately, raytracing doesn't have full hardware support, but is still fast since it's also an embarrassingly parallel task (e.g. do for each pixel).
+        Rendering can usually be done in one of two ways, called the \emph{rasterization} and \emph{raytracing} techniques, or, by using some hybrid of these. \emph{Rasterization} is when we geometrically project a scene, composed of primitives, onto an image plane (our camera) and then color the pixels based on a \emph{local lighting model}. Meaning, objects in a scene are \emph{shaded} only based on position, material properties, viewpoint direction, and light source information; never on other objects. Rasterization is very fast since there is hardware dedicated to these operations, and each of these is independent of each other, in other words, it's an \emph{embarrassingly parallel} problem. \emph{Raytracing} on the other hand shoots \emph{rays} from the pixels in the \emph{camera viewplane} and finds \emph{intersections} with geometry in the scene. These rays bounce around the scene by \emph{specular reflection} or \emph{specular transmission}, until it finds a \emph{diffuse surface}, which then \emph{absorbs} it. It's a process by recursion, which approximates \emph{irradiance} falling onto a pixel. Since it takes into account other objects, it's a technique which gives \emph{global illumination}. Unfortunately, raytracing doesn't have full hardware support, but is still fast since it's also an embarrassingly parallel task (done for each sample).
 
         In this report we'll describe all the party tricks we've used to implement our \emph{Monte Carlo raytracer} from scratch. It simulates all \emph{light transport} effects for \emph{perfectly diffuse} and \emph{perfectly specular} surfaces. We've also implemented \emph{photon mapping} to speed up our convergence rate for higher quality \emph{caustics}. Arbitrary \emph{triangle meshes} can also be rendered and use \emph{bounding volumes} to ignore low-effort intersection tests. Lastly, we also support \emph{quadric geometry}. All of our scene is specified by using a JSON format.
 
@@ -91,7 +91,7 @@ labelfont=bf,singlelinecheck=off,labelsep=space}
 
     \subsection{Global\, Illumination} \label{sec:global_illumination}
 
-    A rendering technique is deemed to be \emph{photorealistic} if, after full convergance, it exactly mimics reality. One of the most important ingredients for achieving photorealism is \emph{global illumination}. We can compare \emph{local illumination} and \emph{global illumination} by looking at \cref{fig:cornell_box}. Notice that GI (global illumination) has \emph{color bleeding}, \emph{hard and soft shadows} and \emph{caustics}. These phenomena are not possible in a local model without resorting to e.g. \emph{shadow mapping} technique.
+    A rendering technique is deemed to be \emph{photorealistic} if, after full convergance, it exactly mimics reality. One of the most important ingredients for achieving photorealism is \emph{global illumination}. We can compare \emph{local illumination} and \emph{global illumination} by looking at \cref{fig:cornell_box}. Notice that GI (global illumination) has \emph{color bleeding}, \emph{hard and soft shadows} and \emph{caustics}. These phenomena are not possible in a local model without ``hacks'' like the \emph{shadow mapping} technique.
 
     \subsection{Rendering Equation} \label{sec:rendering_equation}
 
@@ -102,28 +102,55 @@ labelfont=bf,singlelinecheck=off,labelsep=space}
                                                       (\hat{n}_{x} \cdot \hat{\omega}_i) \, d\hat{\omega}_i
         \end{align*}
 
-    \newpage
-
     \subsection{Radiosity} \label{sec:radiosity}
-    
-    \textit{Radiosity} for computer graphics builds on the concept of calculating how light is transferred between patches of the scene in an iterative process with, for each iterations we solve the equation: \begin{equation*}
-        B_i = E_i + \rho_i \sum_{j=1}^{n} F_{ij} B_j
+    \textit{Radiosity} for computer graphics assumes all surfaces are \emph{perfectly diffuse patches} (e.g. triangles), and builds on the concept of finding the radiance that is transferred between patches in the scene using an iterative process. Each iteration solves the equation below by reflecting radiance for each patch: \begin{equation*}
+        B_i = E_i + \rho_i \sum_{j=1}^{n} F_{ij} B_j \; ,
     \end{equation*}
-    where \(B_i\) is the \textit{radiosity} of patch \(i\), \(\rho_i\) is the \textit{reflectivity} of patch \(i\), and the sum is between each patch in the scene and the patch \(i\) with \(F_{ij} \) the formfactor (geometric term) between \(i\) and \(j\).
+    where \(B_i\) is the \textit{radiosity} of \emph{patch} \(i\), \(E_i\) the \emph{emitted radiosity} by \(i\), \(\rho_i\) is the \textit{surface reflectivity} of \(i\), and the sum defines the \emph{radiance} falling onto \(i\) between each patch in the scene and the patch \(i\), depending on the \emph{form-factor} \(F_{ij}\) (geometric term) of \(i\) and \(j\).
 
-Iterating on the above equations, a discrete approximation of the \textit{rendering equation} is achieved for perfect labertian surfaces as the patch size goes infinitesimal and the iterations tends to infinity. Some advantages of radiosity over GI techniques that takes into account specular light is that it calculates the radiosity of the full scene and not just based on the camera viewport, making it useful when baking lightmaps with the scene.     
+    \begin{figure}[ht]
+        \centering
+        \includegraphics[width=\linewidth]{share/radiosity.png}
+        \caption{Shows how the radiosity technique spreads the radiance in each iteration (render by \emph{H. Elias}).}
+        \label{fig:radiosity}
+    \end{figure}
+
+    \vspace{-0.5em}
+
+Iterating on the above equations, a discrete approximation of the \textit{rendering equation} is achieved for perfect Lambertian surfaces as the patch size goes infinitesimal and the iterations tends to infinity (but there needs to be some cutoff point, otherwise numerical errors might start appearing). You can see a radiosity-based renderer iterate through a scene in \cref{fig:radiosity}. Some advantages of radiosity over GI techniques that takes into account specular light is that it calculates the radiosity of the full scene and not just based on the camera viewport, making it useful when baking light-maps with the scene. It's a spin-off of the heat transfer equations in thermodynamics into rendering by \emph{Goral et al.}~\cite{goral1984modeling}.
 
     \subsection{Whitted Raytracing} \label{sec:whitted_raytracing}
 
-    In the Whitted ray tracing method initial rays are emitted from the camera into the scene. The rays will intersect with objects and new reflective and/or refractive rays are spawned. In this method it is assumed that we have perfect reflections and refractions. The direction of a refracted ray is computed with Snell's law given the refractive indices of the materials at the intersection point.
+    In the \emph{Whitted}~\cite{whitted1980improved} ray tracing method initial rays are emitted from the camera into the scene. The rays will intersect with objects and new reflective and/or refractive rays are spawned. In this method it is assumed that we only have \emph{perfect reflections and refractions}. The direction of a refracted ray is computed with Snell's law given the refractive indices of the materials at the ray intersection point.
 
-    Reflecting and refracting rays will build up a tree of rays. When all rays have terminated the radiance at each intersection point is computed from the leaf nodes back up to the root node (camera). The radiance from the child rays of an intersection point contribute to the total radiance leaving the intersection point. Shadow rays is sent from each intersection point to the light sources to know if the point is in shadow. If the shadow ray reaches the light source the point is not in shadow and the light source therefore contribute to the total radiance. 
+    Reflecting and refracting rays will build up a \emph{tree of rays}. When all rays have terminated (i.e. hit a diffuse surface) the radiance at each intersection is computed from the leaf nodes back up to the root node (the camera). The radiance from the child rays of an intersection point contribute to the total radiance leaving each intersection point. \emph{Shadow rays} are sent from each of these points to the light sources, to know if the point is in shadow. If the shadow ray reaches a source of light then it's not in shadow and the light therefore contributes to the total radiance. \cref{fig:raytracing} (a) is being rendered by it.
+
+    \begin{figure}[ht]
+        \centering
+        \begin{subfigure}{0.48\linewidth}
+            \centering
+            \label{fig:whitted_raytracing}
+            \includegraphics[width=\linewidth]{share/whitted_raytracing.png}
+            \caption{Whitted-ish raytracing}
+        \end{subfigure} \hfill
+        \begin{subfigure}{0.48\linewidth}
+            \centering
+            \label{fig:monte_carlo_raytracing}
+            \includegraphics[width=\linewidth]{share/monte_carlo_raytracing.png}
+            \caption{Monte Carlo raytracing}
+        \end{subfigure}
+        \caption{Renders of \emph{the scene} in \cref{sec:scene_description} using our raytracer in the early and later progress stages.}
+        \label{fig:raytracing}
+    \end{figure}
+
+    \vspace{-1.5em}
 
     \subsection{Path Tracing} \label{sec:path_tracing}
 
-    The path tracing method works in a similar way to Whitted raytracing but the reflections and refractions is not always perfect. Instead, when a ray intersects with an object it will be reflected in a random direction from the intersection point. The rays will be recursivly reflect until they intersect with a light source. Since some rays never hit a light source another condition to terminate is needed. The soulution is Russian roulette, where rays have a probability of terminating at an intersection point. This will give an unbiased result.
+    The \emph{path tracing} method works in a similar way to Whitted raytracing, but the reflections and refractions may not always perfect. Instead, when a ray intersects with an object it will be reflected in a \emph{random direction} originating from the \emph{hemisphere} at the intersection point. The rays are be recursively reflected until they intersect with a light source. But since some rays never hit a light source another condition to terminate is needed. The solution is called \emph{Russian roulette}, where rays have a probability of being \emph{absorbed} at the intersection point. This gives the technique an unbiased result. A tree will be built recursively just as before, adding contribution from the child nodes and from the light sources (which may have an area now) with a local lighting model.
 
-    A tree will be built and recursed just as before adding contribution from the child nodes and from the light sources with a local lighting model. 
+    This is a method that needs many \emph{samples} to converge, and thus uses \emph{Monte Carlo integration}; making the \emph{path tracing technique} a \emph{Monte Carlo raytracer}. \cref{fig:raytracing} (b) shows a render of a scene using our Monte Carlo raytracer; we have more interesting light phenomena than Whitted raytracing.
+
     \subsection{Photon Mapping} \label{sec:photon_mapping}
     
     One of the main problems with \textit{path tracing} is that it usually takes very long to converge to a noise-less image. To speed up the convergence H. Jensen propposed an algorithm where rays with low importance are approximated using a spatial map of how the light sources in the scene deposits flux. These data-structures are called \textit{Photon maps} and significantly spped up convergence of a typical \textit{path tracer}.
@@ -131,7 +158,6 @@ Iterating on the above equations, a discrete approximation of the \textit{render
     \textit{Photon mapping} is done in two passes. The first pass is done before the \textit{path tracer} as a pre-processing step where photons are emitted from light sources and bounced around the scene in a way similar to the typical \textit{path tracer} and saved to a balanced kd-tree whenever they terminate. The second pass is done in conjunction with the \textit{path tracer} where rays with low importance are approximated by photons stored around the terminating scene-intersection. The number of photons to consider is either calculated by a bounding sphere of fixed size or a sphere expanded until it encompases  a fixed number of photons. These photons are then used to approixmate radiance at the intersection point. 
 
 In some cases a higher resolusion secondary \textit{photon map} is used to show caustics effects since these are very expensive to do in regular \textit{path tracing}. In this case, photons are only emitted towards specular objects in the scene and in much greater numbers compared to the regular \textit{photon map}.
-
 
     \clearpage
 
