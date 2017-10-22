@@ -152,12 +152,33 @@ Iterating on the above equations, a discrete approximation of the \textit{render
     This is a method that needs many \emph{samples} to converge, and thus uses \emph{Monte Carlo integration}; making the \emph{path tracing technique} a \emph{Monte Carlo raytracer}. \cref{fig:raytracing} (b) shows a render of a scene using our Monte Carlo raytracer; we have more interesting light phenomena than Whitted raytracing.
 
     \subsection{Photon Mapping} \label{sec:photon_mapping}
-    
-    One of the main problems with \textit{path tracing} is that it usually takes very long to converge to a noise-less image. To speed up the convergence H. Jensen propposed an algorithm where rays with low importance are approximated using a spatial map of how the light sources in the scene deposits flux. These data-structures are called \textit{Photon maps} and significantly spped up convergence of a typical \textit{path tracer}.
 
-    \textit{Photon mapping} is done in two passes. The first pass is done before the \textit{path tracer} as a pre-processing step where photons are emitted from light sources and bounced around the scene in a way similar to the typical \textit{path tracer} and saved to a balanced kd-tree whenever they terminate. The second pass is done in conjunction with the \textit{path tracer} where rays with low importance are approximated by photons stored around the terminating scene-intersection. The number of photons to consider is either calculated by a bounding sphere of fixed size or a sphere expanded until it encompases  a fixed number of photons. These photons are then used to approixmate radiance at the intersection point. 
+    One of the main problems with \textit{path tracing} is that it usually takes very long to \emph{converge} to a \emph{noise-less} image. To speed up the raytrace convergence, \emph{H. Jensen} proposed an algorithm where rays with low importance are approximated using a spatial map of how the light sources in the scene deposits flux. These data-structures are called \textit{photon maps}~\cite{jensen1996global} and significantly speed up convergence of a typical \textit{path tracer} by only requiring a bit of extra memory.
 
-In some cases a higher resolusion secondary \textit{photon map} is used to show caustics effects since these are very expensive to do in regular \textit{path tracing}. In this case, photons are only emitted towards specular objects in the scene and in much greater numbers compared to the regular \textit{photon map}.
+    \vspace{0.5em}
+
+    \begin{figure}[ht]
+        \centering
+        \begin{subfigure}{0.478\linewidth}
+            \centering
+            \label{fig:cornell_box_photon_map}
+            \scalebox{-1}[1]{\includegraphics[width=\linewidth]{share/photon_mapping.png}}
+            \caption{direct light photon map}
+        \end{subfigure} \hfill
+        \begin{subfigure}{0.498\linewidth}
+            \centering
+            \includegraphics[width=\linewidth]{share/cornell_global_illumination.png}
+            \caption{possible raytrace result}
+        \end{subfigure}
+        \caption{Here the flux coming from the light source is distributed as seen in (a) before we do raytracing.}
+        \label{fig:photon_mapping}
+    \end{figure}
+
+    \vspace{-0.25em}
+
+    \textit{Photon mapping} is done in two passes. The first pass is done before the \textit{path tracer} as a pre-processing step where photons are emitted from light sources and bounced around the scene in a way similar to the typical \textit{path tracer}. These photons are usually stored in a \emph{balanced kd-tree} whenever they hit a diffuse surface. The second pass is done in conjunction with the \textit{path tracer} where rays with low importance are approximated by photons stored around the terminating scene-intersection. The number of photons to consider is either calculated by a bounding sphere of fixed size or a sphere expanded until it encompasses a fixed number of photons. These photons are then used to approixmate radiance at the intersection point. We'll see later in the report that our implementation uses the ``\emph{fixed sphere radiance estimation}'' approach for this.
+
+In some cases a higher resolusion secondary \textit{photon map} is used to show caustics effects since these are very expensive to do in regular \textit{path tracing}. In this case, photons are only emitted towards specular objects in the scene and in much greater numbers compared to the regular \textit{photon map}. This enables one to get detailed caustic effects cheaply and fast.
 
     \clearpage
 
