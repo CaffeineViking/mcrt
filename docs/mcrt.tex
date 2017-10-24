@@ -148,13 +148,13 @@ Iterating on the above equations, a discrete approximation of the \textit{render
 
     \subsection{Path Tracing} \label{sec:path_tracing}
 
-    The \emph{path tracing} method works in a similar way to Whitted raytracing, but the reflections and refractions may not always perfect. Instead, when a ray intersects with an object it will be reflected in a \emph{random direction} originating from the \emph{hemisphere} at the intersection point. The rays are be recursively reflected until they intersect with a light source. But since some rays never hit a light source another condition to terminate is needed. The solution is called \emph{Russian roulette}, where rays have a probability of being \emph{absorbed} at the intersection point. This gives the technique an unbiased result. A tree will be built recursively just as before, adding contribution from the child nodes and from the light sources (which may have an area now) with a local lighting model.
+    The \emph{path tracing} method works in a similar way to Whitted raytracing, but the reflections and refractions may not always perfect. Instead, when a ray intersects with an object it will be reflected in a \emph{random direction} originating from the \emph{hemisphere} at the intersection point. These rays are recursively reflected until they intersect with a light source. But since some rays never hit a light source another condition to terminate is needed. The solution is called \emph{Russian roulette}, where rays have a probability of being \emph{absorbed} at the intersection point. This gives the technique an unbiased result. A tree will be built recursively just as before, adding contribution from the child nodes and from the light sources (which may have an area now) with a local lighting model.
 
     This is a method that needs many \emph{samples} to converge, and thus uses \emph{Monte Carlo integration}; making the \emph{path tracing technique} a \emph{Monte Carlo raytracer}. \cref{fig:raytracing} (b) shows a render of a scene using our Monte Carlo raytracer; we have more interesting light phenomena than Whitted raytracing.
 
     \subsection{Photon Mapping} \label{sec:photon_mapping}
 
-    One of the main problems with \textit{path tracing} is that it usually takes very long to \emph{converge} to a \emph{noise-less} image. To speed up the raytrace convergence, \emph{H. Jensen} proposed an algorithm where rays with low importance are approximated using a spatial map of how the light sources in the scene deposits flux. These data-structures are called \textit{photon maps}~\cite{jensen1996global} and significantly speed up convergence of a typical \textit{path tracer} by only requiring a bit of extra memory.
+    One of the main problems with \textit{path tracing} is that it usually takes very long to \emph{converge} to a \emph{noise-less} image. To speed up the raytrace convergence, \emph{H. Jensen} proposed an algorithm where rays with low importance are approximated using a spatial map which describe how light sources deposit flux in the scene. These data-structures are called \textit{photon maps}~\cite{jensen1996global} and significantly speed up convergence of a typical \textit{path tracer} by requiring a bit more memory.
 
     \vspace{0.5em}
 
@@ -219,9 +219,61 @@ In some cases a higher resolution secondary \textit{photon map} is used to show 
         
         \subsubsection{Triangle Mesh} \label{sec:triangle_mesh}
 
+        \clearpage
+
         \subsection{Surface Properties} \label{sec:surface_properties}
+
             \subsubsection{Lambertian Model} \label{sec:lambertian_model}
+
+                \begin{figure}[ht]
+                    \centering
+                    \includegraphics[width=0.8\linewidth]{share/lambertian_model.eps}
+                    \caption{Diffuse ``Lambertian'' surface.}
+                    \label{fig:lambertian_model}
+                \end{figure}
+
+                \begin{equation} \label{eq:lambertian_model}
+                    f_r(\vec{x}, \hat{\omega}_i, \hat{\omega}_o) = \frac{\rho}{\pi} \; ,
+                \end{equation}
+
             \subsubsection{Oren-Nayar Model} \label{sec:oren-nayar_model}
+
+                \begin{figure}[ht]
+                    \centering
+                    \includegraphics[width=0.8\linewidth]{share/oren-nayar_model.eps}
+                    \caption{Diffuse ``Oren-Nayar'' surface.}
+                    \label{fig:oren-nayar_model}
+                \end{figure}
+
+                \begin{equation} \label{eq:oren-nayar_model}
+                    \begin{split}
+                        f_r(\vec{x}, \hat{\omega}_i, \hat{\omega}_o) = \frac{\rho}{\pi} \cdot (A + \sin\alpha \cdot \tan\beta \cdot \gamma \cdot B) \; ,\\
+                        A = 1 - 0.5 \frac{\sigma^2}{\sigma^2 + 0.33} \; , \; B = 0.45\frac{\sigma^2}{\sigma^2 + 0.09} \; ,\\
+                        \alpha = \max\, \{\theta_i, \theta_o\} \; , \; \beta = \min\, \{\theta_i, \theta_o\} \; ,\\
+                        \gamma = \max\, \{0, \phi_i - \phi_o\} \; ,
+                    \end{split}
+                \end{equation}
+
+                \begin{equation} \label{eq:improved_oren-nayar_model}
+                    \begin{split}
+                        f_r(\vec{x}, \hat{\omega}_i, \hat{\omega}_o) = \rho \cdot \Big(A' + \frac{s}{t} \cdot B'\Big) \; ,\\
+                        A' = \frac{1}{\pi + \big(\frac{\pi}{2} - \frac{2}{3}\big) \sigma'} \; , \; B' = \frac{\sigma'}{\pi + \big(\frac{\pi}{2} - \frac{2}{3}\big) \sigma'} \; ,\\
+                        t = \begin{cases}
+                            1 & \textbf{if}\;\;\; s \leq 0\\
+                            \max\, \{\hat{n} \cdot \hat{\omega}_i, \hat{n} \cdot \hat{\omega}_o\} & \textbf{otherwise}
+                        \end{cases} \; ,\\
+                        s = \hat{\omega}_i \cdot \hat{\omega}_o - (\hat{n} \cdot \hat{\omega}_i)(\hat{n} \cdot \hat{\omega}_o) \; ,
+                    \end{split}
+                \end{equation}
+
+                \begin{figure}[ht]
+                    \centering
+                    \includegraphics[width=\linewidth]{share/roughness.png}
+                    \caption{Spheres rendered using our raytracer with different roughness values, \(\sigma'\), for the Oren-Nayars.}
+                    \label{fig:roughness}
+                \end{figure}
+
+        \clearpage
 
         \subsection{Direct Light Contributions} \label{sec:direct_light_contributions}
             \subsubsection{Point Light Source} \label{sec:point_light_source}
