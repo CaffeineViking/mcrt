@@ -3,11 +3,11 @@
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \usepackage[pdftex, hidelinks,
-            pdftitle={Monte Carlo Ray Tracing in a Nutshell},
+            pdftitle={Monte Carlo Raytracing from Scratch},
             pdfauthor={Martin Estgren and Erik S. V. Jansson},
             pdfsubject={Rendering -- Global Illumination},
-            pdfkeywords={rendering, global illumination,
-                         path tracing, c++}]{hyperref}
+            pdfkeywords={rendering, global illumination, mcrt, c,
+                         path tracing, photon mapping}]{hyperref}
 
 \usepackage{bm}
 \usepackage{caption}
@@ -46,12 +46,12 @@ labelfont=bf,singlelinecheck=off,labelsep=space}
         escapeinside={<@}{@>}}
 
 \title{\LARGE{\textbf{Monte Carlo Raytracing from Scratch}}}
-\author{{\textbf{Martin Estgren}} \;\;\;\;\;\;\;\;\,   {\href{mailto:mares480@student.liu.se}
-                                                       {\texttt{<mares480@student.liu.se>}}} \\
-        {\textbf{Rasmus Hedin}} \;\;\;\;\;\;\;\;\;\,\, {\href{mailto:rashe877@student.liu.se}
-                                                       {\texttt{<rashe877@student.liu.se>}}} \\
-        {\textbf{Erik S. V. Jansson}} \;\;\;           {\href{mailto:erija578@student.liu.se}
-                                                       {\texttt{<erija578@student.liu.se>}}} \\~\\
+\author{{\textbf{Martin Estgren}} \;\;\;\;\;\;\;\;\;\;\;\;\;\,   {\href{mailto:mares480@student.liu.se}
+                                                                 {\texttt{<mares480@student.liu.se>}}} \\
+        {\textbf{Rasmus Hedin}} \;\;\;\;\;\;\;\;\;\;\;\;\;\;\,\, {\href{mailto:rashe877@student.liu.se}
+                                                                 {\texttt{<rashe877@student.liu.se>}}} \\
+        {\textbf{Erik S. V. Jansson}} \;\;\;\;\;\;\;\;           {\href{mailto:erija578@student.liu.se}
+                                                                 {\texttt{<erija578@student.liu.se>}}} \\~\\
         {Linköping University, Sweden}\vspace{-1.0ex}}
 
 \begin{document}
@@ -261,11 +261,13 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
 
         \subsection{Surface Properties} \label{sec:surface_properties}
 
-            After hitting a diffuse surface with normal \(\hat{n}\) coming from a ray direction \(\hat{\omega}_i\), we need to find the reflected radiance going towards \(\hat{\omega}_o\). This is affected by the \emph{bidirectional reflectance distribution function}, \(f_r\), of the surface. We've implemented two known models:
+            After hitting a diffuse surface with normal \(\hat{n}\) coming from a ray direction \(\hat{\omega}_i\), we need to find the reflected radiance going towards \(\hat{\omega}_o\). This is affected by the \emph{bidirectional reflectance distribution function}, \(f_r\), of the surface. It's used to model the \emph{ratio} of \emph{reflected radiance} leaving the surface towards \(\hat{\omega}_o\) with respect to the \emph{irradiance} arriving from the direction \(\hat{\omega}_i\). The first definition given by \emph{F. E. Nicodemos}~\cite{nicodemus1965directional} shows: \[f_r(\vec{x}, \hat{\omega}_i, \hat{\omega}_o) = \frac{d \mathcal{L}_{r}(\vec{x}, \hat{\omega}_o)}{\mathcal{L}_i(\vec{x}, \hat{\omega}_i)(\hat{n} \cdot \hat{\omega}_i)d\hat{\omega}_i}\; .\]
+
+            There are several \emph{surface reflectance models}; we'll only describe the \emph{Lambertian} and the \emph{Oren-Nayar} \emph{reflectance models}, since those are in our raytracer.
 
             \subsubsection{Lambertian Model} \label{sec:lambertian_model}
 
-                Assumes the surface reflects radiance \emph{isotropically}, meaning it reflects radiance \emph{equally in all directions}.
+                Assumes the surface reflects radiance \emph{isotropically}, meaning it reflects radiance \emph{equally in all directions}. It was introduced by \emph{J. H. Lambert}~\cite{lambert1760photometria} in 1760, and realistically models perfectly diffuse surfaces which are free of imperfections (i.e. there is no roughness).
 
                 \begin{figure}[ht]
                     \centering
@@ -274,20 +276,26 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
                     \label{fig:lambertian_model}
                 \end{figure}
 
-                Since it doesn't depend on the incoming/outgoing directions, the value of \(f_r\) is constant, and gives us:
+                Since it doesn't depend on the incoming/outgoing directions, the value of \(f_r\) is constant in all directions within the hemisphere. This gives us the BRDF in \cref{eq:lambertian_model}. Now, usually you see the factor \(\hat{n} \cdot \hat{\omega}_i\) here as well, but we've chosen to not include it since it'll be appearing in the rendering equation anyway.
 
                 \begin{equation} \label{eq:lambertian_model}
                     f_r(\vec{x}, \hat{\omega}_i, \hat{\omega}_o) = \frac{\rho}{\pi} \; ,
-                \end{equation} where \(\rho\) is the \emph{albedo} of the diffuse surface \(D\) and \(\pi\) is the \emph{normalization factor} for \emph{energy conservation}.
+                \end{equation} where \(\rho\) is the \emph{albedo} of the diffuse surface \(D\) and \(\pi\) is the \emph{normalization factor} for \emph{energy conservation}. \emph{Albedo} can hand-wavingly be interpreted as ``color''.
 
             \subsubsection{Oren-Nayar Model} \label{sec:oren-nayar_model}
 
-                \begin{figure}[ht]
+                Unfortunately, while the Lambertian model might be good for some surface types, it's inappropriate for others, such as concrete, ceramic and cloth. Which is a shame, since it's an simple and intuitive model.
+
+                Surfaces which are diffuse and have rough texture can be accurately modeled with the \emph{Oren-Nayar}~\cite{oren1994generalization} \emph{reflection model}. It's based on the \emph{microfacet model} introduced by \emph{Torrace-Sparrow}~\cite{torrance1967theory}, which assumes a surface is composed of infinitesimally small, flat, Lambertian reflectors (as shown in the last section). An intuitive sketch of such a surface can be seen in \cref{fig:oren-nayar_model}, where the V-shaped microfacets are actually supposed to be infinitesimally small sized.
+
+                \begin{figure}[H]
                     \centering
                     \includegraphics[width=0.8\linewidth]{share/oren-nayar_model.eps}
                     \caption{Diffuse ``Oren-Nayar'' surface.}
                     \label{fig:oren-nayar_model}
                 \end{figure}
+
+                Deriving \cref{eq:oren-nayar_model} is outside the scope of this paper, so if you're interested, consult the original paper. Note that this is the \emph{qualitative Oren-Nayar} definition, and will therefore fail energy conservation laws when the \emph{roughness} parameter is set \(\sigma > 0.97\).
 
                 \begin{equation} \label{eq:oren-nayar_model}
                     \begin{split}
@@ -296,7 +304,13 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
                         \alpha = \max\, \{\theta_i, \theta_o\} \; , \; \beta = \min\, \{\theta_i, \theta_o\} \; ,\\
                         \gamma = \max\, \{0, \phi_i - \phi_o\} \; ,
                     \end{split}
-                \end{equation} where \(\theta\) is the \emph{inclination} and \(\phi\) the \emph{azimuth} of \(\hat{\omega}\). By using \(\sigma\) we can control the \emph{surfaces' roughness}.
+                \end{equation} where \(\theta\) is the \emph{inclination} and \(\phi\) the \emph{azimuth} of \(\hat{\omega}\). By changing \(\sigma\) we can control the \emph{surfaces' roughness}. Notice that this BRDF dependents on the ray angle, and is therefore \emph{anisotropic}. Implementing this isn't that straightforward since our raytracer has \(\hat{\omega}\)'s that aren't easily decomposable into the form \(\hat{\omega} = (\theta, \phi)\). It boils down to doing projections onto the surface plane. We can get a vector parallel to the plane with \(\hat{p} = \hat{\omega}_i \times \hat{\omega}_o\) and then \(\hat{q} = \hat{p} \times \hat{n}\). By projecting down \(\hat{\omega}_i\) onto \(\hat{q}\) with \(\hat{\omega}_{i\parallel \hat{q}}\), we get \(\theta = \hat{\omega}_i \cdot \hat{q} \; , \; \phi = \hat{\omega}_{i\parallel \hat{q}} \cdot \hat{q}\).
+
+                Because the qualitative Oren-Nayar calculations have quite a few expensive operations, we've chosen to implement \emph{Yasuhiro Fujii's}~\cite{fujii2015improvement} Oren-Nayar variant. It doesn't require trigonometric functions, and gives empirically almost indistinguishable results to O-N. Like regular Oren-Nayar, it suffers from not following energy conservation laws when \(\sigma' > 0.97\).
+
+                Actually, experimentally, \emph{Y. Fujii} has found that his proposed approach matches regular Oren-Nayar better than the qualitative Oren-Nayar found in \cite{oren1994generalization}.
+
+                \vspace{-1em}
 
                 \begin{equation} \label{eq:improved_oren-nayar_model}
                     \begin{split}
@@ -306,9 +320,13 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
                             1 & \textbf{if}\;\;\; s \leq 0\\
                             \max\, \{\hat{n} \cdot \hat{\omega}_i, \hat{n} \cdot \hat{\omega}_o\} & \textbf{otherwise}
                         \end{cases} \; ,\\
-                        s = \hat{\omega}_i \cdot \hat{\omega}_o - (\hat{n} \cdot \hat{\omega}_i)(\hat{n} \cdot \hat{\omega}_o) \; ,
+                        s = \hat{\omega}_i \cdot \hat{\omega}_o - (\hat{n} \cdot \hat{\omega}_i)(\hat{n} \cdot \hat{\omega}_o) \; .
                     \end{split}
-                \end{equation} where 
+                \end{equation}
+
+                Unlike qualitative Oren-Nayar, the above BRDF is a breeze to evaluate, for both the hardware and the programmer (who likes projecting stuff anyway).
+
+                Looking at \cref{fig:roughness} we see results returned from our raytracer. We should make a couple of interesting observations. Notice that Oren-Nayar reflectors with \(\sigma' = 0\) are essentially the same as Lambertian reflectors. Which makes sense, since \(\sigma' = 0\) means the surface has no roughness (i.e. perfectly diffuse).
 
                 \begin{figure}[ht]
                     \centering
@@ -317,7 +335,9 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
                     \label{fig:roughness}
                 \end{figure}
 
-        \clearpage
+                To wrap things up, when we hit a diffuse surface, we wish to know the ratio of radiance that will leave the surface. For this we need to choose between the Lambertian and Oren-Nayar model to calculate \(f_r\). Each surface in our scene defs. it's \(f_r\) model to use.
+
+                \clearpage
 
         \subsection{Direct Light Contributions} \label{sec:direct_light_contributions}
         Most importance rays that are sent from the camera into the scene never hit a light source. Therefore, the direct light from the light sources to an intesection point needs to contribute to the total radiance at the point. This is computed with shadow rays that are sent from each intersection point to the light sources. The shadow rays will provide light which contribute to the radiance at the ray intersection points. To determine if the intersection point lies in shadow a visbility test is performed. Transparent objects are ignored by the visibility test.
