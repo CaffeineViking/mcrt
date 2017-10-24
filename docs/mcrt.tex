@@ -223,7 +223,11 @@ In some cases a higher resolution secondary \textit{photon map} is used to show 
 
         \subsection{Surface Properties} \label{sec:surface_properties}
 
+            After hitting a diffuse surface with normal \(\hat{n}\) coming from a ray direction \(\hat{\omega}_i\), we need to find the reflected radiance going towards \(\hat{\omega}_o\). This is affected by the \emph{bidirectional reflectance distribution function}, \(f_r\), of the surface. We've implemented two known models:
+
             \subsubsection{Lambertian Model} \label{sec:lambertian_model}
+
+                Assumes the surface reflects radiance \emph{isotropically}, meaning it reflects radiance \emph{equally in all directions}.
 
                 \begin{figure}[ht]
                     \centering
@@ -232,9 +236,11 @@ In some cases a higher resolution secondary \textit{photon map} is used to show 
                     \label{fig:lambertian_model}
                 \end{figure}
 
+                Since it doesn't depend on the incoming/outgoing directions, the value of \(f_r\) is constant, and gives us:
+
                 \begin{equation} \label{eq:lambertian_model}
                     f_r(\vec{x}, \hat{\omega}_i, \hat{\omega}_o) = \frac{\rho}{\pi} \; ,
-                \end{equation}
+                \end{equation} where \(\rho\) is the \emph{albedo} of the diffuse surface \(D\) and \(\pi\) is the \emph{normalization factor} for \emph{energy conservation}.
 
             \subsubsection{Oren-Nayar Model} \label{sec:oren-nayar_model}
 
@@ -252,7 +258,7 @@ In some cases a higher resolution secondary \textit{photon map} is used to show 
                         \alpha = \max\, \{\theta_i, \theta_o\} \; , \; \beta = \min\, \{\theta_i, \theta_o\} \; ,\\
                         \gamma = \max\, \{0, \phi_i - \phi_o\} \; ,
                     \end{split}
-                \end{equation}
+                \end{equation} where \(\theta\) is the \emph{inclination} and \(\phi\) the \emph{azimuth} of \(\hat{\omega}\). By using \(\sigma\) we can control the \emph{surfaces' roughness}.
 
                 \begin{equation} \label{eq:improved_oren-nayar_model}
                     \begin{split}
@@ -264,7 +270,7 @@ In some cases a higher resolution secondary \textit{photon map} is used to show 
                         \end{cases} \; ,\\
                         s = \hat{\omega}_i \cdot \hat{\omega}_o - (\hat{n} \cdot \hat{\omega}_i)(\hat{n} \cdot \hat{\omega}_o) \; ,
                     \end{split}
-                \end{equation}
+                \end{equation} where 
 
                 \begin{figure}[ht]
                     \centering
