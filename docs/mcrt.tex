@@ -345,11 +345,40 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
             \end{equation*}
              $G(x, q) = cos\alpha cos\beta / d^2$ is the geometric term where d is the length of the shadow ray and $\alpha$, $\beta$ are the inclination angles to the surface normal at the start- and endpoint. $V(x, q_i)$ is the visibility function which is 1 if no object is in the way and 0 otherwise. Thus, only unblocked shadow rays will contribute to the estimate giving a soft shadow. Since the light source is a Lambertian emittor $L_0$ is emitted for all points and directions of the light source.
             
-             \subsection{Indirect Light Contributions} \label{sec:indirect_light_contributions}
+            \subsection{Indirect Light Contributions} \label{sec:indirect_light_contributions}
+            When rays are emitted from the camera they will intersect with surfaces. At the intersections the rays will either terminate or spawn new rays depending on the surface material. By following the path of the ray we build up a tree with intersections as nodes connected by rays. The child nodes will contribute radiance to the parent nodes which gives indirect light, i.e. light reflected at least once since it left the light source.
             \subsubsection{Specular Reflection} \label{sec:specular_reflection}
+            If a ray hits a specular surface a new ray will always spawn. The direction of the new ray is determined by the perfect specular reflection law. The direction of the new ray $\vec{R} = \vec{I} - 2 (\vec{I} \cdot \vec{N}) \vec{N}$ where $\vec{I}$ is the incoming ray and $\vec{N}$ is the surface normal.
+
             \subsubsection{Specular Refraction} \label{sec:specular_refraction}
-            \subsubsection{Diffuse Reflection} \label{sec:diffuse_refraction}
-            \subsubsection{Russian Roulette} \label{sec:russian_roulette}
+            If a ray hits a refractive surface, i.e. a transparent object, a new ray is spawned that enters the object.
+            The refractive ray $\vec{T}$ is computed with the perfect refraction law and the angle to the surface normal is computed with \emph{Snell's law}.
+            \begin{equation*}
+              \vec{T} = \tfrac{n_1}{n_2}\vec{I} + \vec{N}\left(-\tfrac{n_1}{n_2}(\vec{N}\cdot\vec{I}) - \sqrt{1 - [\tfrac{n_1}{n_2}]^2[1 - (\vec{N}\cdot\vec{I})^2]}\right)
+            \end{equation*}
+
+            When a ray is moving between media of different refractive indices we might both reflect and refract. The fresnel equation is used to determine the distribution of the radiance over the refracted and reflected rays.
+
+            \begin{equation*}
+            R_s = \left[\frac{n_1cos\theta_1 - n_2\sqrt{1-([n_1/n_2]sin\theta_1)^2}}{n_1cos\theta_1 + n_2\sqrt{1-([n_1/n_2]sin\theta_1)^2}}\right]^2
+          \end{equation*}
+
+          \begin{equation*}
+            R_p = \left[\frac{n_2\sqrt{1-([n_1/n_2]sin\theta_1)^2} - n_1cos\theta_1}{n_2\sqrt{1-([n_1/n_2]sin\theta_1)^2} + n_1cos\theta_1}\right]^2
+          \end{equation*}
+
+          The total reflection coefficient becomes
+          \begin{equation*}
+            k_r = (R_s + R_p)/2
+          \end{equation*}
+
+          The radiance of the parent node to the refracted and reflected ray is computed as
+          \begin{equation*}
+            L = R k_r + T (1-k_r)
+          \end{equation*}
+
+          \subsubsection{Diffuse Reflection} \label{sec:diffuse_refraction}
+          \subsubsection{Russian Roulette} \label{sec:russian_roulette}
 
         \subsection{Photon Mapping} \label{sec:photon_mapping}
             \subsubsection{Gathering Photons} \label{sec:gathering_photons}
