@@ -276,7 +276,23 @@ In some cases a higher resolution secondary \textit{photon map} is used to show 
         \clearpage
 
         \subsection{Direct Light Contributions} \label{sec:direct_light_contributions}
+        Most importance rays that are sent from the camera into the scene never hit a light source. Therefore, the direct light from the light sources to an intesection point needs to contribute to the total radiance at the point. This is computed with shadow rays that are sent from each intersection point to the light sources. The shadow rays will provide light which contribute to the radiance at the ray intersection points. To determine if the intersection point lies in shadow a visbility test is performed. Transparent objects are ignored by the visibility test.
             \subsubsection{Point Light Source} \label{sec:point_light_source}
+            The shadow ray $S_2 = x - y$ from an intersection point $y$ to a point light source position $x$ is launched. If it does not hit any object it pass the visibility test and will the light will contribute to the radiance. 
+
+            \begin{figure}[ht]
+              \centering
+              \includegraphics[width=\linewidth]{share/point_light.png}
+              \caption{Point light shadow ray}
+              %\label{fig:roughness}
+            \end{figure}
+
+            \begin{equation*}
+              L(y \rightarrow -\Psi_1) = f_r(y, \omega_{S_2}, -\Psi_1) L(y \leftarrow S_2) cos\theta_{S_2}
+            \end{equation*} 
+
+
+
             \subsubsection{Area Light Source} \label{sec:area_light_source}
             \subsubsection{Monte Carlo Method} \label{sec:monte_carlo_method}
 
