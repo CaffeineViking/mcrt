@@ -1,6 +1,7 @@
 \documentclass[a4paper, twocolumn]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage{lmodern}
 \usepackage[pdftex, hidelinks,
             pdftitle={Monte Carlo Ray Tracing in a Nutshell},
             pdfauthor={Martin Estgren and Erik S. V. Jansson},
@@ -176,9 +177,9 @@ Iterating on the above equations, a discrete approximation of the \textit{render
 
     \vspace{-0.25em}
 
-    \textit{Photon mapping} is done in two passes. The first pass is done before the \textit{path tracer} as a pre-processing step where photons are emitted from light sources and bounced around the scene in a way similar to the typical \textit{path tracer}. These photons are usually stored in a \emph{balanced kd-tree} whenever they hit a diffuse surface. The second pass is done in conjunction with the \textit{path tracer} where rays with low importance are approximated by photons stored around the terminating scene-intersection. The number of photons to consider is either calculated by a bounding sphere of fixed size or a sphere expanded until it encompasses a fixed number of photons. These photons are then used to approixmate radiance at the intersection point. We'll see later in the report that our implementation uses the ``\emph{fixed sphere radiance estimation}'' approach for this.
+    \textit{Photon mapping} is done in two passes. The first pass is done before the \textit{path tracer} as a pre-processing step where photons are emitted from light sources and bounced around the scene in a way similar to the typical \textit{path tracer}. These photons are usually stored in a \emph{balanced kd-tree} whenever they hit a diffuse surface. The second pass is done in conjunction with the \textit{path tracer} where rays with low importance are approximated by photons stored around the terminating scene-intersection. The number of photons to consider is either calculated by a bounding sphere of fixed size or a sphere expanded until it encompasses a fixed number of photons. These photons are then used to approximate radiance at the intersection point. We'll see later in the report that our implementation uses the ``\emph{fixed sphere radiance estimation}'' approach for this.
 
-In some cases a higher resolusion secondary \textit{photon map} is used to show caustics effects since these are very expensive to do in regular \textit{path tracing}. In this case, photons are only emitted towards specular objects in the scene and in much greater numbers compared to the regular \textit{photon map}. This enables one to get detailed caustic effects cheaply and fast.
+In some cases a higher resolution secondary \textit{photon map} is used to show caustics effects since these are very expensive to do in regular \textit{path tracing}. In this case, photons are only emitted towards specular objects in the scene and in much greater numbers compared to the regular \textit{photon map}. This enables one to get detailed caustic effects cheaply and fast.
 
     \clearpage
 
@@ -187,9 +188,36 @@ In some cases a higher resolusion secondary \textit{photon map} is used to show 
         \subsection{Scene Description} \label{sec:scene_description}
 
         \subsection{Ray-Surface Intersections} \label{sec:ray-surface_intersections}
-            \subsubsection{Parametric Sphere} \label{sec:parametric_sphere}
-            \subsubsection{Triangle Polygon} \label{sec:triangle_polygon}
-            \subsubsection{Triangle Mesh} \label{sec:triangle_mesh}
+
+        Since the scene can be constructed using a number of different geometric surfaces, some different intersection methods are required. Common for them all is that a ray is defined on the parametric formula \( \vec{o} + t \hat{d} \) where \( \vec{o} \in \mathbb{R}^3\) denotes the origin of the ray, \(t \in \mathbb{R}\) specifies a distance from the origin, and \(\hat{d} \in \mathbb{R}^3\) indicating the direction of the ray.
+            
+        \subsubsection{Parametric Sphere} \label{sec:parametric_sphere}
+        
+        Spherical objects are defined as a vector \(\vec{o} \in \mathbb{R}^3\) which denotes the origin of the sphere, and a scalar \(r\) as the radius of the sphere. Sphere - ray intersections are done using a geometric solution on the following form:
+
+        \begin{align*}
+            \vec{L} = \vec{o_{sphere}} - \vec{o_{ray}} \\
+            t_{ca} = \vec{L} \cdot  \hat{d_{ray}} \\
+        \end{align*}
+        if \(t_{ca} < 0\), there's no intersection between ray and sphere. otherwise look for intersection points using:
+        
+        \begin{align*}
+            d^2 = L \cdot L - t_{ca} \cdot t_{ca}
+        \end{align*}
+        if \(d^2 > r^2\), there's not intersection, otherwise we continue with:
+
+        \begin{align*}
+            t_{hc} = \sqrt{r^2 - d^2} \\
+            t_0 = t_{ca} - t_{hc} \\
+            t_1 = t_{ca} + t_{hc} \\
+            t_{min} = min(t_0, t_1)
+        \end{align*}
+        where \(t_{min}\) is the distance from \(\vec{o_{ray}}\) to the closest intersection point on the sphere \(\vec{i} = \vec{o_{ray}} + t_{min} \hat{d_{ray}} - o_{sphere} \). The surface normal for the intersection point is calculated as \( \hat{n} = || \vec{i} - \vec{o_{sphere}} || \).
+
+        \subsubsection{Triangle Polygon} \label{sec:triangle_polygon}
+
+        
+        \subsubsection{Triangle Mesh} \label{sec:triangle_mesh}
 
         \subsection{Surface Properties} \label{sec:surface_properties}
             \subsubsection{Lambertian Model} \label{sec:lambertian_model}
