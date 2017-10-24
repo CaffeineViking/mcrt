@@ -189,7 +189,7 @@ In some cases a higher resolution secondary \textit{photon map} is used to show 
 
         \subsection{Ray-Surface Intersections} \label{sec:ray-surface_intersections}
 
-        Since the scene can be constructed using a number of different geometric surfaces, some different intersection methods are required. Common for them all is that a ray is defined on the parametric formula \( \vec{o} + t \hat{d} \) where \( \vec{o} \in \mathbb{R}^3\) denotes the origin of the ray, \(t \in \mathbb{R}\) specifies a distance from the origin, and \(\hat{d} \in \mathbb{R}^3\) indicating the direction of the ray.
+        The scene can be constructed using a number of different geometric surfaces and requires different intersection test for each surface type. Common for them all is that the incomming ray is defined on the parametric formula \( \vec{o} + t \hat{d} \) where \( \vec{o} \in \mathbb{R}^3\) denotes the origin of the ray, \(t \in \mathbb{R}\) specifies a distance from the origin, and \(\hat{d} \in \mathbb{R}^3\) indicating the direction of the ray.
             
         \subsubsection{Parametric Sphere} \label{sec:parametric_sphere}
         
@@ -204,21 +204,59 @@ In some cases a higher resolution secondary \textit{photon map} is used to show 
         \begin{align*}
             d^2 = L \cdot L - t_{ca} \cdot t_{ca}
         \end{align*}
-        if \(d^2 > r^2\), there's not intersection, otherwise we continue with:
+        if \(d^2 > r^2\), there's not intersection, otherwise:
 
         \begin{align*}
-            t_{hc} = \sqrt{r^2 - d^2} \\
-            t_0 = t_{ca} - t_{hc} \\
-            t_1 = t_{ca} + t_{hc} \\
-            t_{min} = min(t_0, t_1)
+            t_{hc} &= \sqrt{r^2 - d^2} \\
+            t_0 &= t_{ca} - t_{hc} \\
+            t_1 &= t_{ca} + t_{hc} \\
+            t_{min} &= min(t_0, t_1)
         \end{align*}
-        where \(t_{min}\) is the distance from \(\vec{o_{ray}}\) to the closest intersection point on the sphere \(\vec{i} = \vec{o_{ray}} + t_{min} \hat{d_{ray}} - o_{sphere} \). The surface normal for the intersection point is calculated as \( \hat{n} = || \vec{i} - \vec{o_{sphere}} || \).
+        where \(t_{min}\) is the distance from \(\vec{o_{ray}}\) to the closest intersection point on the sphere. If \(t_{min}  < 0\) we don't have an intersectino as well. The intersection point is calculataed as  \(\vec{i} = \vec{o_{ray}} + t_{min} \hat{d_{ray}} - o_{sphere} \) and the surface normal as \( \hat{n} = || \vec{i} - \vec{o_{sphere}} || \).
 
         \subsubsection{Triangle Polygon} \label{sec:triangle_polygon}
+        
+        Intersections between triangles and ray are computed using the \textit{Möller-Trumbore} algorithm which allow for intersection tests without having to compute the triangle containing plane. First a local coordinate system for the triangle is computed using the corner vertecies \(\vec{v_1}\), \(\vec{v_2}\), and \(\vec{v_3}\) on the form:
+
+\begin{align*}
+    \hat{e_1} = \vec{v_2} - \vec{v_1} \\
+    \hat{e_2} = \vec{v_3} - \vec{v_1}
+\end{align*}
+
+the surface normal is extracted as \( \hat{n} =\hat{e_1} \times \hat{e_2} \)
+
+we check if the ray travels parallel with the triangle surface by \(\hat{p} = \hat{d_{ray}} \times \hat{e_2}\), and if the determinant  \(d = \hat{e_1} \cdot \hat{p}\), \(d = 0 \), the ray does not intersect the triangle. Otherwise the intersection test continues with
+
+\begin{align*}
+    \vec{t} &= \vec{o_{ray}} - \vec{v_1} \\
+    \vec{q} &= \vec{t} \times \hat{e_1} \\\\
+    u &= \vec{t} \cdot \hat{p} * d^{-1} \\
+    v &= \hat{d_{ray}} \cdot \vec{q} * d^{-1}
+\end{align*} 
+if the two conditions
+ 
+\begin{align*}
+    u < 0 \; &\textbf{and} \; u > 1 \\
+    v < 0 \; &\textbf{and}  \; u + v > 1 
+\end{align*}
+holds we have an intersection and the distance \(t\) the ray has to travel to the intersection point can be calculated as \(\vec{e_2} \cdot \vec{q} * d^{-1} \).
 
         
         \subsubsection{Triangle Mesh} \label{sec:triangle_mesh}
+        
+        To speed up the intersection testfor geometries using mulltiple triangles we use a herarchical geometric representation where the geometry of interest is encapsulated within a bounding sphere, this allows for faster intersection tests by only having to take the triangles into account if we already know that the ray will intersect the bouding sphere.
 
+    The bouding sphere is calcualted by picking the smallest and largest \textit{vertecies} from the vertex set \(\mathcal{V}\)
+    \begin{align*} 
+        \vec{v_{min}} &= \underset{\vec{v} \in \mathcal{V}}{argmin}(\vec{v}) \\
+        \vec{v_{max}} &= \underset{\vec{v} \in \mathcal{V}}{argmax}(\vec{v})
+    \end{align*}
+    and defining the bounding sphere as:
+    \begin{align*}
+        radius &= \frac{ || \vec{v_{min}} - \vec{v_{max}} ||}{2} \\
+        \vec{origin} &= \frac{\vec{v_{max}} - \vec{v_{min}}}{2}
+    \end{align*}
+ 
         \clearpage
 
         \subsection{Surface Properties} \label{sec:surface_properties}
