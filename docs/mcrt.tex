@@ -214,7 +214,7 @@ In some cases a higher resolution secondary \textit{photon map} is used to show 
             t_1 &= t_{ca} + t_{hc} \\
             t_{min} &= min(t_0, t_1)
         \end{align*}
-        where \(t_{min}\) is the distance from \(\vec{o_{ray}}\) to the closest intersection point on the sphere. If \(t_{min}  < 0\) we don't have an intersectino as well. The intersection point is calculataed as  \(\vec{i} = \vec{o_{ray}} + t_{min} \hat{d_{ray}} - o_{sphere} \) and the surface normal as \( \hat{n} = || \vec{i} - \vec{o_{sphere}} || \).
+        where \(t_{min}\) is the distance from \(\vec{o_{ray}}\) to the closest intersection point on the sphere. If \(t_{min}  < 0\) we don't have an intersection as well. The intersection point is calculated as  \(\vec{i} = \vec{o_{ray}} + t_{min} \hat{d_{ray}} - o_{sphere} \) and the surface normal as \( \hat{n} = || \vec{i} - \vec{o_{sphere}} || \).
 
         \subsubsection{Triangle Polygon} \label{sec:triangle_polygon}
         
@@ -246,9 +246,9 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
         
         \subsubsection{Triangle Mesh} \label{sec:triangle_mesh}
         
-        To speed up the intersection testfor geometries using mulltiple triangles we use a herarchical geometric representation where the geometry of interest is encapsulated within a bounding sphere, this allows for faster intersection tests by only having to take the triangles into account if we already know that the ray will intersect the bouding sphere.
+        To speed up the intersection test for geometries using multiple triangles we use a hierarchical geometric representation where the geometry of interest is encapsulated within a bounding sphere, this speeds up the test since only the triangles are taken into account if we already know that the ray will intersect the bounding sphere.
 
-    The bouding sphere is calcualted by picking the smallest and largest \textit{vertecies} from the vertex set \(\mathcal{V}\)
+    The bounding sphere is calculated by picking the smallest and largest \textit{vertecies} from the vertex set \(\mathcal{V}\)
     \begin{align*} 
         \vec{v_{min}} &= \underset{\vec{v} \in \mathcal{V}}{argmin}(\vec{v}) \\
         \vec{v_{max}} &= \underset{\vec{v} \in \mathcal{V}}{argmax}(\vec{v})
@@ -356,14 +356,14 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
             \end{figure}
 
             \subsubsection{Area Light Source} \label{sec:area_light_source}
-            The direct light from an area light source needs to be approxmiated for each intersection point. This is done with a Monte-Carlo estimator $<L_D>$ using $M$ shadow photons which will be explained in the next section. The light source is a triangle with corners $\mathbf{v_0}$, $\mathbf{v_1}$, and $\mathbf{v_2}$ and with area $A = 0.5 ||(\mathbf{v_1} - \mathbf{v_0})\times(\mathbf{v_2}-\mathbf{v_0})||$. To get the shadow rays we need to pick random points $q$ on the light source uniformely with PDF $p(q) = \frac{1}{A}$. This is done by drawing two random numbers $u, v$ until $u + v < 1$ and building the point $q$ with barycentric coordinates $q = (1-u-v)\mathbf{v_0} + u\mathbf{v_1} + v\mathbf{v_2}$. Repeat this until we have $M$ points. 
+            The direct light from an area light source needs to be approximated for each intersection point. This is done with a Monte-Carlo estimator $<L_D>$ using $M$ shadow photons which will be explained in the next section. The light source is a triangle with corners $\mathbf{v_0}$, $\mathbf{v_1}$, and $\mathbf{v_2}$ and with area $A = 0.5 ||(\mathbf{v_1} - \mathbf{v_0})\times(\mathbf{v_2}-\mathbf{v_0})||$. To get the shadow rays we need to pick random points $q$ on the light source uniformly with PDF $p(q) = \frac{1}{A}$. This is done by drawing two random numbers $u, v$ until $u + v < 1$ and building the point $q$ with barycentric coordinates $q = (1-u-v)\mathbf{v_0} + u\mathbf{v_1} + v\mathbf{v_2}$. Repeat this until we have $M$ points. 
 
 
             \subsubsection{Monte Carlo Method} \label{sec:monte_carlo_method}
             \begin{equation*}
               <L_D> = \frac{AL_0}{M}\sum_{i=1}^{M}{f_r V(x, q) G(x, q_i)}
             \end{equation*}
-             $G(x, q) = cos\alpha cos\beta / d^2$ is the geometric term where d is the length of the shadow ray and $\alpha$, $\beta$ are the inclination angles to the surface normal at the start- and endpoint. $V(x, q_i)$ is the visibility function which is 1 if no object is in the way and 0 otherwise. Thus, only unblocked shadow rays will contribute to the estimate giving a soft shadow. Since the light source is a Lambertian emittor $L_0$ is emitted for all points and directions of the light source.
+             $G(x, q) = cos\alpha cos\beta / d^2$ is the geometric term where d is the length of the shadow ray and $\alpha$, $\beta$ are the inclination angles to the surface normal at the start- and endpoint. $V(x, q_i)$ is the visibility function which is 1 if no object is in the way and 0 otherwise. Thus, only unblocked shadow rays will contribute to the estimate giving a soft shadow. Since the light source is a Lambertian emitter $L_0$ is emitted for all points and directions of the light source.
             
             \subsection{Indirect Light Contributions} \label{sec:indirect_light_contributions}
             When rays are emitted from the camera they will intersect with surfaces. At the intersections the rays will either terminate or spawn new rays depending on the surface material. By following the path of the ray we build up a tree with intersections as nodes connected by rays. The child nodes will contribute radiance to the parent nodes which gives indirect light, i.e. light reflected at least once since it left the light source.
@@ -406,7 +406,7 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
           In order to not get a biased result an unbiased termination condition is required. This is achieved with russian roulette \ref{sec:russian_roulette} that determines if a ray should be terminated.
 
           \subsubsection{Russian Roulette} \label{sec:russian_roulette}
-          In order to achieve a unbiased result russian roulette is used to get an unbiased termination condition. The idea is to select a reflection probabilty $P$ for an intersection of a ray. This probability is connected to the surface properties. The radiance at a intersection point is approximated with a Monte-Carlo scheme using one ray.
+          In order to achieve a unbiased result russian roulette is used to get an unbiased termination condition. The idea is to select a reflection probability $P$ for an intersection of a ray. This probability is connected to the surface properties. The radiance at a intersection point is approximated with a Monte-Carlo scheme using one ray.
 
           \begin{equation*}
             L(x \rightarrow \omega_{out}) = \pi f_r(x, \omega_{in}, \omega_{out}) L(x \leftarrow \omega_{in})
@@ -419,8 +419,27 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
           \end{equation*}
 
           To determine if a ray should be terminated the azimuth angle of the reflected ray is modified to $\phi_i = (2\pi/P)u$ where $u$ is a random variable $0 \leq u \leq 1$. If $\phi_i > 2\pi$ the ray is terminated and a new ray is spawned if $0 \leq \phi_i \leq 2\pi$.
+
         \subsection{Photon Mapping} \label{sec:photon_mapping}
+
+        Photon mapping is a technique where photons are distributed within the scene and used during the path tracing render pass. This is done in order to provide an approximative method for radiance sampling during the path tracing step. Each photon represents a tiny packet of flux which provides information that helps us to reduce the number of reflection and shadow rays during the path tracing pass. 
+
             \subsubsection{Gathering Photons} \label{sec:gathering_photons}
+
+            Photons are propagated from the light sources in the scene and bounced around the geometry similar to how rays are emitted through the camera viewplane and reflected/refracted based on the material properties of surfaces. In this implementation the main difference between ray and photon propagation is that the photons always terminate on the first diffuse surface which it intersects. Terminated photons are stored in a balanced kd-tree to allow for efficient photon lookup during the radiance estimation. 
+
+            In this implementation a fixed number of photons are defined during the pre-rendering step \(P\). Each light source is assigned a number of photons based on the size of the light source.
+
+            First the total area for all light sources in the scene is calculated: 
+            \begin{align*}
+            A = \sum_{l \in \mathcal{L}}{area(l)}
+            \end{align*}
+            where \(\mathcal{L}\) is the set of all light sources. To get the number of photons a specific light source \(l\) will emit, the contribution of \(l\) towards the total emission area is used with the total number of photons:
+            \begin{align*}
+            p_l = \frac{P}{A}area(l)
+            \end{align*}
+            which results in the number of photons a given light source should emit into the scene. Each photons' outgoing direction and origin point is uniformly sampled from the hemisphere and light source area respectively. 
+
             \subsubsection{Radiance Estimate} \label{sec:radiance_estimate}
 
         \clearpage
