@@ -442,12 +442,40 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
 
             \begin{figure}[ht]
                 \centering
+                \begin{subfigure}{0.32\linewidth}
+                    \centering
+                    \label{fig:aliasing1x}
+                    \includegraphics[width=\linewidth]{share/aliasing_1x.png}
+                    \caption{1x}
+                \end{subfigure} \hfill
+                \begin{subfigure}{0.32\linewidth}
+                    \centering
+                    \label{fig:aliasing4x}
+                    \includegraphics[width=\linewidth]{share/aliasing_4x.png}
+                    \caption{4x}
+                \end{subfigure} \hfill
+                \begin{subfigure}{0.32\linewidth}
+                    \centering
+                    \label{fig:aliasing16x}
+                    \includegraphics[width=\linewidth]{share/aliasing_16x.png}
+                    \caption{16x}
+                \end{subfigure}
+                \caption{Effects of different supersampling levels for 64x64 render of the \emph{Utah teapot} in our raytracer.}
+                \label{fig:aliasing}
+            \end{figure}
+
+            Sometimes the locations where we evaluate our sub-pixels makes a difference in the final render. If the scene has of e.g. a texture which is of high-frequency (almost at the sub-pixel level) and has a regular pattern, then some details might be lost in the render process. It's largely affected by the \emph{supersampling pattern} that we use to choose the sub-pixel locations which are going to be raytraced. We've implemented three patterns, as can be seen in \cref{fig:sampling_methods}. The \emph{grid} samples at regular intervals inside the pixel with a step size \(\Delta_p\). \emph{Randomly} taking samples inside the pixel is also a valid strategy, leading to noisier, but unbiased results. Finally we have also implemented a \emph{Gaussian sampling pattern}, with a distribution \(X \sim \mathcal{N}(\mu, \sigma)\) around the center.
+
+            From the four vertices \(\{v_1, v_2, v_3, v_4\}\) of \(E_\Pi\) we build a coordinate system: \(\vec{x} = v_2 - v_1,\, \vec{y} = v_4 - v_1\) to calculate the next sub-pixel positions (based on the pattern we use) we're going to use to send rays.
+
+            \begin{figure}[ht]
+                \centering
                 \includegraphics[width=\linewidth]{share/sampling_methods.eps}
                 \caption{Visualization of \emph{supersampling patterns} we've implemented: \emph{grid}, \emph{random}, and the \emph{gaussian}. Another common technique is \emph{jittering} (not shown).}
                 \label{fig:sampling_methods}
             \end{figure}
 
-        \clearpage
+            As the last step, we need to be aware that we're storing \emph{irradiance values} (using double precision) in our pixels. They are in the so called \emph{sampling space}, but since we're going to be writing down the render to an image (integer values), we need to convert them from \emph{sample space} to \emph{image space}. We do this by \(\hat{p}_{ij} \div \max\, \{\hat{p}_{ij}\},\, \forall \hat{p}_{ij}\), scaling this down to \([0,1]\).
 
     \section{Results and Benchmark} \label{sec:results_and_benchmark}
 
