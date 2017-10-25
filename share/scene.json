@@ -154,7 +154,7 @@
         },
         {
             "geometry": "mesh",
-            "file": "share/tetrahedra.obj",
+            "file": "share/tetrahedron.obj",
             "origin": [4.5, -4.999, 0.00],
             "rotate": [0.0, 0.5, 0.0],
             "scale": 0.6,
