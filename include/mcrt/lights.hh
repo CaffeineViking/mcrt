@@ -43,7 +43,8 @@ namespace mcrt {
         double area;
         static size_t shadowRayCount;
 
-        glm::dvec3 sample();
+        glm::dvec3 sample() const;
+        glm::dvec3 sampleHemisphere() const;
         glm::dvec3 radiance(const Ray&, const Ray::Intersection&, const Scene*) override;
         Ray::Intersection intersect(const Ray&) const override;        
     };

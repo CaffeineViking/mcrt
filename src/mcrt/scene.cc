@@ -1,9 +1,17 @@
 #include "mcrt/scene.hh"
+#include "mcrt/photon.hh"
+#include "mcrt/photon_map.hh"
 
 #include <glm/glm.hpp>
 #include <limits>
 #include <vector>
 #include <cmath>
+#include <algorithm>
+#include <fstream>
+#include <iostream>
+
+#include "mcrt/photon.hh"
+#include "mcrt/progress.hh"
 
 namespace mcrt {
     Ray::Intersection Scene::intersect(const Ray& ray) const {
@@ -65,6 +73,120 @@ namespace mcrt {
     }
 
     size_t Scene::maxRayDepth = 10;
+    double Scene::photonEstimationRadius = 0.5;
+
+    void Scene::getPhotons(const Ray& ray, const glm::dvec3& partialFlux){
+
+        std::vector<Ray::Intersection> intersections;
+
+        for (const Geometry* geometry : geometries) {
+            Ray::Intersection rayHit = geometry->intersect(ray);
+            if (rayHit.distance > 0.0 )
+              intersections.push_back(rayHit);
+        }
+
+        std::sort(intersections.begin(), intersections.end(), []
+            (const Ray::Intersection& i1, const Ray::Intersection& i2) -> bool
+            {
+                return i1.distance < i2.distance;
+            });
+
+        for(unsigned i = 0; i < intersections.size(); ++i) {
+            glm::dvec3 rayHitPosition { ray.origin + ray.direction * intersections.at(i).distance };
+            Photon photon {rayHitPosition,  ray.direction, partialFlux, i != 0};
+            photonMap.insert(photon);
+        }
+    }
+
+    // Store the resulting photons in the photons vector.
+    bool Scene::photonTrace(const Ray& ray, const glm::dvec3& partialFlux, const size_t depth = 0) {
+
+        // Make sure we don't bounce forever
+        if(depth >= Scene::maxRayDepth)
+            return false;
+
+        Ray::Intersection rayHit = intersect(ray);
+        glm::dvec3 rayHitPosition { ray.origin + ray.direction * rayHit.distance };
+
+        // We have hit nothing or something like that I guess.....
+        if (rayHit.material == nullptr) return false;
+
+        if(rayHit.material->type == Material::Type::Diffuse) {
+            // We terminate path
+            getPhotons(ray, partialFlux);
+            return true;
+        } else if(rayHit.material->type == Material::Type::Reflective) {
+
+            Ray reflectionRay { ray.reflect(rayHitPosition, rayHit.normal) };
+            return photonTrace(reflectionRay, partialFlux, depth + 1);
+
+        } else if(rayHit.material->type == Material::Type::Refractive) {
+            double kr = ray.fresnel(rayHit.normal, rayHit.material->refractionIndex);
+            bool outside = glm::dot(ray.direction, rayHit.normal) < 0.0;
+
+            if(kr < 1.0) { // Check if ray isn't completely parallel to graze.
+                Ray refractionRay { ray.refract(rayHitPosition, rayHit.normal,
+                                                rayHit.material->refractionIndex) };
+                return photonTrace(refractionRay, partialFlux, depth + 1);
+            }
+
+            Ray reflectionRay; // If we need to invert the bias if we are inside.
+            if (outside) reflectionRay = ray.reflect(rayHitPosition, rayHit.normal);
+            else reflectionRay = ray.insideReflect(rayHitPosition, rayHit.normal);
+            return photonTrace(reflectionRay, partialFlux, depth + 1);
+
+        } else if(rayHit.material->type == Material::Type::LightSource) {
+            return false;
+        }
+
+        return false;
+    }
+
+    void Scene::gatherPhotons(std::size_t photonAmount) {
+        currentPhoton = 0;
+
+        double cachedProgress = 0.0;
+        std::size_t totalPhotons = 0;
+        double totalLightArea = 0.0;
+
+        for(Light* l: lights) {
+            totalLightArea += dynamic_cast<AreaLight*>(l)->area;
+        }
+
+        photonMap = PhotonMap { photonAmount };
+
+        for(Light* l: lights) {
+            AreaLight* al = dynamic_cast<AreaLight*>(l);
+            const double ratio = al->area / totalLightArea;
+            const unsigned numPhotons = ratio * photonAmount;
+            const glm::dvec3 totalFlux = glm::pi<double>() * al->area * al->material->color;
+            const glm::dvec3 partialFlux = totalFlux / (double)numPhotons;
+
+            // Create photons for this area light
+           unsigned photons = 0;
+
+           while(photons < numPhotons) {
+                Ray path { al->sample(), al->sampleHemisphere()};
+                if(photonTrace(path, partialFlux, 0)){
+                    ++totalPhotons;
+                    ++photons;
+                }
+
+                double progress = totalPhotons / (double) photonAmount;
+                if (progress - cachedProgress >= 0.01) {
+                    cachedProgress = progress;
+                    printProgress("Photon maps: ",
+                                  progress);
+                }
+           }
+        }
+
+        printProgress("Photon maps: ", 1.0);
+        std::cout << std::endl;
+
+        photonMapEnabled = true;
+        photonMap.rebalance();
+    }
 
     glm::dvec3 Scene::rayTrace(const Ray& ray, const size_t depth = 0) const {
         glm::dvec3 rayColor { 0.0 };
@@ -87,8 +209,28 @@ namespace mcrt {
                 rayColor += rayTrace(reflectionRay, depth + 1) * brdf * glm::pi<double>() / rayHit.material->reflectionRate;
             }
 
-            for (Light* lightSource : lights) {
-                rayColor += lightSource->radiance(ray, rayHit, this);
+            glm::dvec3 color { 0 };
+            const std::vector<const Photon*> photons = [this, &rayHit]() {
+                if (hasPhotonMap()) return photonMap.around(rayHit.position,
+                                                    photonEstimationRadius);
+                else return std::vector<const Photon*> {  };
+            }();
+
+            // Use photon map to estimate radiance from direct lighting
+            if (radianceEstimationPossible(photons)) {
+                for (const Photon* photon : photons) {
+                    double distance = glm::distance(rayHit.position, photon->position);
+                    double w = std::max(0.0, 1.0 - distance/photonEstimationRadius);
+                    glm::dvec3 brdf = rayHit.material->brdf(rayHit.position, rayHit.normal, -photon->incoming, -ray.direction);
+                    color += brdf * photon->color * w;
+                }
+                rayColor += color / ((1.0 - 2.0/3.0) * glm::pi<double>() * (photonEstimationRadius*photonEstimationRadius));
+            }
+            // Photon mapping conditions not met, use MC raytracing instead
+            else {
+                for (Light* lightSource : lights) {
+                    rayColor += lightSource->radiance(ray, rayHit, this);
+                }
             }
 
         } else if(rayHit.material->type == Material::Type::Reflective) {
@@ -120,5 +262,13 @@ namespace mcrt {
         }
 
         return rayColor;
+    }
+
+    bool Scene::radianceEstimationPossible(const std::vector<const Photon*>& photons) const {
+        if (!hasPhotonMap()) return false;
+        if (photons.size() < 10) return false;
+        for (const Photon* photon : photons) if (photon->shadow) return false;
+
+        return true;
     }
 }

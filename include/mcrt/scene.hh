@@ -5,6 +5,8 @@
 #include "mcrt/lights.hh"
 #include "mcrt/camera.hh"
 #include "mcrt/geometry.hh"
+#include "mcrt/photon.hh"
+#include "mcrt/photon_map.hh"
 
 namespace mcrt {
     class Light;
@@ -51,6 +53,8 @@ namespace mcrt {
 
         double inShadow(const Ray& ray) const;
 
+        void gatherPhotons(std::size_t);
+
         std::vector<Material*>& getMaterials() { return materials; }
         const std::vector<Material*>& getMaterials() const { return materials; }
 
@@ -58,6 +62,7 @@ namespace mcrt {
         const std::vector<Geometry*>& getGeometries() const { return geometries; }
 
         static size_t maxRayDepth;
+        static double photonEstimationRadius;
 
         const std::vector<Light*>& getLights() const { return lights; }
         std::vector<Light*>& getLights() { return lights; }
@@ -68,7 +73,17 @@ namespace mcrt {
     private:
         std::vector<Material*> materials;
         std::vector<Geometry*> geometries;
+        bool photonMapEnabled { false };
         std::vector<Light*> lights;
+        PhotonMap photonMap;
+
+        unsigned currentPhoton;
+
+        bool photonTrace(const Ray& ray, const glm::dvec3&, const size_t);
+        void getPhotons(const Ray& ray, const glm::dvec3&);
+        bool hasPhotonMap() const { return photonMapEnabled; }
+        bool radianceEstimationPossible(const std::vector<const Photon*>&) const;
+
         Camera camera;
     };
 }
