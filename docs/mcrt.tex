@@ -373,9 +373,12 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
             \subsubsection{Specular Refraction} \label{sec:specular_refraction}
             If a ray hits a refractive surface, i.e. a transparent object, a new ray is spawned that enters the object.
             The refractive ray $\vec{T}$ is computed with the perfect refraction law and the angle to the surface normal is computed with \emph{Snell's law}.
+
+            \small
             \begin{equation*}
               \vec{T} = \tfrac{n_1}{n_2}\vec{I} + \vec{N}\left(-\tfrac{n_1}{n_2}(\vec{N}\cdot\vec{I}) - \sqrt{1 - [\tfrac{n_1}{n_2}]^2[1 - (\vec{N}\cdot\vec{I})^2]}\right)
             \end{equation*}
+            \normalsize
 
             When a ray is moving between media of different refractive indices we might both reflect and refract. The fresnel equation is used to determine the distribution of the radiance over the refracted and reflected rays.
 
@@ -398,8 +401,24 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
           \end{equation*}
 
           \subsubsection{Diffuse Reflection} \label{sec:diffuse_refraction}
-          \subsubsection{Russian Roulette} \label{sec:russian_roulette}
+          As described in \ref{sec:surface_properties} two diffuse surfaces are implemented in the project; Lambertian and Oren-Nayar. When these surfaces are intersected by a ray we need to determine the direction of the reflected ray. For specular surfaces the ray was reflected/refracted perfectly, but for diffuse surfaces this is not the case. Instead, a random azimuth angle $\phi_i$ and inclination angle $\theta_i$ is picked in the hemisphere. We pick two random values $u, v \in [0,1)$ and compute azimuth $\phi_i = 2\pi u$ and inclination $\theta_i = cos^{-1}(\sqrt{v})$. The reflected ray will contribute to the radiance at the intersection giving indirect light.
 
+          In order to not get a biased result an unbiased termination condition is required. This is achieved with russian roulette \ref{sec:russian_roulette} that determines if a ray should be terminated.
+
+          \subsubsection{Russian Roulette} \label{sec:russian_roulette}
+          In order to achieve a unbiased result russian roulette is used to get an unbiased termination condition. The idea is to select a reflection probabilty $P$ for an intersection of a ray. This probability is connected to the surface properties. The radiance at a intersection point is approximated with a Monte-Carlo scheme using one ray.
+
+          \begin{equation*}
+            L(x \rightarrow \omega_{out}) = \pi f_r(x, \omega_{in}, \omega_{out}) L(x \leftarrow \omega_{in})
+          \end{equation*}
+
+          A new ray is spawned at the intersection point with probability $P$ and the ray is terminated with probability $(1-P)$. In order to remove the bias the following equation is used.
+
+          \begin{equation*}
+            L(x \rightarrow \omega_{out}) = \frac{\pi}{P} f_r(x, \omega_{in}, \omega_{out}) L(x \leftarrow \omega_{in})
+          \end{equation*}
+
+          To determine if a ray should be terminated the azimuth angle of the reflected ray is modified to $\phi_i = (2\pi/P)u$ where $u$ is a random variable $0 \leq u \leq 1$. If $\phi_i > 2\pi$ the ray is terminated and a new ray is spawned if $0 \leq \phi_i \leq 2\pi$.
         \subsection{Photon Mapping} \label{sec:photon_mapping}
             \subsubsection{Gathering Photons} \label{sec:gathering_photons}
             \subsubsection{Radiance Estimate} \label{sec:radiance_estimate}
