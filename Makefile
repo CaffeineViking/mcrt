@@ -45,6 +45,8 @@ clean: FORCE
 	rm -rf docs/slides/build
 	rm -rf share/perf.out
 	rm -rf share/perf.svg
+	rm -rf share/photons.csv
+	rm -rf share/statistics.csv
 distclean: clean
 	rm -rf bin
 	rm -f docs/mcrt.pdf

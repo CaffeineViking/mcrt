@@ -186,9 +186,9 @@ mcrt::Scene mcrt::SceneImporter::load(const std::string& file) {
                     mesh->rotateZ(surface["rotate"][2].get<double>());
                 }
 
-                mesh->move({surface["position"][0].get<double>(),
-                            surface["position"][1].get<double>(),
-                            surface["position"][2].get<double>()});
+                mesh->move({surface["origin"][0].get<double>(),
+                            surface["origin"][1].get<double>(),
+                            surface["origin"][2].get<double>()});
                 mesh->updateBoundingSphere();
                 geometry = mesh;
             } else throw std::runtime_error { "Error: unknown geometry type '" + geometryType + "'!" };

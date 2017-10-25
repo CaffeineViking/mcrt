@@ -3,18 +3,20 @@
 #include <iostream>
 #include <vector>
 #include <numeric>
-#include <iomanip>
 
 #include "mcrt/param_import.hh"
 #include "mcrt/scene_import.hh"
 #include "mcrt/parameter.hh"
 #include "mcrt/scene.hh"
 
+#include "mcrt/photon.hh"
+#include "mcrt/photon_map.hh"
+
 #include "mcrt/image.hh"
+#include "mcrt/material.hh"
 #include "mcrt/supersample.hh"
 #include "mcrt/image_export.hh"
-
-#include "mcrt/material.hh"
+#include "mcrt/progress.hh"
 
 int usage(int argc, char** argv) {
     if (argc < 2) std::cerr << "Error: need the path to render scenes to!" << std::endl;
@@ -22,20 +24,6 @@ int usage(int argc, char** argv) {
               << "IMAGE [SCENE] [PARAMETER]"
               << std::endl;
     return 1;
-}
-
-void printProgress(const std::string& task, double progress, size_t characters = 70) {
-    std::cout << task << "[";
-    size_t position = progress * characters;
-    for (size_t i { 0 }; i < characters; ++i) {
-        if (i < position) std::cout << "=";
-        else if (i > position) std::cout << " ";
-        else std::cout << ">";
-    } std::cout << "] ";
-
-    size_t percent = progress * 100.0;
-    std::cout << percent << " %\r";
-    std::cout.flush();
 }
 
 int main(int argc, char** argv) {
@@ -74,9 +62,15 @@ int main(int argc, char** argv) {
     scene.getCamera().setFieldOfView(fieldOfView);
 
     mcrt::Scene::maxRayDepth = parameters.maxRayDepth;
+    mcrt::Scene::photonEstimationRadius = parameters.photonEstimationRadius;
     mcrt::AreaLight::shadowRayCount = parameters.shadowRayCount;
 
     auto renderStart  { std::chrono::steady_clock::now() };
+
+    // ==================== Photon Gather Step =====================
+
+    if (parameters.photonMap) // Trade-off between speed and memory.
+        scene.gatherPhotons(parameters.photonAmount); // Photon map.
 
     // ===================== Ray Tracing Step ======================
 
@@ -158,5 +152,7 @@ int main(int argc, char** argv) {
 
     mcrt::ImageExporter::save(renderImage, renderImagePath); // A resized variant.
     std::cout << "Rendered to: '" << renderImagePath << "'." << std::endl;
+    if (parameters.recordStatistics)
+        parameters.writeStatistics(renderImagePath, renderDuration.count());
     return 0;
 }
