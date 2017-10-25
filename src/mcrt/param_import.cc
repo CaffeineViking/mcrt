@@ -89,5 +89,11 @@ mcrt::Parameters mcrt::ParameterImporter::load(const std::string& file) {
         else parameters.photonMap = false;
     }
 
+    if (parser.find("recordStatistics") != parser.end()) {
+        size_t recordStatistics { parser["recordStatistics"].get<size_t>() };
+        if (recordStatistics > 0) parameters.recordStatistics = true;
+        else parameters.recordStatistics = false;
+    }
+
     return parameters;
 }
