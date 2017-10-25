@@ -10,5 +10,5 @@
 
     "photonMap": 1,
     "photonAmount": 100000,
-    "photonEstimationRadius": 0.5
+    "photonEstimationRadius": 0.7
 }

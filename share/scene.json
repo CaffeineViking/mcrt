@@ -1,7 +1,7 @@
 {
     "camera": {
         "fieldOfView": 90.0,
-        "origin": [0.0, 0.0, 0.0],
+        "origin": [-1.0, 0.0, 0.0],
         "lookAt": [1.0, 0.0, 0.0],
         "up": [0.0, 1.0, 0.0]
     },
@@ -123,7 +123,7 @@
             "reflectionRate": 1.0
         },
         {
-            "name": "ceramic",
+            "name": "concrete",
             "color": [1.0, 1.0, 1.0],
             "type": "diffuse",
             "brdf": "oren-nayar",
@@ -147,12 +147,18 @@
             "radius": 1.5
         },
         {
+            "geometry": "sphere",
+            "origin": [7.0, 0.0, 0.0],
+            "material": "concrete",
+            "radius": 1.5
+        },
+        {
             "geometry": "mesh",
-            "file": "share/teapot.obj",
-            "origin": [7.0, -0.88, 0.0],
-            "rotate": [0.0, -0.78, 0.5],
-            "scale": 1.5,
-            "material": "ceramic"
+            "file": "share/tetrahedra.obj",
+            "origin": [4.5, -4.999, 0.00],
+            "rotate": [0.0, 0.5, 0.0],
+            "scale": 0.6,
+            "material": "yellow"
         },
         {
             "geometry": "triangle",
