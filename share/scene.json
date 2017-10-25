@@ -127,7 +127,7 @@
             "color": [1.0, 1.0, 1.0],
             "type": "diffuse",
             "brdf": "oren-nayar",
-            "roughness": 0.3,
+            "roughness": 0.2,
             "refractionIndex": 0.0,
             "reflectionRate": 0.75
         }
