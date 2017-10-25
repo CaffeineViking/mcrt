@@ -425,19 +425,25 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
 
         \clearpage
 
-        \subsection{Anti-Aliasing} \label{sec:anti-aliasing}
+        \subsection{Anti-Aliasing \& Sampling} \label{sec:anti-aliasing_and_sampling}
+
+            Since we're \emph{sampling} irradiance falling onto pixels, we're converting from something that's \emph{continuous} (i.e. the scene description) to something \emph{discrete} (i.e. the pixels on a screen). If we're only to take one \emph{sample per pixel} (SPP) we'll most likely get multiple \emph{aliasing artifacts} (usually \emph{``jaggies''} on most edges).
+
+            We're \emph{undersampling}, in signal processing theory. To perfectly eliminate aliasing, we'd need to fetch samples at the \emph{Nyquist rate} (or higher) and filter it. Unfortunately, that generally isn't possible, and is usually also overkill in computer graphics. Instead we use an approximation, called \emph{supersampling}, that sends importance rays from sub-pixels, and then takes the weighted average of them. Let \(p_{ij}\) be the final pixel color (unknown) at location \((i,j)\), and let \(\mathcal{S}_{ij} = \{s_1, s_2, ...\}\) be sub-pixel colors (known) we have found when raytracing. We'll estimate \(p_{ij}\) by: \[\hat{p}_{ij} = \frac{1}{|\mathcal{S}_{ij}|}\sum_{\forall s_i } s_i \; .\]
+
+            Below you'll find an example sketch, using 4 SPP. Another important use-case of supersampling which we've failed to mention explicitly is that it replaces Monte Carlo integration over the hemisphere for the indirect diffuse  light component. We've already mentioned that we do Monte Carlo integration for direct area light sources, but in this case the Monte Carlo integration we're doing is implicit. We do this by accumulating all irradiance falling onto the pixels and then uses the above ``Monte Carlo'' estimator. Supersampling solves two big issues with one stone: anti-aliasing and also the Monte Carlo integration.
 
             \begin{figure}[ht]
                 \centering
                 \includegraphics[width=0.8\linewidth]{share/supersampling.eps}
-                \caption{}
+                \caption{Intuition for \emph{supersampling} anti-aliasing technique. Average the samples \(s_1, s_2, s_3, s_4\) to find the pixel's expected color. Usually not four samples.}
                 \label{fig:supersampling}
             \end{figure}
 
             \begin{figure}[ht]
                 \centering
                 \includegraphics[width=\linewidth]{share/sampling_methods.eps}
-                \caption{Visualization of \emph{supersampling patterns} we've implemented: \emph{grid}, \emph{random}, and the \emph{gaussian}.}
+                \caption{Visualization of \emph{supersampling patterns} we've implemented: \emph{grid}, \emph{random}, and the \emph{gaussian}. Another common technique is \emph{jittering} (not shown).}
                 \label{fig:sampling_methods}
             \end{figure}
 
