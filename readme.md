@@ -2,7 +2,7 @@ Monte Carlo Ray Tracer
 ======================
 
 <p align="center">
-    <img src="/docs/share/render.png" alt="Render 1024x1024 1024 SPP"/>
+    <img src="/docs/share/new_render.png" alt="Render 1024x1024 1024 SPP"/>
     <img width=33% src="/docs/share/cornell_local_illumination.png" alt="Cornell Box  - Local Illumination"/>
     <img width=33% src="/docs/share/cornell_global_illumination.png" alt="Cornell Box - Global Illumination"/>
     <img width=33% src="/docs/share/whitted_raytracing.png" alt="Utah Teapot"/>
