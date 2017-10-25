@@ -2,7 +2,7 @@
     "camera": {
         "fieldOfView": 90.0,
         "origin": [-1.0, 0.0, 0.0],
-        "lookAt": [1.0, 0.0, 0.0],
+        "lookAt": [1.0,  0.0, 0.0],
         "up": [0.0, 1.0, 0.0]
     },
 
@@ -154,11 +154,11 @@
         },
         {
             "geometry": "mesh",
-            "file": "share/tetrahedron.obj",
-            "origin": [4.5, -5.05, 0.00],
-            "rotate": [0.0, 0.5, 0.0],
-            "scale": 0.6,
-            "material": "white"
+            "file": "share/teapot.obj",
+            "origin": [5.0, -5.6, 0.00],
+            "rotate": [0.0, -1.2, 0.0],
+            "scale": 1.0,
+            "material": "orange"
         },
         {
             "geometry": "triangle",
