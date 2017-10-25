@@ -27,7 +27,7 @@ namespace mcrt {
         if (oclusionDistance > glm::length(rayToLightSource)) {
             double lambertianFalloff { std::max(0.0, glm::dot(shadowRay.direction, rayHit.normal)) };
             glm::dvec3 brdf { rayHit.material->brdf(rayHit.position, rayHit.normal,
-                                                   -ray.direction, shadowRay.direction) };
+                                                    -ray.direction, shadowRay.direction) };
             return material->color * brdf * lambertianFalloff;
         }
 
@@ -137,7 +137,7 @@ namespace mcrt {
                 double cosa = glm::dot(shadowRay.direction, rayHit.normal);
                 double cosb = std::max(glm::dot(-shadowRay.direction, normal), glm::dot(-shadowRay.direction, -normal)) ;
                 glm::dvec3 brdf = rayHit.material->brdf(rayHit.position, rayHit.normal,
-                                                               -ray.direction, shadowRay.direction);
+                                                        -ray.direction, shadowRay.direction);
                 radiance += brdf*cosa*cosb/(shadowRayDistance*shadowRayDistance);
             }
         }

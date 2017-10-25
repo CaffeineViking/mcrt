@@ -18,9 +18,25 @@
         {
             "type": "area",
             "vertex-1": [1.0, 4.999, 4.0],
+            "vertex-2": [1.0, 4.999, -4.0],
+            "vertex-3": [-1.0, 4.999, 0.0],
+            "color": [1.0, 1.0, 1.0],
+            "intensity": 1.0
+        },
+        {
+            "type": "area",
+            "vertex-1": [1.0, 4.999, 4.0],
             "vertex-2": [9.0, 4.999, -4.0],
             "vertex-3": [9.0, 4.999, 4.0],
-            "color": [1.0,1.0,1.0],
+            "color": [1.0, 1.0, 1.0],
+            "intensity": 1.0
+        },
+        {
+            "type": "area",
+            "vertex-1": [11.0, 4.999, 0.0],
+            "vertex-2": [9.0, 4.999, -4.0],
+            "vertex-3": [9.0, 4.999, 4.0],
+            "color": [1.0, 1.0, 1.0],
             "intensity": 1.0
         }
     ],
@@ -107,11 +123,11 @@
             "reflectionRate": 1.0
         },
         {
-            "name": "concrete",
-            "color": [0.498, 0.721, 0.000],
+            "name": "ceramic",
+            "color": [1.0, 1.0, 1.0],
             "type": "diffuse",
             "brdf": "oren-nayar",
-            "roughness": 0.8,
+            "roughness": 0.3,
             "refractionIndex": 0.0,
             "reflectionRate": 0.75
         }
@@ -120,15 +136,23 @@
     "surfaces": [
         {
             "geometry": "sphere",
-            "origin": [5.0, -3.5, 1.0],
+            "origin": [7.0, -3.5, 2.0],
             "material": "mirror",
             "radius": 1.5
         },
         {
             "geometry": "sphere",
-            "origin": [8.0, -3.5, -2.0],
+            "origin": [7.0, -3.5, -2.0],
             "material": "glass",
             "radius": 1.5
+        },
+        {
+            "geometry": "mesh",
+            "file": "share/teapot.obj",
+            "origin": [7.0, -0.88, 0.0],
+            "rotate": [0.0, -0.78, 0.5],
+            "scale": 1.5,
+            "material": "ceramic"
         },
         {
             "geometry": "triangle",
@@ -233,14 +257,14 @@
             "vertex-1": [0.0, 5.0, -6.0],
             "vertex-2": [-3.0, 5.0, 0.0],
             "vertex-3": [0.0, -5.0, -6.0],
-            "material": "orange"
+            "material": "yellow"
         },
         {
             "geometry": "triangle",
             "vertex-1": [0.0, -5.0, -6.0],
             "vertex-2": [-3.0, -5.0, 0.0],
             "vertex-3": [-3.0, 5.0, 0.0],
-            "material": "orange"
+            "material": "yellow"
         },
         {
             "geometry": "triangle",
