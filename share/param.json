@@ -1,4 +1,5 @@
 {
+    "recordStatistics": 0,
     "progressiveRendering": 1,
     "parallelMethod": "openmp",
     "resolution":  [256,  256],

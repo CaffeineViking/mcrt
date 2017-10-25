@@ -152,5 +152,7 @@ int main(int argc, char** argv) {
 
     mcrt::ImageExporter::save(renderImage, renderImagePath); // A resized variant.
     std::cout << "Rendered to: '" << renderImagePath << "'." << std::endl;
+    if (parameters.recordStatistics)
+        parameters.writeStatistics(renderImagePath, renderDuration.count());
     return 0;
 }
