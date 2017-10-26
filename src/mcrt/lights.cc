@@ -62,7 +62,7 @@ namespace mcrt {
        glm::dvec3 v2 = glm::normalize(glm::cross(v1,normal));
        
        const glm::dvec3 azimuthRotation = glm::rotate(v1, phi, normal);
-       const glm::dvec3 inclinationRotation = glm::rotate(v1, theta, v2);
+       const glm::dvec3 inclinationRotation = glm::rotate(normal, theta, v2);
        const glm::dvec3 outgoing = glm::normalize(azimuthRotation + inclinationRotation);
        return outgoing;
     }

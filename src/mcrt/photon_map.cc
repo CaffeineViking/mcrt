@@ -122,7 +122,7 @@ void mcrt::PhotonMap::print(std::ostream& output) const {
     for (const auto& photon : photons) {
         output << photon.position.x << ',' << photon.position.y << ',' << photon.position.z << ',';
         output << photon.incoming.x << ',' << photon.incoming.y << ',' << photon.incoming.z << ',';
-        if (photon.shadow) output << 0.0 << ',' << 0.0 << ',' << 0.0 << std::endl;
+        if (photon.shadow) output << 1.0 << ',' << 0.0 << ',' << 0.0 << std::endl;
         else output << photon.color.r << ',' << photon.color.g << ',' << photon.color.b << std::endl;
     }
 }

@@ -441,6 +441,22 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
             which results in the number of photons a given light source should emit into the scene. Each photons' outgoing direction and origin point is uniformly sampled from the hemisphere and light source area respectively. 
 
             \subsubsection{Radiance Estimate} \label{sec:radiance_estimate}
+            In this project, the computation of the direct light is replaced by an estimation based on the photon map. To estimate the radiance at point $x$ all photons within a sphere with radius $r$. A fix sized sphere is used in this project. Some condition needs to be fulfilled in order estimate the radiance with photon mapping. If these conditions is not met the Monte-Carlo scheme will be used for the approximation. Photon mapping will not be used if the sphere contains shadow photons, or if the sphere contains few photons.
+
+            \begin{equation*}
+              L(x \rightarrow \omega_{out}) = \sum_{i=1}^M f_r(x, \omega_{in,i}, \omega_{out}) \frac{\phi(x_i \leftarrow \omega_{in,i})}{\pi r^2}
+            \end{equation*}
+
+            Areas with low photon density may give a blurry result. Therefore, a cone-filter is applied to the estimate. This is done by giving a weight $w_p$ to each photon based on the distance $d_p$ between the point $x$ and photon $p$. 
+            \begin{equation*}
+              w_p = max(0, 1 - d/(kr))
+            \end{equation*}
+
+            The filter is normalized by $1 - \tfrac{2}{3k}$ giving the final equation.
+            \begin{equation*}
+         L(x \rightarrow \omega_{out}) = \sum_{i=1}^M f_r(x, \omega_{in,i}, \omega_{out}) \frac{\phi(x_i \leftarrow \omega_{in,i}) }{\pi r^2}
+            \end{equation*}
+
 
         \clearpage
 
