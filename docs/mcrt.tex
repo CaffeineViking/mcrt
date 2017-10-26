@@ -531,7 +531,7 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
             \begin{figure}[H]
                 \centering
                 \includegraphics[width=\linewidth]{share/new_render.png}
-                \caption{High-resolution render of the scene at 1024x1024 using 1024 SPP, 1 shadow ray and 7 ray bounces.}
+                \caption{High-resolution render of the scene at 1024x1024, 1024 SPP, 1 shadow ray and 7 bounces.}
                 \label{fig:render}
             \end{figure}
 
@@ -539,7 +539,7 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
 
             \subsubsection*{Reflection}
 
-            Sphere with a perfectly reflective surface where both different geometrical surfaces which aren't visible in the original viewplane can be observed as well as some fresnel effects on the grazing angles of the sphere. 
+            Sphere with a perfectly reflective surface where different geometrical surfaces which aren't visible in the original viewplane can be observed. 
 
             \begin{figure}[H]
                 \centering
@@ -549,7 +549,7 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
 
             \subsubsection*{Refraction}
 
-            Sphere with perfectly refractive material with an refractive index similar to glass. The convex lens which the sphere creates causes a mirrored refracted projection. As with the reflective sphere, some fresnel effects can be observed.
+            Sphere with perfectly refractive material with an refractive index similar to glass. The convex lens which the sphere creates causes a mirrored refracted projection. Some fresnel effects can be observed in the sphere, i.e, we get some reflections at grazing angles.
             \begin{figure}[H]
                 \centering
                 \includegraphics[width=0.8\linewidth]{share/new_render_refraction.png}
@@ -578,7 +578,7 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
 
             \subsubsection*{Photon Map Visualization}
 
-            Below is a direct visualization of the photon map created by plotting each photon in the direct light photon map. The white points are regular photons carrying some flux in them, naturally each of these should carry only a little flux, so in reality they should be almost black (they are white visualization purposes only). The black photons represent shadow photons. As can be seen, only diffuse surfaces create photons when intersected, and if there were any specular surfaces in the scene as they would only reflect or refract the photon paths, never store them there. This was made by using \texttt{plot3d} in the \emph{R} library \texttt{rgl}.
+            Below is a direct visualization of the photon map created by plotting each photon in the direct light photon map. The white points are regular photons carrying some flux in them, naturally each of these should carry only a little flux, so in reality they should be almost black (they are white for visualization purposes only). The black photons represent shadow photons. As can be seen, only diffuse surfaces create photons when intersected, and if there were any specular surfaces in the scene as they would only reflect or refract the photon paths, never store them there. This was made by using \texttt{plot3d} in the \emph{R} library \texttt{rgl}.
 
             \begin{figure}[H]
                 \centering
@@ -587,29 +587,6 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
             \end{figure}
 
         \subsection*{Parameter Benchmarks}
-
-            \begin{figure}[H]
-                \centering
-                \caption{Render of the 512x512 at 49 samples per pixel, 1 shadow ray and 7 max ray bounces.}
-                \includegraphics[width=0.8\linewidth]{share/results/default.png}
-                \label{fig:default}
-            \end{figure}
-
-            \subsubsection*{Number of Shadow Rays}
-
-            \begin{figure}[H]
-                \centering
-                \caption{Render of the 512x512 at 49 samples per pixel, 4 shadow rays and 7 max ray bounces.}
-                \includegraphics[width=0.8\linewidth]{share/results/shadow_rays_4.png}
-                \label{fig:shadow_rays_4}
-            \end{figure}
-
-            \begin{figure}[H]
-                \centering
-                \caption{Render of the scene 512x512 at 49 samples per pixel, 8 shadow rays and 7 max ray bounces.}
-                \includegraphics[width=0.8\linewidth]{share/results/shadow_rays_4.png}
-                \label{fig:shadow_rays_8}
-            \end{figure}
 
             \begin{table}[H]
             \centering
@@ -625,9 +602,68 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
             \label{tab:shadow_rays}
             \end{table}
 
+            \begin{figure}[H]
+                \centering
+                \caption{Render of the scene 512x512 at 49 samples per pixel, 1 shadow ray and 7 max ray bounces.}
+                \includegraphics[width=0.8\linewidth]{share/results/default.png}
+                \label{fig:default}
+            \end{figure}
+
+            \subsubsection*{Number of Shadow Rays}
+
+            \begin{figure}[H]
+                \centering
+                \caption{Render of the scene 512x512 at 49 samples per pixel, 4 shadow rays and 7 max ray bounces.}
+                \includegraphics[width=0.8\linewidth]{share/results/shadow_rays_4.png}
+                \label{fig:shadow_rays_4}
+            \end{figure}
+
+            \begin{figure}[H]
+                \centering
+                \caption{Render of the scene 512x512 at 49 samples per pixel, 8 shadow rays and 7 max ray bounces.}
+                \includegraphics[width=0.8\linewidth]{share/results/shadow_rays_4.png}
+                \label{fig:shadow_rays_8}
+            \end{figure}
+
             \subsubsection*{Number of Bounces}
 
             \subsubsection*{Sampling Density}
+
+            \begin{table}[H]
+            \centering
+            \begin{tabular}{lll}
+                \toprule
+                \textbf{Supersamples}&\textbf{Rendered}&\textbf{Time Taken}\\
+                \midrule
+                1&See Fig.~\ref{fig:supersamples_1}&3.1 s\\
+                16&See Fig.~\ref{fig:supersamples_16}&50.3 s\\
+                49&See Fig.~\ref{fig:default}&162.2 s\\
+                196&See Fig.~\ref{fig:supersamples_192}&624.7 s\\
+                \bottomrule
+            \end{tabular}
+            \label{tab:shadow_rays}
+            \end{table}
+
+            \begin{figure}[H]
+                \centering
+                \caption{Render of the scene 512x512 at 1 samples per pixel, 1 shadow ray and 7 max ray bounces.}
+                \includegraphics[width=0.8\linewidth]{share/results/supersamples_1.png}
+                \label{fig:supersamples_1}
+            \end{figure}
+
+            \begin{figure}[H]
+                \centering
+                \caption{Render of the scene 512x512 at 16 samples per pixel, 1 shadow ray and 7 max ray bounces.}
+                \includegraphics[width=0.8\linewidth]{share/results/supersamples_16.png}
+                \label{fig:supersamples_16}
+            \end{figure}
+
+            \begin{figure}[H]
+                \centering
+                \caption{Render of the scene 512x512 at 196 samples per pixel, 1 shadow ray and 7 max ray bounces.}
+                \includegraphics[width=0.8\linewidth]{share/results/supersamples_196.png}
+                \label{fig:supersamples_192}
+            \end{figure}
 
             \subsubsection*{Using Photon Maps}
 
