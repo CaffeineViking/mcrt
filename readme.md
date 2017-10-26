@@ -16,6 +16,9 @@ Features
     * Using header JSON library
 * **Loadable triangle meshes**
    * Using header only lib.
+* **Render Parallelization**
+    * Using `OpenMP`
+    * Progressive rendering
 * **Ray-surface intersections**
     * For parametric spheres
     * For triangles (using Möller–Trumbore)
