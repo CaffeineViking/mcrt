@@ -1,3 +1,4 @@
 parallelFramework,resolutionWidth,resolutionHeight,scalingFactorX,scalingFactorY,interpolationMethod,samplingPattern,samplesPerPixel,maxRayDepth,shadowRayCount,photonEstimationRadius,photonAmount,photonMap,progressiveRendering,renderPath,renderTime
 openmp,512,512,1,1,bilinear,grid,49,7,1,0.1,1000000,0,1,share/render.png,162.202
 openmp,512,512,1,1,bilinear,grid,49,7,4,0.1,1000000,0,1,share/render.png,446.127
+openmp,512,512,1,1,bilinear,grid,49,7,8,0.1,1000000,0,1,share/render.png,811.195

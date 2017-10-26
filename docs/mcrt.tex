@@ -543,7 +543,7 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
 
             \begin{figure}[H]
                 \centering
-                \includegraphics[width=\linewidth]{share/new_render_reflection.png}
+                \includegraphics[width=0.8\linewidth]{share/new_render_reflection.png}
                 \label{fig:render_reflection}
             \end{figure}
 
@@ -552,7 +552,7 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
             Sphere with perfectly refractive material with an refractive index similar to glass. The convex lens which the sphere creates causes a mirrored refracted projection. As with the reflective sphere, some fresnel effects can be observed.
             \begin{figure}[H]
                 \centering
-                \includegraphics[width=\linewidth]{share/new_render_refraction.png}
+                \includegraphics[width=0.8\linewidth]{share/new_render_refraction.png}
                 \label{fig:render_refraction}
             \end{figure}
 
@@ -562,7 +562,7 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
 
             \begin{figure}[H]
                 \centering
-                \includegraphics[width=\linewidth]{share/new_render_caustics.png}
+                \includegraphics[width=0.8\linewidth]{share/new_render_caustics.png}
                 \label{fig:render_caustics}
             \end{figure}
 
@@ -572,7 +572,7 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
 
             \begin{figure}[H]
                 \centering
-                \includegraphics[width=\linewidth]{share/new_render_color_bleeding.png}
+                \includegraphics[width=0.8\linewidth]{share/new_render_color_bleeding.png}
                 \label{fig:render_color_bleeding}
             \end{figure}
 
@@ -582,7 +582,7 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
 
             \begin{figure}[H]
                 \centering
-                \includegraphics[width=\linewidth]{share/photon_map.png}
+                \includegraphics[width=0.8\linewidth]{share/photon_map.png}
                 \label{fig:photon_map}
             \end{figure}
 
@@ -590,8 +590,8 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
 
             \begin{figure}[H]
                 \centering
-                \caption{}
-                \includegraphics[width=\linewidth]{share/results/default.png}
+                \caption{Render of the 512x512 at 49 samples per pixel, 1 shadow ray and 7 max ray bounces.}
+                \includegraphics[width=0.8\linewidth]{share/results/default.png}
                 \label{fig:default}
             \end{figure}
 
@@ -599,20 +599,27 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
 
             \begin{figure}[H]
                 \centering
-                \caption{}
-                \includegraphics[width=\linewidth]{share/results/shadow_rays_4.png}
+                \caption{Render of the 512x512 at 49 samples per pixel, 4 shadow rays and 7 max ray bounces.}
+                \includegraphics[width=0.8\linewidth]{share/results/shadow_rays_4.png}
                 \label{fig:shadow_rays_4}
             \end{figure}
 
-            \begin{table}[h]
+            \begin{figure}[H]
+                \centering
+                \caption{Render of the scene 512x512 at 49 samples per pixel, 8 shadow rays and 7 max ray bounces.}
+                \includegraphics[width=0.8\linewidth]{share/results/shadow_rays_4.png}
+                \label{fig:shadow_rays_8}
+            \end{figure}
+
+            \begin{table}[H]
             \centering
-            \begin{tabular}{llllll}
+            \begin{tabular}{lll}
                 \toprule
-                \textbf{Shadow Rays}&\textbf{Figure}&\textbf{Render Time}&\\
+                \textbf{Shadow Rays}&\textbf{Rendered}&\textbf{Time Taken}\\
                 \midrule
-                1&Figure~\ref{fig:default}&162.2 seconds\\
-                4&Figure~\ref{fig:shadow_rays_4}&446.1 seconds\\
-                8&Figure~\ref{fig:shadow_rays_8}&0.0\\
+                1&See Fig.~\ref{fig:default}&162.2 s\\
+                4&See Fig.~\ref{fig:shadow_rays_4}&446.1 s\\
+                8&See Fig.~\ref{fig:shadow_rays_8}&811.1 s\\
                 \bottomrule
             \end{tabular}
             \label{tab:shadow_rays}
