@@ -54,6 +54,7 @@ namespace mcrt {
         double inShadow(const Ray& ray) const;
 
         void gatherPhotons(std::size_t);
+        void dumpPhotonMap(const std::string&) const;
 
         std::vector<Material*>& getMaterials() { return materials; }
         const std::vector<Material*>& getMaterials() const { return materials; }

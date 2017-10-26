@@ -186,8 +186,11 @@ namespace mcrt {
 
         photonMapEnabled = true;
         photonMap.rebalance();
-	std::ofstream os("share/photons.csv");
-	os << photonMap << std::endl;
+    }
+
+    void mcrt::Scene::dumpPhotonMap(const std::string& filePath) const {
+        std::ofstream fileStream { filePath };
+        fileStream << photonMap;
     }
 
     glm::dvec3 Scene::rayTrace(const Ray& ray, const size_t depth = 0) const {
@@ -224,7 +227,7 @@ namespace mcrt {
                     double distance = glm::distance(rayHit.position, photon->position);
                     double w = std::max(0.0, 1.0 - distance/photonEstimationRadius);
                     glm::dvec3 brdf = rayHit.material->brdf(rayHit.position, rayHit.normal, -photon->incoming, -ray.direction);
-                    color += brdf * photon->color;
+                    color += w * brdf * photon->color;
                 }
                 rayColor += color / (glm::pi<double>() * (photonEstimationRadius*photonEstimationRadius));
             }

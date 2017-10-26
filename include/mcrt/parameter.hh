@@ -24,6 +24,7 @@ namespace mcrt {
         bool photonMap { true };
         bool progressiveRendering { false };
         bool recordStatistics { false };
+        bool photonMapVisualize { false };
 
         void writeStatistics(const std::string&, double);
     };

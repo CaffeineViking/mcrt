@@ -1,15 +1,16 @@
 {
-    "recordStatistics": 1,
+    "recordStatistics": 0,
     "progressiveRendering": 1,
     "parallelMethod": "openmp",
-    "resolution":  [512,  512],
+    "resolution":  [256,  256],
     "scalingFactor": [1.0, 1.0],
     "interpolation": "bilinear",
-    "supersamples": [4, "grid"],
+    "supersamples": [21,"grid"],
     "maxRayDepth": 7,
     "shadowRays": 1,
 
     "photonMap": 0,
+    "photonMapVisualize": 0,
     "photonAmount": 1000000,
     "photonEstimationRadius": 0.1
 }
