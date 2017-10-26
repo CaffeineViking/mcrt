@@ -5,7 +5,7 @@
     "resolution":  [512,  512],
     "scalingFactor": [1.0, 1.0],
     "interpolation": "bilinear",
-    "supersamples": [7, "grid"],
+    "supersamples": [4, "grid"],
     "maxRayDepth": 7,
     "shadowRays": 1,
 

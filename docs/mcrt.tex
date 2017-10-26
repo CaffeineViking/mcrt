@@ -531,7 +531,7 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
             \begin{figure}[H]
                 \centering
                 \includegraphics[width=\linewidth]{share/new_render.png}
-                \caption{High-resolution render of the scene at 1024x1024 using 1024 SPP, 1 shadow ray and 7 ray bounces.}
+                \caption{High-resolution render of the scene at 1024x1024, 1024 SPP, 1 shadow ray and 7 bounces.}
                 \label{fig:render}
             \end{figure}
 
@@ -588,29 +588,6 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
 
         \subsection*{Parameter Benchmarks}
 
-            \begin{figure}[H]
-                \centering
-                \caption{Render of the 512x512 at 49 samples per pixel, 1 shadow ray and 7 max ray bounces.}
-                \includegraphics[width=0.8\linewidth]{share/results/default.png}
-                \label{fig:default}
-            \end{figure}
-
-            \subsubsection*{Number of Shadow Rays}
-
-            \begin{figure}[H]
-                \centering
-                \caption{Render of the 512x512 at 49 samples per pixel, 4 shadow rays and 7 max ray bounces.}
-                \includegraphics[width=0.8\linewidth]{share/results/shadow_rays_4.png}
-                \label{fig:shadow_rays_4}
-            \end{figure}
-
-            \begin{figure}[H]
-                \centering
-                \caption{Render of the scene 512x512 at 49 samples per pixel, 8 shadow rays and 7 max ray bounces.}
-                \includegraphics[width=0.8\linewidth]{share/results/shadow_rays_4.png}
-                \label{fig:shadow_rays_8}
-            \end{figure}
-
             \begin{table}[H]
             \centering
             \begin{tabular}{lll}
@@ -625,9 +602,68 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
             \label{tab:shadow_rays}
             \end{table}
 
+            \begin{figure}[H]
+                \centering
+                \caption{Render of the scene 512x512 at 49 samples per pixel, 1 shadow ray and 7 max ray bounces.}
+                \includegraphics[width=0.8\linewidth]{share/results/default.png}
+                \label{fig:default}
+            \end{figure}
+
+            \subsubsection*{Number of Shadow Rays}
+
+            \begin{figure}[H]
+                \centering
+                \caption{Render of the scene 512x512 at 49 samples per pixel, 4 shadow rays and 7 max ray bounces.}
+                \includegraphics[width=0.8\linewidth]{share/results/shadow_rays_4.png}
+                \label{fig:shadow_rays_4}
+            \end{figure}
+
+            \begin{figure}[H]
+                \centering
+                \caption{Render of the scene 512x512 at 49 samples per pixel, 8 shadow rays and 7 max ray bounces.}
+                \includegraphics[width=0.8\linewidth]{share/results/shadow_rays_4.png}
+                \label{fig:shadow_rays_8}
+            \end{figure}
+
             \subsubsection*{Number of Bounces}
 
             \subsubsection*{Sampling Density}
+
+            \begin{table}[H]
+            \centering
+            \begin{tabular}{lll}
+                \toprule
+                \textbf{Supersamples}&\textbf{Rendered}&\textbf{Time Taken}\\
+                \midrule
+                1&See Fig.~\ref{fig:supersamples_1}&3.1254\\
+                16&See Fig.~\ref{fig:supersamples_16}&50.35\\
+                49&See Fig.~\ref{fig:default}&162.2\\
+                196&See Fig.~\ref{fig:supersamples_192}&624.7\\
+                \bottomrule
+            \end{tabular}
+            \label{tab:shadow_rays}
+            \end{table}
+
+            \begin{figure}[H]
+                \centering
+                \caption{Render of the scene 512x512 at 1 samples per pixel, 1 shadow ray and 7 max ray bounces.}
+                \includegraphics[width=0.8\linewidth]{share/results/supersamples_1.png}
+                \label{fig:supersamples_1}
+            \end{figure}
+
+            \begin{figure}[H]
+                \centering
+                \caption{Render of the scene 512x512 at 16 samples per pixel, 1 shadow ray and 7 max ray bounces.}
+                \includegraphics[width=0.8\linewidth]{share/results/supersamples_16.png}
+                \label{fig:supersamples_16}
+            \end{figure}
+
+            \begin{figure}[H]
+                \centering
+                \caption{Render of the scene 512x512 at 192 samples per pixel, 1 shadow ray and 7 max ray bounces.}
+                \includegraphics[width=0.8\linewidth]{share/results/supersamples_16.png}
+                \label{fig:supersamples_192}
+            \end{figure}
 
             \subsubsection*{Using Photon Maps}
 
