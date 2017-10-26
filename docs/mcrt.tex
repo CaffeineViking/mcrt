@@ -580,7 +580,7 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
 
             Below is a direct visualization of the photon map created by plotting each photon in the direct light photon map. The white points are regular photons carrying some flux in them, naturally each of these should carry only a little flux, so in reality they should be almost black (they are white visualization purposes only). The black photons represent shadow photons. As can be seen, only diffuse surfaces create photons when intersected, and if there were any specular surfaces in the scene as they would only reflect or refract the photon paths, never store them there. This was made by using \texttt{plot3d} in the \emph{R} library \texttt{rgl}.
 
-            \begin{figure}[ht]
+            \begin{figure}[H]
                 \centering
                 \includegraphics[width=\linewidth]{share/photon_map.png}
                 \label{fig:photon_map}
@@ -588,7 +588,35 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
 
         \subsection*{Parameter Benchmarks}
 
+            \begin{figure}[H]
+                \centering
+                \caption{}
+                \includegraphics[width=\linewidth]{share/results/default.png}
+                \label{fig:default}
+            \end{figure}
+
             \subsubsection*{Number of Shadow Rays}
+
+            \begin{figure}[H]
+                \centering
+                \caption{}
+                \includegraphics[width=\linewidth]{share/results/shadow_rays_4.png}
+                \label{fig:shadow_rays_4}
+            \end{figure}
+
+            \begin{table}[h]
+            \centering
+            \begin{tabular}{llllll}
+                \toprule
+                \textbf{Shadow Rays}&\textbf{Figure}&\textbf{Render Time}&\\
+                \midrule
+                1&Figure~\ref{fig:default}&162.2 seconds\\
+                4&Figure~\ref{fig:shadow_rays_4}&446.1 seconds\\
+                8&Figure~\ref{fig:shadow_rays_8}&0.0\\
+                \bottomrule
+            \end{tabular}
+            \label{tab:shadow_rays}
+            \end{table}
 
             \subsubsection*{Number of Bounces}
 
