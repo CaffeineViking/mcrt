@@ -126,16 +126,15 @@ namespace mcrt {
             glm::dvec3 rayToLightSource = origin - rayHit.position;
             glm::dvec3 rayToLightNormal { glm::normalize(rayToLightSource) };
 
-            Ray shadowRay { rayHit.position + rayToLightNormal * Ray::EPSILON,
-                    rayToLightNormal };
+            Ray shadowRay { rayHit.position + rayToLightNormal * Ray::EPSILON, rayToLightNormal };
 
 
             // Return distance to light, 0 if occluded
             double occlusionDistance = scene->inShadow(shadowRay);
             double shadowRayDistance = std::max(glm::distance(rayHit.position, origin),1.0);
             if (occlusionDistance > 0.0 && occlusionDistance >= shadowRayDistance) {
-                double cosa = glm::dot(shadowRay.direction, rayHit.normal);
-                double cosb = std::max(glm::dot(-shadowRay.direction, normal), glm::dot(-shadowRay.direction, -normal)) ;
+                double cosa = glm::clamp(glm::dot(shadowRay.direction, rayHit.normal),0.0,1.0);
+                double cosb = glm::dot(-shadowRay.direction, normal) ;
                 glm::dvec3 brdf = rayHit.material->brdf(rayHit.position, rayHit.normal,
                                                         -ray.direction, shadowRay.direction);
                 radiance += brdf*cosa*cosb/(shadowRayDistance*shadowRayDistance);
