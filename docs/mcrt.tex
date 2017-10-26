@@ -192,6 +192,10 @@ In some cases a higher resolution secondary \textit{photon map} is used to show 
 
         \subsection{Scene Description} \label{sec:scene_description}
 
+        In \cref{fig:scene_description} an overview of the scene we'll be using to display the results and benchmark is shown. All walls are Lambertian reflectors with different colors, while the floor and roof are white. An area light source with 4 triangles exists, it's white, on the roof.
+
+        There exists four primitives in the scene, an orange teapot mesh (4) with a Lambertian BRDF, a white sphere (2) with Oren-Nayar BRDF \(\sigma' = 0.1\), a perfectly reflective sphere in (3) and a perfectly refractive sphere in (1) with a refraction index 1.5.
+
         \begin{figure}[ht]
             \centering
             \includegraphics[width=0.8\linewidth]{share/scene_description.eps}
@@ -203,11 +207,11 @@ In some cases a higher resolution secondary \textit{photon map} is used to show 
 
         \subsection{Ray-Surface Intersections} \label{sec:ray-surface_intersections}
 
-        The scene can be constructed using a number of different geometric surfaces and requires different intersection test for each surface type. Common for them all is that the incomming ray is defined on the parametric formula \( \vec{o} + t \hat{d} \) where \( \vec{o} \in \mathbb{R}^3\) denotes the origin of the ray, \(t \in \mathbb{R}\) specifies a distance from the origin, and \(\hat{d} \in \mathbb{R}^3\) indicating the direction of the ray.
+        The scene can be constructed using a number of different geometric surfaces and requires different intersection test for each surface type. Common for them all is that the incoming ray is defined on the parametric formula \( \vec{o} + t \hat{d} \) where \( \vec{o} \in \mathbb{R}^3\) denotes the origin of the ray, \(t \in \mathbb{R}\) specifies a distance from the origin, and \(\hat{d} \in \mathbb{R}^3\) indicates the direction of the ray.
             
         \subsubsection{Parametric Sphere} \label{sec:parametric_sphere}
         
-        Spherical objects are defined as a vector \(\vec{o} \in \mathbb{R}^3\) which denotes the origin of the sphere, and a scalar \(r\) as the radius of the sphere. Sphere - ray intersections are done using a geometric solution on the following form:
+        Spherical objects are defined as a vector \(\vec{o} \in \mathbb{R}^3\) which denotes the origin of the sphere, and a scalar \(r\) as the radius of the sphere. Sphere-ray intersections are done using a geometric solution on the following:
 
         \begin{align*}
             \vec{L} = \vec{o_{sphere}} - \vec{o_{ray}} \\
@@ -230,16 +234,14 @@ In some cases a higher resolution secondary \textit{photon map} is used to show 
 
         \subsubsection{Triangle Polygon} \label{sec:triangle_polygon}
         
-        Intersections between triangles and ray are computed using the \textit{Möller-Trumbore} algorithm which allow for intersection tests without having to compute the triangle containing plane. First a local coordinate system for the triangle is computed using the corner vertecies \(\vec{v_1}\), \(\vec{v_2}\), and \(\vec{v_3}\) on the form:
+        Intersections between triangles and ray are computed using the \textit{Möller-Trumbore}~\cite{moller2005fast} algorithm which allow for intersection tests without having to compute the triangle containing plane. First a local coordinate system for the triangle is computed using the corner vertecies \(\vec{v_1}\), \(\vec{v_2}\), and \(\vec{v_3}\) on the form:
 
 \begin{align*}
     \hat{e_1} = \vec{v_2} - \vec{v_1} \\
     \hat{e_2} = \vec{v_3} - \vec{v_1}
 \end{align*}
 
-the surface normal is extracted as \( \hat{n} =\hat{e_1} \times \hat{e_2} \)
-
-we check if the ray travels parallel with the triangle surface by \(\hat{p} = \hat{d_{ray}} \times \hat{e_2}\), and if the determinant  \(d = \hat{e_1} \cdot \hat{p}\), \(d = 0 \), the ray does not intersect the triangle. Otherwise the intersection test continues with
+the surface normal is extracted as \( \hat{n} =\hat{e_1} \times \hat{e_2} \), we check if the ray travels parallel with the triangle surface by \(\hat{p} = \hat{d_{ray}} \times \hat{e_2}\), and if the determinant  \(d = \hat{e_1} \cdot \hat{p}\), \(d = 0 \), the ray does not intersect the triangle. Otherwise the intersection test continues:
 
 \begin{align*}
     \vec{t} &= \vec{o_{ray}} - \vec{v_1} \\
@@ -270,8 +272,6 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
         radius &= \frac{ || \vec{v_{min}} - \vec{v_{max}} ||}{2} \\
         \vec{origin} &= \frac{\vec{v_{max}} - \vec{v_{min}}}{2}
     \end{align*}
-
-    \clearpage
 
         \subsection{Surface Properties} \label{sec:surface_properties}
 
@@ -469,14 +469,11 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
          L(x \rightarrow \omega_{out}) = \sum_{i=1}^M f_r(x, \omega_{in,i}, \omega_{out}) \frac{\phi(x_i \leftarrow \omega_{in,i}) }{\pi r^2}
             \end{equation*}
 
-
-        \clearpage
-
         \subsection{Anti-Aliasing \& Sampling} \label{sec:anti-aliasing_and_sampling}
 
             Since we're \emph{sampling} irradiance falling onto pixels, we're converting from something that's \emph{continuous} (i.e. the scene description) to something \emph{discrete} (i.e. the pixels on a screen). If we're only to take one \emph{sample per pixel} (SPP) we'll most likely get multiple \emph{aliasing artifacts} (usually \emph{``jaggies''} on most edges).
 
-            We're \emph{undersampling}, in signal processing theory. To perfectly eliminate aliasing, we'd need to fetch samples at the \emph{Nyquist rate} (or higher) and filter it. Unfortunately, that generally isn't possible, and is usually also overkill in computer graphics. Instead we use an approximation, called \emph{supersampling}, that sends importance rays from sub-pixels, and then takes the weighted average of them. Let \(p_{ij}\) be the final pixel color (unknown) at location \((i,j)\), and let \(\mathcal{S}_{ij} = \{s_1, s_2, ...\}\) be sub-pixel colors (known) we have found when raytracing. We'll estimate \(p_{ij}\) by: \[\hat{p}_{ij} = \frac{1}{|\mathcal{S}_{ij}|}\sum_{\forall s_i } s_i \; .\]
+            We're \emph{undersampling}, in signal processing theory. To perfectly eliminate aliasing, we'd need to fetch samples at the \emph{Nyquist rate} (or higher) and filter it. Unfortunately, that generally isn't possible, and is usually also overkill in computer graphics. Instead we use an approximation, called \emph{supersampling}, that sends importance rays from sub-pixels, and then takes the weighted average of them. Let \(p_{ij}\) be the final pixel color (unknown) at location \((i,j)\), and let \(\mathcal{S}_{ij} = \{s_1, s_2, ...\}\) be sub-pixel colors (known) we have found when raytracing. We'll estimate \(p_{ij}\) by: \[\hat{p}_{ij} = \frac{1}{|\mathcal{S}_{ij}|}\sum_{\forall s_k } s_k \; .\]
 
             Below you'll find an example sketch, using 4 SPP. Another important use-case of supersampling which we've failed to mention explicitly is that it replaces Monte Carlo integration over the hemisphere for the indirect diffuse  light component. We've already mentioned that we do Monte Carlo integration for direct area light sources, but in this case the Monte Carlo integration we're doing is implicit. We do this by accumulating all irradiance falling onto the pixels and then uses the above ``Monte Carlo'' estimator. Supersampling solves two big issues with one stone: anti-aliasing and also the Monte Carlo integration.
 
@@ -511,7 +508,7 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
                 \label{fig:aliasing}
             \end{figure}
 
-            Sometimes the locations where we evaluate our sub-pixels makes a difference in the final render. If the scene has of e.g. a texture which is of high-frequency (almost at the sub-pixel level) and has a regular pattern, then some details might be lost in the render process. It's largely affected by the \emph{supersampling pattern} that we use to choose the sub-pixel locations which are going to be raytraced. We've implemented three patterns, as can be seen in \cref{fig:sampling_methods}. The \emph{grid} samples at regular intervals inside the pixel with a step size \(\Delta_p\). \emph{Randomly} taking samples inside the pixel is also a valid strategy, leading to noisier, but unbiased results. Finally we have also implemented a \emph{Gaussian sampling pattern}, with a distribution \(X \sim \mathcal{N}(\mu, \sigma)\) around the center.
+            Sometimes the locations where we evaluate our sub-pixels makes a difference in the final render. If the scene has of e.g. a texture which is of high-frequency (almost at the sub-pixel level) and has a regular pattern, then some details might be lost in the render process. It's largely affected by the \emph{supersampling pattern} that we use to choose the sub-pixel locations which are going to be raytraced. We've implemented three patterns, as can be seen in \cref{fig:sampling_methods}. The \emph{grid} samples at regular intervals inside the pixel with a step size \(\Delta_p\). \emph{Randomly} taking samples inside the pixel is also a valid strategy, leading to noisier, but unbiased results. Finally we have also implemented a \emph{Gaussian sampling pattern}, with distribution \(X \sim \mathcal{N}(\mu, \sigma^2)\) around the center.
 
             From the four vertices \(\{v_1, v_2, v_3, v_4\}\) of \(E_\Pi\) we build a coordinate system: \(\vec{x} = v_2 - v_1,\, \vec{y} = v_4 - v_1\) to calculate the next sub-pixel positions (based on the pattern we use) we're going to use to send rays.
 
@@ -531,7 +528,7 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
             \begin{figure}[H]
                 \centering
                 \includegraphics[width=\linewidth]{share/new_render.png}
-                \caption{High-resolution render of the scene at 1024x1024, 1024 SPP, 1 shadow ray and 7 bounces.}
+                \caption{High-resolution render of the scene at 1024x1024, 1024 SPP, 1 shadow ray and 7 bounces. Render time taken was \(\approx\) 128 minutes \& 38 seconds.}
                 \label{fig:render}
             \end{figure}
 
@@ -578,7 +575,7 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
 
             \subsubsection*{Photon Map Visualization}
 
-            Below is a direct visualization of the photon map created by plotting each photon in the direct light photon map. The white points are regular photons carrying some flux in them, naturally each of these should carry only a little flux, so in reality they should be almost black (they are white for visualization purposes only). The black photons represent shadow photons. As can be seen, only diffuse surfaces create photons when intersected, and if there were any specular surfaces in the scene as they would only reflect or refract the photon paths, never store them there. This was made by using \texttt{plot3d} in the \emph{R} library \texttt{rgl}.
+            Below is a direct visualization of the photon map created by plotting each photon in the direct light photon map. We've chosen not to plot the scene and instead use the Cornell box since it's easier to see what's happening. The white points are regular photons carrying some flux in them, naturally each of these should carry only a little flux, so in reality they should be almost black (they are white for visualization purposes only). The black photons represent shadow photons. As can be seen, only diffuse surfaces create photons when intersected, and if there were any specular surfaces in the scene, they would only reflect or refract the photons' paths, never store them there. This was made by using \texttt{plot3d} in \emph{R} library \texttt{rgl} (see this in \texttt{utils/photon-map.r}).
 
             \begin{figure}[H]
                 \centering
@@ -592,11 +589,15 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
             \centering
             \begin{tabular}{lll}
                 \toprule
-                \textbf{Shadow Rays}&\textbf{Rendered}&\textbf{Time Taken}\\
+                \textbf{Parameter}&\textbf{Default Value}\\
                 \midrule
-                1&See Fig.~\ref{fig:default}&162.2 s\\
-                4&See Fig.~\ref{fig:shadow_rays_4}&446.1 s\\
-                8&See Fig.~\ref{fig:shadow_rays_8}&811.1 s\\
+                Resolution&512x512\\
+                Shadow Rays&1\\
+                Ray Bounces&7\\
+                Sampling Density&49 SPP\\
+                Photon Mapping&No\\
+                Photon Amount&1 million\\
+                Estimation Radius &0.1 units\\
                 \bottomrule
             \end{tabular}
             \label{tab:shadow_rays}
@@ -609,7 +610,21 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
                 \label{fig:default}
             \end{figure}
 
-            \subsubsection*{Number of Shadow Rays}
+            \subsubsection*{Shadow Rays}
+
+            \begin{table}[H]
+            \centering
+            \begin{tabular}{lll}
+                \toprule
+                \textbf{Shadow Rays}&\textbf{Rendered}&\textbf{Time Taken}\\
+                \midrule
+                1&See Fig.~\ref{fig:default}&2 min 42 sec\\
+                4&See Fig.~\ref{fig:shadow_rays_4}&7 min 26 sec\\
+                8&See Fig.~\ref{fig:shadow_rays_8}&13 min 31 sec\\
+                \bottomrule
+            \end{tabular}
+            \label{tab:shadow_rays}
+            \end{table}
 
             \begin{figure}[H]
                 \centering
@@ -621,11 +636,39 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
             \begin{figure}[H]
                 \centering
                 \caption{Render of the scene 512x512 at 49 samples per pixel, 8 shadow rays and 7 max ray bounces.}
-                \includegraphics[width=0.8\linewidth]{share/results/shadow_rays_4.png}
+                \includegraphics[width=0.8\linewidth]{share/results/shadow_rays_8.png}
                 \label{fig:shadow_rays_8}
             \end{figure}
 
-            \subsubsection*{Number of Bounces}
+            \subsubsection*{Ray Bounces}
+
+            \begin{table}[H]
+            \centering
+            \begin{tabular}{lll}
+                \toprule
+                \textbf{Ray Bounces}&\textbf{Rendered}&\textbf{Time Taken}\\
+                \midrule
+                1&See Fig.~\ref{fig:bounce_rays_1}&51.4 sec\\
+                4&See Fig.~\ref{fig:bounce_rays_4}&2 min 9 sec\\
+                7&See Fig.~\ref{fig:default}&2 min 42 sec\\
+                \bottomrule
+            \end{tabular}
+            \label{tab:ray_bounces}
+            \end{table}
+
+            \begin{figure}[H]
+                \centering
+                \caption{Render of the scene 512x512 at 49 samples per pixel, 1 shadow rays and 1 max ray bounces.}
+                \includegraphics[width=0.8\linewidth]{share/results/bounce_rays_1.png}
+                \label{fig:bounce_rays_1}
+            \end{figure}
+
+            \begin{figure}[H]
+                \centering
+                \caption{Render of the scene 512x512 at 49 samples per pixel, 1 shadow rays and 4 max ray bounces.}
+                \includegraphics[width=0.8\linewidth]{share/results/bounce_rays_4.png}
+                \label{fig:bounce_rays_4}
+            \end{figure}
 
             \subsubsection*{Sampling Density}
 
@@ -635,21 +678,13 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
                 \toprule
                 \textbf{Supersamples}&\textbf{Rendered}&\textbf{Time Taken}\\
                 \midrule
-                1&See Fig.~\ref{fig:supersamples_1}&3.1 s\\
-                16&See Fig.~\ref{fig:supersamples_16}&50.3 s\\
-                49&See Fig.~\ref{fig:default}&162.2 s\\
-                196&See Fig.~\ref{fig:supersamples_192}&624.7 s\\
+                16&See Fig.~\ref{fig:supersamples_16}&50.3 sec\\
+                49&See Fig.~\ref{fig:default}&2 min 42 sec\\
+                196&See Fig.~\ref{fig:supersamples_192}&10 min 24 sec\\
                 \bottomrule
             \end{tabular}
             \label{tab:shadow_rays}
             \end{table}
-
-            \begin{figure}[H]
-                \centering
-                \caption{Render of the scene 512x512 at 1 samples per pixel, 1 shadow ray and 7 max ray bounces.}
-                \includegraphics[width=0.8\linewidth]{share/results/supersamples_1.png}
-                \label{fig:supersamples_1}
-            \end{figure}
 
             \begin{figure}[H]
                 \centering
@@ -665,7 +700,7 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
                 \label{fig:supersamples_192}
             \end{figure}
 
-            \subsubsection*{Using Photon Maps}
+            \subsubsection*{Photon Mapping}
 
     \section{Discussion and Outlook} \label{sec:discussion_and_outlook}
 
