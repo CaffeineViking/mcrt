@@ -3,3 +3,4 @@ openmp,512,512,1,1,bilinear,grid,49,7,1,0.7,100000,1,1,share/render.png,520.241
 openmp,512,512,1,1,bilinear,grid,49,7,1,0.7,100000,0,1,share/render.png,191.228
 openmp,512,512,1,1,bilinear,grid,49,7,8,0.7,100000,1,1,share/render.png,819.613
 openmp,512,512,1,1,bilinear,grid,49,7,8,0.7,100000,1,1,share/render.png,823.228
+openmp,512,512,1,1,bilinear,grid,49,7,8,0.1,2000000,1,1,share/render.png,694.082
