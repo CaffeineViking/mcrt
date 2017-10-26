@@ -183,25 +183,29 @@ In some cases a higher resolution secondary \textit{photon map} is used to show 
 
     \section{Theory and Method} \label{sec:theory_and_method}
 
+        Raytracing attempts to find irradiance falling onto each pixel in the \emph{image plane} \(E_\Pi\). For each pixel at world position \(\vec{o}_{ij}\) on \(E_\Pi\) we send off \emph{rays} originating at \(E\), the \emph{eye origin}. These \emph{importance rays} will \emph{hit} and \emph{bounce} around the \emph{scene} described in \cref{sec:scene_description} according to the theory at \cref{sec:ray-surface_intersections}. Depending on the surface properties, we'll need to consider the \emph{radiance reflectance rate}, \(f_r(\vec{x}, \hat{\omega}_i, \hat{\omega}_o)\), in \cref{sec:surface_properties}, for evaluating the \emph{radiance} at e.g. the point \(\vec{p}\). The \emph{light contributions} for \(\vec{p}\) come in two forms: \emph{direct light} (e.g. the light source \(L\)) and \emph{indirect light} (e.g. the diffuse surface \(D\)). These are described in Sections \ref{sec:direct_light_contributions} and \ref{sec:indirect_light_contributions}. To reduce noise, and converge faster, we use \emph{photon maps} in Part~\ref{sec:photon_mapping}, to approximate the direct light contributions. Lastly, we may get \emph{aliasing}, which we deal with in Part~\ref{sec:anti-aliasing_and_sampling}.
+
         \begin{figure}[ht]
             \centering
             \includegraphics[width=0.8\linewidth]{share/raytracing_overview.eps}
-            \caption{}
             \label{fig:raytracing_overview}
         \end{figure}
 
+        \vspace{-1.8em}
+
         \subsection{Scene Description} \label{sec:scene_description}
 
-        In \cref{fig:scene_description} an overview of the scene we'll be using to display the results and benchmark is shown. All walls are Lambertian reflectors with different colors, while the floor and roof are white. An area light source with 4 triangles exists, it's white, on the roof.
+        Below is the overview of the scene we'll be using to display the results and benchmark is shown. All walls are Lambertian reflectors with different colors, while the floor and roof are white. An area light source with 4 triangles exists, it's white, on the roof.
 
         There exists four primitives in the scene, an orange teapot mesh (4) with a Lambertian BRDF, a white sphere (2) with Oren-Nayar BRDF \(\sigma' = 0.1\), a perfectly reflective sphere in (3) and a perfectly refractive sphere in (1) with a refraction index 1.5.
 
         \begin{figure}[ht]
             \centering
             \includegraphics[width=0.8\linewidth]{share/scene_description.eps}
-            \caption{}
             \label{fig:scene_description}
         \end{figure}
+
+        \vspace{-1.5em}
 
         \clearpage
 
@@ -362,9 +366,8 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
             
             \begin{figure}[ht]
               \centering
-              \includegraphics[width=\linewidth]{share/point_light.png}
-              \caption{Point light shadow ray}
-              %\label{fig:roughness}
+              \includegraphics[width=0.9\linewidth]{share/shadow_ray.eps}
+              \caption{Shadow ray toward point light.}
             \end{figure}
 
             \subsubsection{Area Light Source} \label{sec:area_light_source}
@@ -527,8 +530,8 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
 
             \begin{figure}[H]
                 \centering
-                \includegraphics[width=\linewidth]{share/new_render.png}
-                \caption{High-resolution render of the scene at 1024x1024, 1024 SPP, 1 shadow ray and 7 bounces. Render time taken was \(\approx\) 128 minutes \& 38 seconds.}
+                \includegraphics[width=\linewidth]{share/the_render.png}
+                \caption{High-resolution render of the scene at 1024x1024, 1024 SPP, 1 shadow ray and 7 bounces. Render time taken was \(\approx\) 133 minutes \& 31 seconds.}
                 \label{fig:render}
             \end{figure}
 
