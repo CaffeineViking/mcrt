@@ -37,8 +37,8 @@ Features
     * By specular refractions
         * with Fresnel factor
         * and Snell's law
-    * By Diffuse reflections
-        * Color bleeding!
+    * By diffuse reflections
+        * color bleeding!
     * Russian roulette
 * **Photon mapping**
     * In balanced k-d tree
@@ -48,7 +48,6 @@ Features
 * **Anti-aliasing by supersampling**
     * Using the grid pattern
     * Using some random pattern
-    * Using Gaussian distribution
 * **Paper showing techniques :)**
 
 Compiling and Testing
