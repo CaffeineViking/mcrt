@@ -201,7 +201,7 @@ In some cases a higher resolution secondary \textit{photon map} is used to show 
             \vec{L} = \vec{o_{sphere}} - \vec{o_{ray}} \\
             t_{ca} = \vec{L} \cdot  \hat{d_{ray}} \\
         \end{align*}
-        if \(t_{ca} < 0\), there's no intersection between ray and sphere. otherwise look for intersection points using:
+        if \(t_{ca} < 0\), there's no intersection between ray and sphere. Otherwise look for intersection points using:
         
         \begin{align*}
             d^2 = L \cdot L - t_{ca} \cdot t_{ca}
@@ -438,7 +438,7 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
             \begin{align*}
             p_l = \frac{P}{A}area(l)
             \end{align*}
-            which results in the number of photons a given light source should emit into the scene. Each photons' outgoing direction and origin point is uniformly sampled from the hemisphere and light source area respectively. 
+            which results in the number of photons a given light source should emit into the scene. Each photons' outgoing direction is cosine-weighted and the position uniformly sampled from the area of the light source. 
 
             \subsubsection{Radiance Estimate} \label{sec:radiance_estimate}
 
@@ -497,7 +497,21 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
             As the last step, we need to be aware that we're storing \emph{irradiance values} (using double precision) in our pixels. They are in the so called \emph{sampling space}, but since we're going to be writing down the render to an image (integer values), we need to convert them from \emph{sample space} to \emph{image space}. We do this by \(\hat{p}_{ij} \div \max\, \{\hat{p}_{ij}\},\, \forall \hat{p}_{ij}\), scaling this down to \([0,1]\).
 
     \section{Results and Benchmark} \label{sec:results_and_benchmark}
+	
+	\subsection*{Final render}
 
+	\subsection*{Optical effects}
+	
+	\subsubsection*{Reflection}
+	
+	\subsubsection*{Refraction}
+	
+	\subsubsection*{Caustics}
+	
+	\subsubsection*{Color bleeding}
+		
+	\subsection*{Parameter benchmarks}
+	
     \section{Discussion and Outlook} \label{sec:discussion_and_outlook}
 
     \newpage % Next column...
