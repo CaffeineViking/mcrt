@@ -188,7 +188,6 @@ namespace mcrt {
         photonMap.rebalance();
 	std::ofstream os("share/photons.csv");
 	os << photonMap << std::endl;
-	
     }
 
     glm::dvec3 Scene::rayTrace(const Ray& ray, const size_t depth = 0) const {

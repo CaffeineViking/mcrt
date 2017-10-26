@@ -183,9 +183,21 @@ In some cases a higher resolution secondary \textit{photon map} is used to show 
 
     \section{Theory and Method} \label{sec:theory_and_method}
 
-        \clearpage
+        \begin{figure}[ht]
+            \centering
+            \includegraphics[width=0.8\linewidth]{share/raytracing_overview.eps}
+            \caption{}
+            \label{fig:raytracing_overview}
+        \end{figure}
 
         \subsection{Scene Description} \label{sec:scene_description}
+
+        \begin{figure}[ht]
+            \centering
+            \includegraphics[width=0.8\linewidth]{share/scene_description.eps}
+            \caption{}
+            \label{fig:scene_description}
+        \end{figure}
 
         \clearpage
 
@@ -441,6 +453,22 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
             which results in the number of photons a given light source should emit into the scene. Each photons' outgoing direction is cosine-weighted and the position uniformly sampled from the area of the light source. 
 
             \subsubsection{Radiance Estimate} \label{sec:radiance_estimate}
+            In this project, the computation of the direct light is replaced by an estimation based on the photon map. To estimate the radiance at point $x$ all photons within a sphere with radius $r$. A fix sized sphere is used in this project. Some condition needs to be fulfilled in order estimate the radiance with photon mapping. If these conditions is not met the Monte-Carlo scheme will be used for the approximation. Photon mapping will not be used if the sphere contains shadow photons, or if the sphere contains few photons.
+
+            \begin{equation*}
+              L(x \rightarrow \omega_{out}) = \sum_{i=1}^M f_r(x, \omega_{in,i}, \omega_{out}) \frac{\phi(x_i \leftarrow \omega_{in,i})}{\pi r^2}
+            \end{equation*}
+
+            Areas with low photon density may give a blurry result. Therefore, a cone-filter is applied to the estimate. This is done by giving a weight $w_p$ to each photon based on the distance $d_p$ between the point $x$ and photon $p$. 
+            \begin{equation*}
+              w_p = max(0, 1 - d/(kr))
+            \end{equation*}
+
+            The filter is normalized by $1 - \tfrac{2}{3k}$ giving the final equation.
+            \begin{equation*}
+         L(x \rightarrow \omega_{out}) = \sum_{i=1}^M f_r(x, \omega_{in,i}, \omega_{out}) \frac{\phi(x_i \leftarrow \omega_{in,i}) }{\pi r^2}
+            \end{equation*}
+
 
         \clearpage
 
@@ -497,21 +525,105 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
             As the last step, we need to be aware that we're storing \emph{irradiance values} (using double precision) in our pixels. They are in the so called \emph{sampling space}, but since we're going to be writing down the render to an image (integer values), we need to convert them from \emph{sample space} to \emph{image space}. We do this by \(\hat{p}_{ij} \div \max\, \{\hat{p}_{ij}\},\, \forall \hat{p}_{ij}\), scaling this down to \([0,1]\).
 
     \section{Results and Benchmark} \label{sec:results_and_benchmark}
-	
-	\subsection*{Final render}
 
-	\subsection*{Optical effects}
-	
-	\subsubsection*{Reflection}
-	
-	\subsubsection*{Refraction}
-	
-	\subsubsection*{Caustics}
-	
-	\subsubsection*{Color bleeding}
-		
-	\subsection*{Parameter benchmarks}
-	
+        \subsection*{Final Render}
+
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=\linewidth]{share/new_render.png}
+                \caption{High-resolution render of the scene at 1024x1024 using 1024 SPP, 1 shadow ray and 7 ray bounces.}
+                \label{fig:render}
+            \end{figure}
+
+            The figure above contains all optical effects required for photorealism. In the coming sections each of these effects will be shown and described in detail.
+
+            \subsubsection*{Reflection}
+
+            Sphere with a perfectly reflective surface where both different geometrical surfaces which aren't visible in the original viewplane can be observed as well as some fresnel effects on the grazing angles of the sphere. 
+
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=\linewidth]{share/new_render_reflection.png}
+                \label{fig:render_reflection}
+            \end{figure}
+
+            \subsubsection*{Refraction}
+
+            Sphere with perfectly refractive material with an refractive index similar to glass. The convex lens which the sphere creates causes a mirrored refracted projection. As with the reflective sphere, some fresnel effects can be observed.
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=\linewidth]{share/new_render_refraction.png}
+                \label{fig:render_refraction}
+            \end{figure}
+
+            \subsubsection*{Caustics}
+
+            Caustics are usually hard to reproduce with a monte-carlo ray tracer, but given enough time to converge, there is no limitation in the method itself. In the image below we can observe caustics created by refracting direct light through the sphere, as well as those created by reflecting direct light through the mirror and then through the sphere. One possible cause for the caustics being generated underneath the sphere is the self-refraction inside the sphere.
+
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=\linewidth]{share/new_render_caustics.png}
+                \label{fig:render_caustics}
+            \end{figure}
+
+            \subsubsection*{Color Bleeding}
+
+            As can be seen in the image of the white Oren-Nayar sphere, it has received indirect illumination from the red wall and the green wall. This happens because the direct light of diffuse surfaces can be reflected multiple times, and this causes the radiance to be a mix of all intersected surfaces. In the mirror reflection of this sphere, there is also contributions from the blue wall via indirect illumination.
+
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=\linewidth]{share/new_render_color_bleeding.png}
+                \label{fig:render_color_bleeding}
+            \end{figure}
+
+            \subsubsection*{Photon Map Visualization}
+
+            Below is a direct visualization of the photon map created by plotting each photon in the direct light photon map. The white points are regular photons carrying some flux in them, naturally each of these should carry only a little flux, so in reality they should be almost black (they are white visualization purposes only). The black photons represent shadow photons. As can be seen, only diffuse surfaces create photons when intersected, and if there were any specular surfaces in the scene as they would only reflect or refract the photon paths, never store them there. This was made by using \texttt{plot3d} in the \emph{R} library \texttt{rgl}.
+
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=\linewidth]{share/photon_map.png}
+                \label{fig:photon_map}
+            \end{figure}
+
+        \subsection*{Parameter Benchmarks}
+
+            \begin{figure}[H]
+                \centering
+                \caption{}
+                \includegraphics[width=\linewidth]{share/results/default.png}
+                \label{fig:default}
+            \end{figure}
+
+            \subsubsection*{Number of Shadow Rays}
+
+            \begin{figure}[H]
+                \centering
+                \caption{}
+                \includegraphics[width=\linewidth]{share/results/shadow_rays_4.png}
+                \label{fig:shadow_rays_4}
+            \end{figure}
+
+            \begin{table}[h]
+            \centering
+            \begin{tabular}{llllll}
+                \toprule
+                \textbf{Shadow Rays}&\textbf{Figure}&\textbf{Render Time}&\\
+                \midrule
+                1&Figure~\ref{fig:default}&162.2 seconds\\
+                4&Figure~\ref{fig:shadow_rays_4}&446.1 seconds\\
+                8&Figure~\ref{fig:shadow_rays_8}&0.0\\
+                \bottomrule
+            \end{tabular}
+            \label{tab:shadow_rays}
+            \end{table}
+
+            \subsubsection*{Number of Bounces}
+
+            \subsubsection*{Sampling Density}
+
+            \subsubsection*{Using Photon Maps}
+
     \section{Discussion and Outlook} \label{sec:discussion_and_outlook}
 
     \newpage % Next column...

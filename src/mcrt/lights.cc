@@ -62,7 +62,7 @@ namespace mcrt {
        glm::dvec3 v2 = glm::normalize(glm::cross(v1,normal));
        
        const glm::dvec3 azimuthRotation = glm::rotate(v1, phi, normal);
-       const glm::dvec3 inclinationRotation = glm::rotate(v1, theta, v2);
+       const glm::dvec3 inclinationRotation = glm::rotate(normal, theta, v2);
        const glm::dvec3 outgoing = glm::normalize(azimuthRotation + inclinationRotation);
        return outgoing;
     }
@@ -126,16 +126,15 @@ namespace mcrt {
             glm::dvec3 rayToLightSource = origin - rayHit.position;
             glm::dvec3 rayToLightNormal { glm::normalize(rayToLightSource) };
 
-            Ray shadowRay { rayHit.position + rayToLightNormal * Ray::EPSILON,
-                    rayToLightNormal };
+            Ray shadowRay { rayHit.position + rayToLightNormal * Ray::EPSILON, rayToLightNormal };
 
 
             // Return distance to light, 0 if occluded
             double occlusionDistance = scene->inShadow(shadowRay);
             double shadowRayDistance = std::max(glm::distance(rayHit.position, origin),1.0);
             if (occlusionDistance > 0.0 && occlusionDistance >= shadowRayDistance) {
-                double cosa = glm::dot(shadowRay.direction, rayHit.normal);
-                double cosb = std::max(glm::dot(-shadowRay.direction, normal), glm::dot(-shadowRay.direction, -normal)) ;
+                double cosa = glm::clamp(glm::dot(shadowRay.direction, rayHit.normal),0.0,1.0);
+                double cosb = glm::dot(-shadowRay.direction, normal) ;
                 glm::dvec3 brdf = rayHit.material->brdf(rayHit.position, rayHit.normal,
                                                         -ray.direction, shadowRay.direction);
                 radiance += brdf*cosa*cosb/(shadowRayDistance*shadowRayDistance);
