@@ -6,3 +6,5 @@ openmp,512,512,1,1,bilinear,grid,49,1,1,0.1,1000000,0,1,share/render.png,51.4743
 openmp,512,512,1,1,bilinear,grid,49,4,1,0.1,1000000,0,1,share/render.png,129.588
 openmp,512,512,1,1,bilinear,grid,49,8,1,0.1,1000000,0,1,share/render.png,207.491
 openmp,512,512,1,1,bilinear,grid,49,8,1,0.1,1000000,1,1,share/render.png,324.663
+openmp,512,512,1,1,bilinear,grid,16,7,1,0.7,1000000,1,1,share/render.png,1029.4
+openmp,512,512,1,1,bilinear,grid,49,7,1,0.7,1000000,1,1,share/render.png,3076.88
