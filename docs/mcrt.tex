@@ -643,7 +643,7 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
                 \label{fig:shadow_rays_8}
             \end{figure}
 
-            \subsubsection*{Ray Bounces}
+            \subsubsection*{Ray-depth}
 
             \begin{table}[H]
             \centering
@@ -704,6 +704,33 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
             \end{figure}
 
             \subsubsection*{Photon Mapping}
+
+        \begin{table}[H]
+            \centering
+            \begin{tabular}{lll}
+                \toprule
+                \textbf{Ray-depth}&\textbf{Rendered}&\textbf{Time Taken}\\
+                \midrule
+                0.1&See Fig.~\ref{fig:photons_0_1}&51.5 s\\
+                0.7&See Fig.~\ref{fig:photons_0_7}&129.6 s\\
+                \bottomrule
+            \end{tabular}
+            \label{tab:depth_rays}
+            \end{table}
+
+            \begin{figure}[H]
+                \centering
+                \caption{Render of the scene 512x512 at 49 samples per pixel, 8 shadow rays and 7 max ray bounces using a photon map with 1 000 000 photons and a radiance estimation radius of 0.1.}
+                \includegraphics[width=0.8\linewidth]{share/results/photons_0_1.png}
+                \label{fig:photons_0_1}
+            \end{figure}
+
+             \begin{figure}[H]
+                \centering
+                \caption{Render of the scene 512x512 at 49 samples per pixel, 8 shadow rays and 7 max ray bounces using a photon map with 1 000 000 photons and a radiance estimation radius of 0.7.}
+                \includegraphics[width=0.8\linewidth]{share/results/photons_0_7.png}
+                \label{fig:photons_0_7}
+            \end{figure}
 
     \section{Discussion and Outlook} \label{sec:discussion_and_outlook}
 
