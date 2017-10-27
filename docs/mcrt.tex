@@ -649,6 +649,8 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
                 \label{fig:shadow_rays_8}
             \end{figure}
 
+            Figure~\ref{fig:default}-\ref{fig:shadow_rays_8} have been rendered with the same resolution and samples but with increasing amount of shadow rays. By comparing the images we can see that the number of shadow rays does not affect the result. Since we sample each pixel multiple times we implicitly get multiple shadow rays. Therefore, one shadow ray is enough to get a good result and the rendering time decrease as shown in table~\ref{tab:shadow_rays}.
+
             \subsubsection*{Ray-depth}
 
             The ray-depth parameter affects how many bounces each ray can do in the scene, with a value of 1 no reflections/refractions will occur.
