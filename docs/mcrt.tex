@@ -588,6 +588,10 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
 
         \subsection*{Parameter Benchmarks}
 
+        In this section different parameter configurations will be tested to examine the visual and computational cost. 
+
+            The table below shows how the parameters for a \textit{default} parameter configuration which performs pure monte-carlo ray tracing and will result in a photon realistic image given enough computation time.
+
             \begin{table}[H]
             \centering
             \begin{tabular}{lll}
@@ -614,6 +618,8 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
             \end{figure}
 
             \subsubsection*{Shadow Rays}
+
+            This section covers how the number of shadow rays affects the result in compassion with the default parameter configuration.
 
             \begin{table}[H]
             \centering
@@ -645,6 +651,8 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
 
             \subsubsection*{Ray-depth}
 
+            The ray-depth parameter affects how many bounces each ray can do in the scene, with a value of 1 no reflections/refractions will occur.
+
             \begin{table}[H]
             \centering
             \begin{tabular}{lll}
@@ -666,14 +674,18 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
                 \label{fig:bounce_rays_1}
             \end{figure}
 
+            The scene becomes much darker since no indirect illumination is present in the scene.
+
             \begin{figure}[H]
                 \centering
                 \caption{Render of the scene 512x512 at 49 samples per pixel, 1 shadow rays and 4 max ray bounces.}
                 \includegraphics[width=0.8\linewidth]{share/results/bounce_rays_4.png}
                 \label{fig:bounce_rays_4}
             \end{figure}
-
+            
             \subsubsection*{Sampling Density}
+
+            The sampling density specifies how many samples will be taken for each pixel on the screen.
 
             \begin{table}[H]
             \centering
@@ -703,7 +715,11 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
                 \label{fig:supersamples_192}
             \end{figure}
 
+            As expected the final results become less noise with more samples but at the cost of computation time.
+
             \subsubsection*{Photon Mapping}
+
+            The following table shows how using a photon map affects the visual and computational results of the render with a fixed number of photons but different radiance estimation bound. This photon map implementation does not use k-nn photon gathering but instead uses a fixed size sphere around each  point of interest.
 
         \begin{table}[H]
             \centering
@@ -725,12 +741,16 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
                 \label{fig:photons_0_1}
             \end{figure}
 
+            Stray shadow-photons causes the result to look spotty since the photon map and path tracer doesn't agree with the amount of radiance for a given point.
+
              \begin{figure}[H]
                 \centering
                 \caption{Render of the scene 512x512 at 49 samples per pixel, 8 shadow rays and 7 max ray bounces using a photon map with 1 000 000 photons and a radiance estimation radius of 0.7.}
                 \includegraphics[width=0.8\linewidth]{share/results/photons_0_7.png}
                 \label{fig:photons_0_7}
             \end{figure}
+
+            WIth a larger sphere of interest the result takes significantly longer to compute but the result doesn't become as spotty as the previous configuration.
 
     \section{Discussion and Outlook} \label{sec:discussion_and_outlook}
 
