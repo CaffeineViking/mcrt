@@ -16,13 +16,13 @@ namespace mcrt {
         double scalingFactorX  { 1.0 }, scalingFactorY   { 1.0 };
         Image::ResizeMethod interpolationMethod { Image::ResizeMethod::BILINEAR };
         Supersampler::Pattern samplingPattern { Supersampler::Pattern::GRID };
-        size_t samplesPerPixel { 1 };
-        size_t maxRayDepth { 10 };
+        size_t samplesPerPixel { 49 };
+        size_t maxRayDepth { 7 };
         size_t shadowRayCount { 1 };
-        double photonEstimationRadius { 1.0 };
-        size_t photonAmount { 100000 };
-        bool photonMap { true };
-        bool progressiveRendering { false };
+        double photonEstimationRadius { 0.1 };
+        size_t photonAmount { 1000000 };
+        bool photonMap { false };
+        bool progressiveRendering { true };
         bool recordStatistics { false };
         bool photonMapVisualize { false };
 
