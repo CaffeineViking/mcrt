@@ -58,7 +58,7 @@ labelfont=bf,singlelinecheck=off,labelsep=space}
     \maketitle
     \section*{Abstract}
 
-    \footnote{https://github.com/CaffeineViking/mcrt}
+    A Monte Carlo raytracer is a renderer which produces photorealistic images after full convergence. It uses a global illumination model, meaning it gives optical phenomena like soft shadows, color bleeding and caustics. This report details the theory and the practical details necessary to implement one from scratch along with the photon mapping extension. After that, we benchmark the raytracer and display example renders from our raytracer. Finally, we do a discussion about the further improvements that can done in the raytracer, giving some reflections on the project. The full \texttt{C++} source is on GitHub \footnote{https://github.com/CaffeineViking/mcrt}.
 
     \begin{figure}[ht]
         \centering
@@ -603,9 +603,9 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
 
         \subsection*{Parameter Benchmarks}
 
-        In this section different parameter configurations will be tested to examine the visual and computational cost. 
+        In this section different parameter configurations will be tested to examine the visual and computational cost. All measurements were made on the same hardware configuration, an \texttt{Intel(R) Core(TM) i5-4250U CPU @ 1.30GHz} with 2 cores and 4 hardware threads. The system has \texttt{16 GiB} of memory. We parallelize it 4-way in \emph{OpenMP}.
 
-            The table below shows how the parameters for a \textit{default} parameter configuration which performs pure monte-carlo ray tracing and will result in a photon realistic image given enough computation time.
+            The table below shows the parameter values for a our \textit{baseline} parameter configuration on which we'll perform pure Monte Carlo ray tracing, which will result in a photorealistic image given enough computation time. \cref{fig:default} is the render of these.
 
             \begin{table}[H]
             \centering
@@ -620,6 +620,7 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
                 Photon Mapping&No\\
                 Photon Amount&1 million\\
                 Estimation Radius &0.1 units\\
+                Render Time &2 min 42 sec\\
                 \bottomrule
             \end{tabular}
             \label{tab:shadow_rays}
@@ -664,7 +665,7 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
                 \label{fig:shadow_rays_8}
             \end{figure}
 
-            Figure~\ref{fig:default}-\ref{fig:shadow_rays_8} have been rendered with the same resolution and samples but with increasing amount of shadow rays. By comparing the images we can see that the number of shadow rays does not affect the result. Since we sample each pixel multiple times we implicitly get multiple shadow rays. Therefore, one shadow ray is enough to get a good result and the rendering time decrease as shown in table~\ref{tab:shadow_rays}.
+            Figure~\ref{fig:default}-\ref{fig:shadow_rays_8} have been rendered with the same resolution and samples but with increasing amount of shadow rays. By comparing the images we can see that the number of shadow rays does not affect the result. Since we sample each pixel multiple times we implicitly get multiple shadow rays. Therefore, one shadow ray is enough to get a good result and the rendering time decreases as in the table above.
 
             \subsubsection*{Ray-depth}
 
@@ -691,15 +692,20 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
                 \label{fig:bounce_rays_1}
             \end{figure}
 
-            The scene becomes much darker since no indirect illumination is present in the scene.
+            The scene becomes much darker since no indirect illumination is present in the scene. There is also no reflection and refraction present, since those count as ray bounces as well. This is a great image for visualizing the difference between the Oren-Nayar and the Lambertian surface. It might now be noticeable, but the falloff around the Oren-Nayar reflector is a less pronounced than that of the Lambertian emitter because the roughness of it is higher.
 
             \begin{figure}[H]
                 \centering
                 \caption{Render of the scene 512x512 at 49 samples per pixel, 1 shadow rays and 4 max ray bounces.}
-                \includegraphics[width=0.8\linewidth]{share/results/bounce_rays_4.png}
+                \includegraphics[width=0.7\linewidth]{share/results/bounce_rays_4.png}
                 \label{fig:bounce_rays_4}
             \end{figure}
-            
+            \vspace{-0.5em}
+
+            In \cref{fig:bounce_rays_4} we can see that indirect light seems to be arriving at the points we sample, but the reflections of high depth return black. This is something which doesn't happen in the baseline configuration.
+
+            \vspace{-0.5em}
+
             \subsubsection*{Sampling Density}
 
             The sampling density specifies how many samples will be taken for each pixel on the screen.
@@ -715,7 +721,7 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
                 196&See Fig.~\ref{fig:supersamples_192}&10 min 24 sec\\
                 \bottomrule
             \end{tabular}
-            \label{tab:shadow_rays}
+            \label{tab:supersamples}
             \end{table}
 
             \begin{figure}[H]
@@ -725,6 +731,8 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
                 \label{fig:supersamples_16}
             \end{figure}
 
+            In the figure above, the scene initially seems very dark. This is expected, since not enough indirect illumination has been spread through the scene yet. It also has to do with how our raytracer does normalization of the radiance in each pixel to integer colors, something like \emph{tone mapping} might fix this.
+
             \begin{figure}[H]
                 \centering
                 \caption{Render of the scene 512x512 at 196 samples per pixel, 1 shadow ray and 7 max ray bounces.}
@@ -732,7 +740,7 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
                 \label{fig:supersamples_192}
             \end{figure}
 
-            As expected the final results become less noise with more samples but at the cost of computation time.
+            As expected the final results give less noise with more samples but at the cost of additional computation time. This also reduces aliasing and thus the jaggies which were presented earlier. The aliasing near the sources of light is especially bad at the start because it doesn't fall off as smoothly as the other surfaces in the scene. That is, it's a very sharp change in color, and it thus takes a lot of samples to blend it with the nearby colors.
 
             \subsubsection*{Photon Mapping}
 
