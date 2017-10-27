@@ -58,6 +58,13 @@ labelfont=bf,singlelinecheck=off,labelsep=space}
     \maketitle
     \section*{Abstract}
 
+    \footnote{https://github.com/CaffeineViking/mcrt}
+
+    \begin{figure}[ht]
+        \centering
+        \includegraphics[width=\linewidth]{share/new_render.png}
+    \end{figure}
+
     \newpage \tableofcontents \clearpage
 
     \section{Introduction} \label{sec:introduction}
@@ -526,7 +533,11 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
 
     \section{Results and Benchmark} \label{sec:results_and_benchmark}
 
+        After describing our Monte Carlo raytracer we now show some example renders of the scene presented earlier in the paper, and point out the optical phenomena that arise. This raytracer has many parameters that can be toggled, and in order to identify the primary knobs that contribute to a good looking image, and those that only increase render time, we've measured the render time of changing parameters.
+
         \subsection*{Final Render}
+
+        Given unconstrained time, the Monte Carlo raytracer will converge to a realistic image, and will be noise-free. After 1024 samples the image below is produced, and gives pretty convincing results, with relatively little noticeable noise. It was rendered using a \texttt{Intel Core i7 860 @ 2.8 GHz} and using \texttt{8 GiB} of on-board main memory. The raytracer supports \texttt{OpenMP}, so it was rendered in 8-way parallel, one for each hardware thread (of 4 cores).
 
             \begin{figure}[H]
                 \centering
@@ -539,7 +550,7 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
 
             \subsubsection*{Reflection}
 
-            Sphere with a perfectly reflective surface where different geometrical surfaces which aren't visible in the original viewplane can be observed. 
+            By zooming into \cref{fig:render} the mirror sphere on the right can be analyzed. We can see that we have a perfectly reflective surface, where the other surfaces in the scene, which aren't visible in the original viewplane directly, can be observed indirectly. We can see in the other figures that this can be applied recursively, as long as it doesn't go over ray depth.
 
             \begin{figure}[H]
                 \centering
@@ -549,16 +560,18 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
 
             \subsubsection*{Refraction}
 
-            Sphere with perfectly refractive material with an refractive index similar to glass. The convex lens which the sphere creates causes a mirrored refracted projection. Some fresnel effects can be observed in the sphere, i.e, we get some reflections at grazing angles.
+            Below is a sphere with perfectly refractive material using an refractive index similar to glass. The convex lens which the sphere creates causes a mirrored refracted projection. Some Fresnel effects can be observed in the sphere, i.e, we get some reflections at grazing angles. Indirect refraction of other surfaces.
             \begin{figure}[H]
                 \centering
                 \includegraphics[width=0.8\linewidth]{share/new_render_refraction.png}
                 \label{fig:render_refraction}
             \end{figure}
 
+            \newpage
+
             \subsubsection*{Caustics}
 
-            Caustics are usually hard to reproduce with a monte-carlo ray tracer, but given enough time to converge, there is no limitation in the method itself. In the image below we can observe caustics created by refracting direct light through the sphere, as well as those created by reflecting direct light through the mirror and then through the sphere. One possible cause for the caustics being generated underneath the sphere is the self-refraction inside the sphere.
+            Caustics are usually hard to reproduce with a monte-carlo ray tracer, but given enough time to converge, there is no limitation in the method itself. In the image below we can observe caustics created by refracting direct light through the sphere, as well as those created by reflecting direct light through the mirror and then through the sphere. One possible cause for the caustics being generated underneath the sphere is the self-refraction inside the sphere. It's also able to see the caustics through the reflection on the mirror sphere. Caustics are caused because the sphere acts as a lens, concentracing light/radiance into a smaller area than normal.
 
             \begin{figure}[H]
                 \centering
@@ -566,9 +579,11 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
                 \label{fig:render_caustics}
             \end{figure}
 
+            \vspace{-5em}
+
             \subsubsection*{Color Bleeding}
 
-            As can be seen in the image of the white Oren-Nayar sphere, it has received indirect illumination from the red wall and the green wall. This happens because the direct light of diffuse surfaces can be reflected multiple times, and this causes the radiance to be a mix of all intersected surfaces. In the mirror reflection of this sphere, there is also contributions from the blue wall via indirect illumination.
+            As can be seen in the image of the white Oren-Nayar sphere, it has received indirect illumination from the red wall and the green wall. This happens because the direct light of diffuse surfaces can be reflected multiple times, and this causes the radiance to be a mix of all intersected surfaces. In the mirror reflection of this sphere, there is also contributions from the blue wall via indirect illumination. This is one of the effects which are not possible with regular Whitted raytracing and is usually an important effect of global illumination and gives photorealism. You can also see this on the walls and teapot.
 
             \begin{figure}[H]
                 \centering
