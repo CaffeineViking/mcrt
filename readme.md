@@ -8,6 +8,47 @@ Monte Carlo Ray Tracer
     <img width=33% src="/docs/share/whitted_raytracing.png" alt="Utah Teapot"/>
 </p>
 
+Features
+--------
+
+* **Written in modern C++ (11/14)**
+* **Scene and parameter loading**
+    * Using header JSON library
+* **Loadable triangle meshes**
+   * Using header only lib.
+* **Render Parallelization**
+    * Using `OpenMP`
+    * Progressive rendering
+* **Ray-surface intersections**
+    * For parametric spheres
+    * For triangles (using Möller–Trumbore)
+    * For arbitrary meshes (with sphere BV)
+* **Surface reflection properties**
+    * Lambertian reflection model
+    * Oren–Nayar reflection model
+* **Direct light contributions**
+    * Using point light sources
+    * Using any area light sources
+    * With Monte Carlo integration
+* **Importance sampling**
+    * By cosine-weights
+* **Indirect light contributions**
+    * By specular reflection
+    * By specular refractions
+        * with Fresnel factor
+        * and Snell's law
+    * By diffuse reflections
+        * color bleeding!
+    * Russian roulette
+* **Photon mapping**
+    * In balanced k-d tree
+    * Direct light radiance estimation
+        * by sampling fixed sphere
+        * cone-filtered estimation
+* **Anti-aliasing by supersampling**
+    * Using the grid pattern
+    * Using some random pattern
+* **Paper showing techniques :)**
 
 Compiling and Testing
 ---------------------
@@ -23,7 +64,12 @@ Compiling and Testing
 Usage and Documents
 -------------------
 
-A report has been written, which can be built by the `make docs`.
+* `bin/mcrt <image-file> [<scene-file> <param-file>]`: render scene in `<scene-file>` with the raytracer parameters in `<param-file>` to an image file `<image-file>` using a supported format (ppm, ff and png). Uses defaults if not given.
+* `make render` and `make view-render`: builds the project and render `share/scene.json` with `share/param.json`. Can be changed to something else by looking at the `Makefile`. Uses the `premake5` build system; make sure to have that :). It also opens your image `share/render.png` with `feh` and continuously updates when additional details are rendered.
+* `make profile` and `make view-profile`: produces *flame graphs* by profiling with `perf`.
+* `make docs`: produces the report *Monte Carlo Raytracing from Scratch* for `mcrt`.
+* `utils/photon-map.r`: gives a visualization of the directly built photon map.
+* `utils/png-distance.r`: takes in two images, produce difference between them.
 
 System Requirements
 -------------------
@@ -52,9 +98,6 @@ Structure
 * `share`: any extra data that needs to be bundled should be here.
 * `src`: all source code for the project should be located below here.
     * `project directories`: source code for specific project build.
-* `tests`: source code for the project's testing suite, using Catch syntax.
-    * `project directories`: project specific testing suite for one build.
-    * `catch.hpp`: awesome modern testing framework for modern C++.
 * `utils`: any sort of helper scripts or similar should be over here.
 
 Contributing

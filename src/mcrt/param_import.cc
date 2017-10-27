@@ -95,5 +95,11 @@ mcrt::Parameters mcrt::ParameterImporter::load(const std::string& file) {
         else parameters.recordStatistics = false;
     }
 
+    if (parser.find("photonMapVisualize") != parser.end()) {
+        size_t photonMapVisualize { parser["photonMapVisualize"].get<size_t>() };
+        if (photonMapVisualize > 0) parameters.photonMapVisualize = true;
+        else parameters.photonMapVisualize = false;
+    }
+
     return parameters;
 }

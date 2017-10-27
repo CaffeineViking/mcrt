@@ -128,7 +128,6 @@ namespace mcrt {
 
             Ray shadowRay { rayHit.position + rayToLightNormal * Ray::EPSILON, rayToLightNormal };
 
-
             // Return distance to light, 0 if occluded
             double occlusionDistance = scene->inShadow(shadowRay);
             double shadowRayDistance = std::max(glm::distance(rayHit.position, origin),1.0);

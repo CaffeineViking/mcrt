@@ -71,6 +71,8 @@ int main(int argc, char** argv) {
 
     if (parameters.photonMap) // Trade-off between speed and memory.
         scene.gatherPhotons(parameters.photonAmount); // Photon map.
+    if (parameters.photonMapVisualize) // Write photon map to a CSV:
+        scene.dumpPhotonMap("share/photon_map.csv"); // photon-map.r
 
     // ===================== Ray Tracing Step ======================
 
@@ -152,7 +154,7 @@ int main(int argc, char** argv) {
 
     mcrt::ImageExporter::save(renderImage, renderImagePath); // A resized variant.
     std::cout << "Rendered to: '" << renderImagePath << "'." << std::endl;
-    if (parameters.recordStatistics)
+    if (parameters.recordStatistics) // Write benchmarking data to CSV file.
         parameters.writeStatistics(renderImagePath, renderDuration.count());
     return 0;
 }
