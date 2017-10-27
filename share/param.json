@@ -9,7 +9,8 @@
     "maxRayDepth": 7,
     "shadowRays": 1,
 
-    "photonMap": 1,
+    "photonMap": 0,
+    "photonMapVisualize": 0,
     "photonAmount": 1000000,
     "photonEstimationRadius": 0.7
 }
