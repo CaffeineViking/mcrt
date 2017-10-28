@@ -8,7 +8,9 @@ Monte Carlo Ray Tracer
     <img width=33% src="/docs/share/whitted_raytracing.png" alt="Utah Teapot"/>
 </p>
 
-A *Monte Carlo raytracer* is a rendering technique which produces a *photorealistic image* of a given scene (given enough time to fully converge). It's a technique which allows *global illumination*, giving optical effects such as *color bleeding*, *hard and soft shadows* and *caustics*. In this repository you'll find a full Monte Carlo raytracer implementation written in C++, along with the accompaying paper *Monte Carlo Raytracing from Scratch* which describes the theory and practical details needed to both understand and implement your own raytracer, alongside some benchmarks and project reflections. Our raytracer is written from the ground up, and doesn't need an libraries to be linked. We've used the header-only libraries: *g-truc/glm* (for vector and matrix operations), *nlohmann/json* (for our custom scene and parameter loader) and *syoyo/tinyobjloader* (for loading arbitrary mesh). Below you'll find a non-exhaustive list of the things we've implemented.
+A *Monte Carlo raytracer* is a rendering technique which produces a *photorealistic image* of a given scene (given enough time to fully converge). It's a technique which allows *global illumination*, giving optical effects such as *color bleeding*, *hard and soft shadows* and *caustics*. In this repository you'll find a full Monte Carlo raytracer implementation written in C++, along with the accompaying paper *Monte Carlo Raytracing from Scratch* which describes the theory and practical details needed to both understand and implement your own raytracer, alongside some benchmarks and project reflections. Our raytracer is written from the ground up, and doesn't need an libraries to be linked. We've used the header-only libraries: *g-truc/glm* (for vector and matrix operations), *nlohmann/json* (for our custom scene and parameter loader) and *syoyo/tinyobjloader* (for loading meshes). 
+
+Below you'll find a non-exhaustive list of features.
 
 Features
 --------
