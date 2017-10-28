@@ -47,6 +47,7 @@ clean: FORCE
 	rm -rf share/perf.svg
 	rm -rf share/photons.csv
 	rm -rf share/statistics.csv
+	rm -rf share/photon_map.csv
 distclean: clean
 	rm -rf bin
 	rm -f docs/mcrt.pdf

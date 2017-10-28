@@ -202,7 +202,7 @@ In some cases a higher resolution secondary \textit{photon map} is used to show 
 
         \subsection{Scene Description} \label{sec:scene_description}
 
-        Below is the overview of the scene we'll be using to display the results and benchmark is shown. All walls are Lambertian reflectors with different colors, while the floor and roof are white. An area light source with 4 triangles exists, it's white, on the roof.
+        Below is an overview of the scene we'll be using to display the results and do our benchmarking. All walls are Lambertian reflectors with different colors, while the floor and roof are white. An area light source with 4 triangles exists, it's white, on the roof.
 
         There exists four primitives in the scene, an orange teapot mesh (4) with a Lambertian BRDF, a white sphere (2) with Oren-Nayar BRDF \(\sigma' = 0.1\), a perfectly reflective sphere in (3) and a perfectly refractive sphere in (1) with a refraction index 1.5.
 
@@ -222,7 +222,7 @@ In some cases a higher resolution secondary \textit{photon map} is used to show 
             
         \subsubsection{Parametric Sphere} \label{sec:parametric_sphere}
         
-        Spherical objects are defined as a vector \(\vec{o} \in \mathbb{R}^3\) which denotes the origin of the sphere, and a scalar \(r\) as the radius of the sphere. Sphere-ray intersections are done using a geometric solution on the following:
+        Spherical objects are defined as a vector \(\vec{o} \in \mathbb{R}^3\) which denotes the origin of the sphere, and a scalar \(r\) as the radius of the sphere. Sphere-ray intersections are done using a geometric solution to the following:
 
         \begin{align*}
             \vec{L} = \vec{o_{sphere}} - \vec{o_{ray}} \\
@@ -245,7 +245,7 @@ In some cases a higher resolution secondary \textit{photon map} is used to show 
 
         \subsubsection{Triangle Polygon} \label{sec:triangle_polygon}
         
-        Intersections between triangles and ray are computed using the \textit{Möller-Trumbore}~\cite{moller2005fast} algorithm which allow for intersection tests without having to compute the triangle containing plane. First a local coordinate system for the triangle is computed using the corner vertecies \(\vec{v_1}\), \(\vec{v_2}\), and \(\vec{v_3}\) on the form:
+        Intersections between triangles and rays are computed using the \textit{Möller-Trumbore}~\cite{moller2005fast} algorithm, which allow for intersection tests without having to compute plane containing the triangle. First a local coordinate system for the triangle is computed using the corner vertices \(\vec{v_1}\), \(\vec{v_2}\), and \(\vec{v_3}\) of the form:
 
 \begin{align*}
     \hat{e_1} = \vec{v_2} - \vec{v_1} \\
@@ -363,9 +363,9 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
                 To wrap things up, when we hit a diffuse surface, we wish to know the ratio of radiance that will leave the surface. For this we need to choose between the Lambertian and Oren-Nayar model to calculate \(f_r\). Each surface in our scene defs. it's \(f_r\) model to use.
 
         \subsection{Direct Light Contributions} \label{sec:direct_light_contributions}
-        Most importance rays that are sent from the camera into the scene never hit a light source. Therefore, the direct light from the light sources to an intesection point needs to contribute to the total radiance at the point. This is computed with shadow rays that are sent from each intersection point to the light sources. The shadow rays will provide light which contribute to the radiance at the ray intersection points. To determine if the intersection point lies in shadow a visbility test is performed. Transparent objects are ignored by the visibility test.
+        Most importance rays that are sent from the camera into the scene never hit a light source. Therefore, the direct light from the light sources to an intesection point needs to contribute to the total radiance at the point. This is computed with \emph{shadow rays}, which are sent from each intersection point to the sources of light. The shadow rays will provide light contributions to the radiance at the ray intersection points. To determine if the intersection point lies in shadow, a visbility test is performed. Transparent objects are obviously ignored by the visibility test.
             \subsubsection{Point Light Source} \label{sec:point_light_source}
-            The shadow ray $S_2 = x - y$ from an intersection point $y$ to a point light source position $x$ is launched. If it does not hit any object it pass the visibility test and the light will contribute to the radiance. A falloff based on the angle $\theta_{S_2}$ between the normal $N$ and $S_2$ is applied which can be seen in the equation below.
+            The shadow ray $S_2 = x - y$ from an intersection point $y$ to a point light source position $x$ is launched. If it does not hit any object, it will pass the visibility test, and will therefore contribute radiance to the surface. The Lambertian cosine falloff, based on the angle $\theta_{S_2}$ between the normal $N$ and $S_2$, is applied, as can be seen in the equation below.
 
             \begin{equation*}
               L(y \rightarrow -\Psi_1) = f_r(y, \omega_{S_2}, -\Psi_1) L(y \leftarrow S_2) cos\theta_{S_2}
@@ -378,7 +378,7 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
             \end{figure}
 
             \subsubsection{Area Light Source} \label{sec:area_light_source}
-            The direct light from an area light source needs to be approximated for each intersection point. This is done with a Monte-Carlo estimator $<L_D>$ using $M$ shadow photons which will be explained in the next section. The light source is a triangle with corners $\mathbf{v_0}$, $\mathbf{v_1}$, and $\mathbf{v_2}$ and with area $A = 0.5 ||(\mathbf{v_1} - \mathbf{v_0})\times(\mathbf{v_2}-\mathbf{v_0})||$. To get the shadow rays we need to pick random points $q$ on the light source uniformly with PDF $p(q) = \frac{1}{A}$. This is done by drawing two random numbers $u, v$ until $u + v < 1$ and building the point $q$ with barycentric coordinates $q = (1-u-v)\mathbf{v_0} + u\mathbf{v_1} + v\mathbf{v_2}$. Repeat this until we have $M$ points. 
+            The direct light from an area light source needs to be approximated for each intersection point. This is done with a Monte-Carlo estimator $<L_D>$ using $M$ shadow rays, as will be explained in the next section. The light source is a triangle with corners $\mathbf{v_0}$, $\mathbf{v_1}$, and $\mathbf{v_2}$ and with area $A = 0.5 ||(\mathbf{v_1} - \mathbf{v_0})\times(\mathbf{v_2}-\mathbf{v_0})||$. To get the shadow rays we need to pick random points $q$ on the light source uniformly with PDF $p(q) = \frac{1}{A}$. This is done by drawing two random numbers $u, v$ until $u + v < 1$ and building the point $q$ with barycentric coordinates $q = (1-u-v)\mathbf{v_0} + u\mathbf{v_1} + v\mathbf{v_2}$. Repeat this until we have $M$ points. 
 
 
             \subsubsection{Monte Carlo Method} \label{sec:monte_carlo_method}
@@ -388,12 +388,12 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
              $G(x, q) = cos\alpha cos\beta / d^2$ is the geometric term where d is the length of the shadow ray and $\alpha$, $\beta$ are the inclination angles to the surface normal at the start- and endpoint. $V(x, q_i)$ is the visibility function which is 1 if no object is in the way and 0 otherwise. Thus, only unblocked shadow rays will contribute to the estimate giving a soft shadow. Since the light source is a Lambertian emitter $L_0$ is emitted for all points and directions of the light source.
             
             \subsection{Indirect Light Contributions} \label{sec:indirect_light_contributions}
-            When rays are emitted from the camera they will intersect with surfaces. At the intersections the rays will either terminate or spawn new rays depending on the surface material. By following the path of the ray we build up a tree with intersections as nodes connected by rays. The child nodes will contribute radiance to the parent nodes which gives indirect light, i.e. light reflected at least once since it left the light source.
+            When rays are emitted from the camera they will intersect with surfaces. At the intersections the rays will either terminate or spawn new rays depending on the surface material. By following the path of the ray we build up a tree with intersections as nodes connected by rays. The child nodes will contribute radiance to the parent nodes which gives indirect light, i.e. light reflected at least once since it left the light source. It's usually split it into three types:
             \subsubsection{Specular Reflection} \label{sec:specular_reflection}
-            If a ray hits a specular surface a new ray will always spawn. The direction of the new ray is determined by the perfect specular reflection law. The direction of the new ray $\vec{R} = \vec{I} - 2 (\vec{I} \cdot \vec{N}) \vec{N}$ where $\vec{I}$ is the incoming ray and $\vec{N}$ is the surface normal.
+            If a ray hits a perfect specular surface a new ray will always spawn. The direction of the new ray is determined by the perfect specular reflection law. The direction of the new ray $\vec{R} = \vec{I} - 2 (\vec{I} \cdot \vec{N}) \vec{N}$ where $\vec{I}$ is the incoming ray and $\vec{N}$ is the normal.
 
             \subsubsection{Specular Refraction} \label{sec:specular_refraction}
-            If a ray hits a refractive surface, i.e. a transparent object, a new ray is spawned that enters the object.
+            If a ray hits a perfectly refractive surface, i.e. a transparent object, a new ray is spawned that enters the object.
             The refractive ray $\vec{T}$ is computed with the perfect refraction law and the angle to the surface normal is computed with \emph{Snell's law}.
 
             \small
@@ -402,7 +402,7 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
             \end{equation*}
             \normalsize
 
-            When a ray is moving between media of different refractive indices we might both reflect and refract. The fresnel equation is used to determine the distribution of the radiance over the refracted and reflected rays.
+            When a ray is moving between media of different refractive indices we might both reflect and refract. The Fresnel equations are used to determine the distribution of the radiance over the refracted and reflected rays.
 
             \begin{equation*}
             R_s = \left[\frac{n_1cos\theta_1 - n_2\sqrt{1-([n_1/n_2]sin\theta_1)^2}}{n_1cos\theta_1 + n_2\sqrt{1-([n_1/n_2]sin\theta_1)^2}}\right]^2
@@ -533,11 +533,11 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
 
     \section{Results and Benchmark} \label{sec:results_and_benchmark}
 
-        After describing our Monte Carlo raytracer we now show some example renders of the scene presented earlier in the paper, and point out the optical phenomena that arise. This raytracer has many parameters that can be toggled, and in order to identify the primary knobs that contribute to a good looking image, and those that only increase render time, we've measured the render time of changing parameters.
+        After describing our Monte Carlo raytracer we now show some example renders of the scene presented earlier in the paper, and point out the optical phenomena that arise. This raytracer has many parameters that can be toggled, and in order to identify the primary knobs that contribute to a good looking image, and those that only increase render time, we've measured the render time by changing parameters.
 
         \subsection*{Final Render}
 
-        Given unconstrained time, the Monte Carlo raytracer will converge to a realistic image, and will be noise-free. After 1024 samples the image below is produced, and gives pretty convincing results, with relatively little noticeable noise. It was rendered using a \texttt{Intel Core i7 860 @ 2.8 GHz} and using \texttt{8 GiB} of on-board main memory. The raytracer supports \texttt{OpenMP}, so it was rendered in 8-way parallel, one for each hardware thread (of 4 cores).
+        Given unconstrained time, the Monte Carlo raytracer will converge to a realistic image, and will be noise-free. After 1024 samples the image below is produced, and gives pretty convincing results, with relatively little noticeable noise. It was rendered using an \texttt{Intel Core i7 860 @ 2.8 GHz} and using \texttt{8 GiB} of on-board main memory. The raytracer supports \texttt{OpenMP}, so it was rendered in 8-way parallel, one for each hardware thread (of 4 cores).
 
             \begin{figure}[H]
                 \centering
@@ -605,7 +605,7 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
 
         In this section different parameter configurations will be tested to examine the visual and computational cost. All measurements were made on the same hardware configuration, an \texttt{Intel(R) Core(TM) i5-4250U CPU @ 1.30GHz} with 2 cores and 4 hardware threads. The system has \texttt{16 GiB} of memory. We parallelize it 4-way in \emph{OpenMP}.
 
-            The table below shows the parameter values for a our \textit{baseline} parameter configuration on which we'll perform pure Monte Carlo ray tracing, which will result in a photorealistic image given enough computation time. \cref{fig:default} is the render of these.
+            The table below shows the parameter values for our \textit{baseline} parameter configuration on which we'll perform pure Monte Carlo ray tracing, which will result in a photorealistic image given enough computation time. \cref{fig:default} gives the render of these.
 
             \begin{table}[H]
             \centering
@@ -635,7 +635,7 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
 
             \subsubsection*{Shadow Rays}
 
-            This section covers how the number of shadow rays affects the result in compassion with the default parameter configuration.
+            This section covers how the number of shadow rays affects the result in comparison with the default parameter configuration.
 
             \begin{table}[H]
             \centering
@@ -692,7 +692,7 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
                 \label{fig:bounce_rays_1}
             \end{figure}
 
-            The scene becomes much darker since no indirect illumination is present in the scene. There is also no reflection and refraction present, since those count as ray bounces as well. This is a great image for visualizing the difference between the Oren-Nayar and the Lambertian surface. It might now be noticeable, but the falloff around the Oren-Nayar reflector is a less pronounced than that of the Lambertian emitter because the roughness of it is higher.
+            The scene becomes much darker since no indirect illumination is present in the scene. There is also no reflection and refraction present, since those count as ray bounces as well. This is a great image for visualizing the difference between the Oren-Nayar and the Lambertian surface. It might not be noticeable, but the falloff around the Oren-Nayar reflector is a less pronounced than that of the Lambertian emitter because the roughness of it is higher.
 
             \begin{figure}[H]
                 \centering
