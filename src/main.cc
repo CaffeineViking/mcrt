@@ -21,7 +21,7 @@
 int usage(int argc, char** argv) {
     if (argc < 2) std::cerr << "Error: need the path to render scenes to!" << std::endl;
     std::cerr << "Usage: " << argv[0] << " "
-              << "IMAGE [SCENE] [PARAMETER]"
+              << "IMAGE-FILE [SCENE-FILE] [PARAM-FILE]"
               << std::endl;
     return 1;
 }

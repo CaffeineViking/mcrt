@@ -1,0 +1,36 @@
+# Maintainer: Erik S. V. Jansson <caffeineviking@gmail.com>
+
+pkgname=mcrt-git
+pkgver=VERSION
+pkgrel=1
+pkgdesc="Monte Carlo Raytracer from Scratch"
+arch=('i686' 'x86_64')
+url="https://github.com/CaffeineViking/mcrt"
+license=('MIT')
+provides=('mcrt')
+makedepends=('git' 'premake-git')
+source=('git+https://github.com/CaffeineViking/mcrt')
+md5sums=('SKIP')
+
+pkgver() {
+	cd mcrt
+	printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+build() {
+	cd mcrt
+	make
+}
+
+package() {
+	cd mcrt
+	install -Dm755 bin/mcrt "$pkgdir"/usr/bin/mcrt
+	install -Dm755 docs/mcrt.1 "$pkgdir"/usr/share/man/man1/mcrt.1
+	install -Dm644 license.md "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+
+	install -Dm644 share/scene.json "$pkgdir"/usr/share/mcrt/scene.json
+	install -Dm644 share/cornell.json "$pkgdir"/usr/share/mcrt/cornell.json
+	install -Dm644 share/param.json "$pkgdir"/usr/share/mcrt/param.json
+	install -Dm644 share/teapot.obj "$pkgdir"/usr/share/mcrt/teapot.obj
+	install -Dm644 share/bunny.obj "$pkgdir"/usr/share/mcrt/bunny.obj
+}
