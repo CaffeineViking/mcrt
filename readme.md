@@ -63,6 +63,7 @@ Compiling and Testing
 4. Finally, issue the command `make -j8 -C build` and wait.
 5. When complete, you'll find the built software in `bin`.
 6. **Shortcuts:** `make render` and `make view-render`.
+7. **Installing:** `make install` if you run Arch Linux.
 
 Usage and Documents
 -------------------
@@ -73,6 +74,7 @@ Usage and Documents
 * `make docs`: produces the report *Monte Carlo Raytracing from Scratch* for `mcrt`.
 * `utils/photon-map.r`: gives a visualization of the directly built photon map.
 * `utils/png-distance.r`: takes in two images, produce difference between them.
+* `utils/PKGBUILD`: use `makepkg -i` to install this when you are running Arch Linux.
 
 System Requirements
 -------------------
