@@ -1,0 +1,52 @@
+.TH MCRT 1 "October 2017"
+.SH NAME
+mcrt \- monte carlo raytracer from scratch
+.SH SYNOPSIS
+\fBmcrt\fR \fIIMAGE-FILE\fR [\fISCENE-FILE\fR] [\fIPARAM-FILE\fR]
+.SH DESCRIPTION
+Renders the given \fISCENE-FILE\fR to an \fIIMAGE-FILE\fR using the settings in \fIPARAM-FILE\fR. The raytracer will automatically deduce the image filetype by looking at the given extension, which can either be *.ppm (Netpbm Portable PixMap), *.ff (Suckless Farbfeld) or *.png (Portable Network Graphic). The scene is specified using a JSON file, but since there is no official documentation on the format, please look at /usr/share/mcrt/scene.json or /usr/share/mcrt/cornell.json for example usage. Same thing applies to the raytracer's parameter file, there is a set of example parameters given in /usr/share/mcrt/param.json. If neither the scene or the parameter file is given, you'll get the default scene and parameters. If a maintainer hasn't done anything, you'll only get an empty scene per default, so the render will only be a black image. If so, look below at the examples part.
+.SH EXAMPLES
+\fBmcrt scene-render.png scene.json parameters.json\fR: renders your own scene with your own set of parameters given in the current working directory.
+
+\fBmcrt scene-render.png /usr/share/mcrt/scene.json /usr/share/mcrt/param.json\fR: renders the bundled example scene with the default parameters.
+
+\fBmcrt cornell-box.ff /usr/share/mcrt/cornell.json /usr/share/mcrt/param.json\fR: renders the well known Cornell box scene using the same parameters.
+.SH FILES
+\fB/usr/share/mcrt/scene.json\fR: example scene file which displays most of the features of the raytracer.
+
+\fB/usr/share/mcrt/cornell.json\fR: another well known scene, it's an exact size replica of it in fact.
+
+\fB/usr/share/mcrt/param.json\fR: set of raytracer parameters with render resolution and sample amount.
+
+\fB/usr/share/mcrt/bunny.obj\fR: the bundled Stanford bunny mesh, which might be useful for testing scene.
+
+\fB/usr/share/mcrt/teapot.obj\fR: the famous Utah teapot, used in the example scene.
+.SH AUTHORS
+M. Estgren, R. Hedin, E. S. V. Jansson
+.SH COPYRIGHT
+The MIT License (MIT)
+
+Copyright © 2017 M. Estgren, R. Hedin, E. S. V. Jansson
+
+Permission is hereby granted, free of charge, to any person
+obtaining a copy of this software and associated documentation
+files (the “Software”), to deal in the Software without
+restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following
+conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+.SH SEE ALSO
+https://github.com/CaffeineViking/mcrt

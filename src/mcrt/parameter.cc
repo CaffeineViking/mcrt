@@ -5,7 +5,7 @@
 
 void mcrt::Parameters::writeStatistics(const std::string& renderPath, double seconds) {
     bool writeHeader = false;
-    std::ifstream checkFile { "share/statistics.csv" };
+    std::ifstream checkFile { "statistics.csv" };
     if (!checkFile.good()) writeHeader = true;
     checkFile.close();
 
