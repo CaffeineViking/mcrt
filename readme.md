@@ -63,7 +63,6 @@ Compiling and Testing
 4. Finally, issue the command `make -j8 -C build` and wait.
 5. When complete, you'll find the built software in `bin`.
 6. **Shortcuts:** `make render` and `make view-render`.
-7. **Installing:** `make install` if you run Arch Linux.
 
 Usage and Documents
 -------------------
