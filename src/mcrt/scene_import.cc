@@ -188,7 +188,6 @@ mcrt::Scene mcrt::SceneImporter::load(const std::string& file) {
                 // I'll probably have a proper fix later by Boost or C++ FS.
                 std::string meshFile { surface["file"].get<std::string>() };
                 std::string meshFilePath { folderPath + meshFile};
-                std::cout << meshFilePath << std::endl;
                 Mesh* mesh = MeshImporter::load(meshFilePath);
 
                 if (surface.find("scale") != surface.end())

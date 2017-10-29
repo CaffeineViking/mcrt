@@ -8,6 +8,7 @@ arch=('i686' 'x86_64')
 url="https://github.com/CaffeineViking/mcrt"
 license=('MIT')
 provides=('mcrt')
+optdepends=('feh: preview image')
 makedepends=('git' 'premake-git')
 source=('git+https://github.com/CaffeineViking/mcrt')
 md5sums=('SKIP')
