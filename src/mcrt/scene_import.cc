@@ -23,8 +23,11 @@ mcrt::Scene mcrt::SceneImporter::load(const std::string& file) {
     // directory stuff, then this might break apart. Probably
     // should exchange this to Boost / C++17 filesystem code.
     std::size_t folderPathIndex { file.find_last_of("/\\") };
-    std::string folderPath { file.substr(0, folderPathIndex) };
-    folderPath += "/";
+    std::string folderPath;
+    if (folderPathIndex != std::string::npos) {
+        folderPath = file.substr(0, folderPathIndex);
+        folderPath += "/";
+    } else folderPath = "";
 
     if (parser.find("camera") != parser.end()) {
         nlohmann::json camera { parser["camera"] };
