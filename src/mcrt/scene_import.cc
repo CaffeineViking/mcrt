@@ -18,6 +18,14 @@ mcrt::Scene mcrt::SceneImporter::load(const std::string& file) {
     fileStream >> parser;
     mcrt::Scene scene;
 
+    // Quick testing shows that this works on both Unix like
+    // paths and Windows like paths. If you are doing network
+    // directory stuff, then this might break apart. Probably
+    // should exchange this to Boost / C++17 filesystem code.
+    std::size_t folderPathIndex { file.find_last_of("/\\") };
+    std::string folderPath { file.substr(0, folderPathIndex) };
+    folderPath += "/";
+
     if (parser.find("camera") != parser.end()) {
         nlohmann::json camera { parser["camera"] };
 
@@ -176,7 +184,13 @@ mcrt::Scene mcrt::SceneImporter::load(const std::string& file) {
                 };
             } else if (geometryType == "mesh") {
                 MeshImporter::setMaterial(palette[materialName]);
-                Mesh* mesh = MeshImporter::load(surface["file"]);
+                // There is now way this is vulnerable...
+                // I'll probably have a proper fix later by Boost or C++ FS.
+                std::string meshFile { surface["file"].get<std::string>() };
+                std::string meshFilePath { folderPath + meshFile};
+                std::cout << meshFilePath << std::endl;
+                Mesh* mesh = MeshImporter::load(meshFilePath);
+
                 if (surface.find("scale") != surface.end())
                     mesh->scale(surface["scale"].get<double>());
 

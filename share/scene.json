@@ -154,7 +154,7 @@
         },
         {
             "geometry": "mesh",
-            "file": "share/teapot.obj",
+            "file": "teapot.obj",
             "origin": [4.0, -5.15, 0.0],
             "rotate": [0.0, -0.90, 0.0],
             "scale": 1.0,

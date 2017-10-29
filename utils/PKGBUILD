@@ -25,6 +25,7 @@ build() {
 package() {
 	cd mcrt
 	install -Dm755 bin/mcrt "$pkgdir"/usr/bin/mcrt
+	install -Dm755 bin/mcrt-view.sh "$pkgdir"/usr/bin/mcrt-view
 	install -Dm755 docs/mcrt.1 "$pkgdir"/usr/share/man/man1/mcrt.1
 	install -Dm644 license.md "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
 
@@ -32,5 +33,4 @@ package() {
 	install -Dm644 share/cornell.json "$pkgdir"/usr/share/mcrt/cornell.json
 	install -Dm644 share/param.json "$pkgdir"/usr/share/mcrt/param.json
 	install -Dm644 share/teapot.obj "$pkgdir"/usr/share/mcrt/teapot.obj
-	install -Dm644 share/bunny.obj "$pkgdir"/usr/share/mcrt/bunny.obj
 }

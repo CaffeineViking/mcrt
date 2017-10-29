@@ -9,7 +9,7 @@ void mcrt::Parameters::writeStatistics(const std::string& renderPath, double sec
     if (!checkFile.good()) writeHeader = true;
     checkFile.close();
 
-    std::ofstream fileStream { "share/statistics.csv", std::fstream::app };
+    std::ofstream fileStream { "statistics.csv", std::fstream::app };
     if (writeHeader) fileStream << "parallelFramework,resolutionWidth,resolutionHeight,scalingFactorX,scalingFactorY,"
                                 << "interpolationMethod,samplingPattern,samplesPerPixel,maxRayDepth,shadowRayCount,"
                                 << "photonEstimationRadius,photonAmount,photonMap,progressiveRendering,renderPath,renderTime"
@@ -18,7 +18,7 @@ void mcrt::Parameters::writeStatistics(const std::string& renderPath, double sec
     fileStream << *this;
     fileStream << renderPath << ',';
     fileStream << seconds << std::endl;
-    std::cout << "Statistics in: '" << "share/statistics.csv'." << std::endl;
+    std::cout << "Statistics in: '" << "statistics.csv'." << std::endl;
 }
 
 std::ostream& operator<<(std::ostream& output, const mcrt::Parameters& parameters) {

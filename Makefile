@@ -18,7 +18,7 @@ render: FORCE
 view-render: FORCE
 	premake5 gmake
 	make -j8 -C build mcrt config=${config}
-	sleep 2s && feh --force-aliasing -R2 -F share/render.png &
+	sleep 2s && feh --force-aliasing -R2 -F --keep-zoom-vp share/render.png &
 	bin/mcrt ${files} ${scene} ${param}
 
 profile: FORCE
@@ -49,7 +49,7 @@ clean: FORCE
 	rm -rf share/statistics.csv
 	rm -rf share/photon_map.csv
 distclean: clean
-	rm -rf bin
+	rm -f bin/mcrt
 	rm -f docs/mcrt.pdf
 	rm -f docs/slides/slides.pdf
 FORCE:
