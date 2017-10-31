@@ -52,7 +52,7 @@ Features
 * **Anti-aliasing by supersampling**
     * Using the grid pattern
     * Using some random pattern
-* [**Paper showing techniques**](https://caffeineviking.net/share/papers/mcrt.pdf)
+* [**Report showing techniques**](https://caffeineviking.net/share/papers/mcrt.pdf)
     * [**Photon mapping slides**](https://caffeineviking.net/share/papers/giph.pdf)
 
 Compiling and Testing
@@ -75,6 +75,7 @@ Usage and Documents
 * `utils/photon-map.r`: gives a visualization of the directly built photon map.
 * `utils/png-distance.r`: takes in two images, produce difference between them.
 * `utils/PKGBUILD`: use `makepkg -i` to install this when you are running Arch Linux.
+    * Manual can be found with `man mcrt` and assets in `/usr/share/mcrt/`.
 
 System Requirements
 -------------------
