@@ -52,7 +52,8 @@ Features
 * **Anti-aliasing by supersampling**
     * Using the grid pattern
     * Using some random pattern
-* **Paper showing techniques :)**
+* [**Paper showing techniques**](https://caffeineviking.net/share/papers/mcrt.pdf)
+    * [**Photon mapping slides**](https://caffeineviking.net/share/papers/giph.pdf)
 
 Compiling and Testing
 ---------------------
