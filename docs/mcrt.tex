@@ -777,7 +777,24 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
             With a larger sphere of interest the result takes significantly longer to compute but the result doesn't become as spotty as the previous configuration.
 
     \section{Discussion and Outlook} \label{sec:discussion_and_outlook}
-    
+
+    While the monte carlo raytracer already gives pretty photorealistic results, it is by no means perfect. Here, we provide an outline of potential future work.
+
+    Both BRDFs in \texttt{mcrt} are for diffuse surfaces, but there are others for specular surfaces as well, such as \emph{Torrance-Sparrow}~\cite{torrance1967theory} and \emph{Cook-Torrance}~\cite{cook1982reflectance}. It would be interesting to integrate into the raytracer.
+
+    In the raytracer, all meshes are wrapped around a sphere for eliminating low-effort intersection tests. Usually, for meshes with many more triangles, it's insufficient. Instead, a \emph{bounding volume hierarchy} would be more appropriate and an general method.
+
+    The photon mapping method used only supports direct light contributions. In \emph{Jensen's}~\cite{jensen1996global} original paper, indirect light is also accounted for in the \emph{global photon map}, and also has a high-resolution \emph{caustics photon map}. It's something we might want.
+
+    Additional effects, \emph{depth of field} and \emph{motion blur}, can be approximated with \emph{distribution raytracer} techniques, such as those presented in \emph{Cook et al.}~\cite{cook1984distributed}. The amount of additional work to integrate these effects into \texttt{mcrt} are not huge, and give nice results.
+
+    Something unusual which would be interesting to implement is a \emph{spectral raytracing} extension, with support for e.g. \emph{black-body radiation} like shown in \emph{Zhang et al.}~\cite{spectral2016zhang}. Instead of using RGB for storing radiance, the wavelength could have been stored instead. Giving a more physically plausible render.
+
+    Perhaps some sort \emph{HDR} (High-Dynamic Range) technique, like \emph{tone mapping}, would solve the problem of initially dark scenes before full convergence.
+
+    For producing realistic scenes, realistic materials are needed, and \emph{textures} would have been a desirable feature to have. A \emph{texture mapping} technique for triangle meshes isn't that hard to implement, but special care is needed when dealing with filtering.
+
+    Parallelization support is currently achieved with \texttt{OpenMP}, but having support for additional hardware accelerators would have been desirable. Initially, \texttt{OpenMPI} would have been nice to have for speeding up rendering in clusters. The other more important addition which would have been to support \texttt{OpenCL} and \texttt{CUDA}, since the problem adapts easily to massively-parallel graphics hardware.
 
     \newpage % Next column...
     \nocite{*} % Include all.
