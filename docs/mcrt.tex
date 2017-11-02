@@ -778,33 +778,33 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
 
     \section{Discussion and Outlook} \label{sec:discussion_and_outlook}
 
-	Some interesting findings can be observed when looking at the results. Some of these are caused implementation details while others are the result of how the path tracer interacts with the photon map.
+	Some interesting findings can be observed when looking at the results. Some of these are caused by implementation details while others are the result of how the path tracer interacts with the photon map.
 
-		The path tracer produces visible and crisp caustics without significant extra computational cost, in our demo scene. This result is interesting since caustics generally are computationally expensive in regular path tracinh. This could be an effect of the very simple geometries the scene and how the objects are placed. To improve the caustics, a caustic photon map can be used instead, as proposed by \cite{jensen1996global}. This would have the effect of speeding up the render while allowing for reduced resoulusion of the global photon map.
+	The path tracer produces visible and crisp caustics without significant extra computational cost. This result is interesting since caustics generally are computationally expensive in regular path tracing. This could be an effect of the very simple geometries in the scene and how the objects are placed. To improve the caustics, a caustic photon map can be used instead, as proposed by \textit{Jensen}~\cite{jensen1996global}. This would have the effect of speeding up the rendering while allowing for reduced resolution of the global photon map.
 
-		Counter-intuitively, the photon map causes the render time to increase. This can be explained by the super sampling and only using one shadow ray, this causes in the case of the photon map, the same value to be approximated several times for each sub pixel sample. The result could be improved by reducing the lookup time in the photon map or removing the super sampling.
+		Counter-intuitively, the photon map causes the render time to increase. This can be explained by the fact that the path tracer only uses one shadow ray. This causes both implementations to compute the same number of rays while the photon map also requires lookups in the photon map data structure. The result could be improved by reducing the lookup time in the photon map or by removing super-sampling.
 				
-	"Spotty" regions can be observed when looking at the result render for the photon map with a small estimation radius. These regions are caused by stray shadow photons from the photons reflected in the scene. A possible way to improve the result would be to increase the size of the estimation radius or thresholding how many shadow photons an estimation region can contain before shadow rays are used.
+	"Spotty" regions can be observed when looking at the rendered image for the photon map with a small estimation radius. These regions are caused by stray shadow photons from the photons reflected in the scene. A possible way to improve the result would be to increase the size of the estimation radius or thresholding how many shadow photons an estimation region can contain before shadow rays are used.
 	
-	The number of shadow rays does not effect the result significantly since the result renders all uses a super sampler. The sub-pixel sampling acts as a complement to many shadow rays. Removing the super sampling the shadow rays contribute much more to the result.
+	The number of shadow rays does not affect the result significantly since the renderer uses super-sampling, effectively doing monte carlo raytracing before computing shadow rays. To increase the relevance of the shadow rays, the super sampler could be disabled.
 
     While the monte carlo raytracer already gives pretty photorealistic results, it is by no means perfect. Here, we provide an outline of potential future work.
 
-    Both BRDFs in \texttt{mcrt} are for diffuse surfaces, but there are others for specular surfaces as well, such as \emph{Torrance-Sparrow}~\cite{torrance1967theory} and \emph{Cook-Torrance}~\cite{cook1982reflectance}. It would be interesting to integrate into the raytracer.
+    Both BRDFs in \texttt{mcrt} are for diffuse surfaces, but there are other BRDFs for specular surfaces as well, such as the \emph{Torrance-Sparrow}~\cite{torrance1967theory} and \emph{Cook-Torrance}~\cite{cook1982reflectance} models. It would be interesting to integrate these into the raytracer.
 
-    In the raytracer, all meshes are wrapped around a sphere for eliminating low-effort intersection tests. Usually, for meshes with many more triangles, it's insufficient. Instead, a \emph{bounding volume hierarchy} would be more appropriate and an general method.
+    In the raytracer, all meshes are wrapped around a sphere for eliminating low-effort intersection tests. Usually, for meshes with many more triangles, it's insufficient, and causes long render times. Instead, a \emph{bounding volume hierarchy} would be a more appropriate general method.
 
-    The photon mapping method used only supports direct light contributions. In \emph{Jensen's}~\cite{jensen1996global} original paper, indirect light is also accounted for in the \emph{global photon map}, and also has a high-resolution \emph{caustics photon map}. It's something we might want.
+    The photon mapping implementation only supports direct light contributions. In \emph{Jensen's}~\cite{jensen1996global} original paper, indirect light is also accounted for in the \emph{global photon map}, and also has a high-resolution \emph{caustics photon map}.
 
-    Additional effects, \emph{depth of field} and \emph{motion blur}, can be approximated with \emph{distribution raytracer} techniques, such as those presented in \emph{Cook et al.}~\cite{cook1984distributed}. The amount of additional work to integrate these effects into \texttt{mcrt} are not huge, and give nice results.
+    Additional effects such as \emph{depth of field} and \emph{motion blur} can be approximated with a \emph{distribution raytracer} such as those presented in \emph{Cook et al.}~\cite{cook1984distributed}. The amount of additional work to integrate these effects into \texttt{mcrt} are not huge, and would give nice results.
 
-    Something unusual which would be interesting to implement is a \emph{spectral raytracing} extension, with support for e.g. \emph{black-body radiation} like shown in \emph{Zhang et al.}~\cite{spectral2016zhang}. Instead of using RGB for storing radiance, the wavelength could have been stored instead. Giving a more physically plausible render.
+    Something which would be interesting to implement is a \emph{spectral raytracing} extension, with support for e.g. \emph{black-body radiation} like shown in \emph{Zhang et al.}~\cite{spectral2016zhang}. Instead of using RGB-channels for storing radiance, the ray wavelength could have been stored instead. Giving a more physically plausible render such as light defined in temperature, chromatic aberrations, and thin film light interference.
 
-    Perhaps some sort \emph{HDR} (High-Dynamic Range) technique, like \emph{tone mapping}, would solve the problem of initially dark scenes before full convergence.
+    Perhaps some sort of \emph{HDR} (High-Dynamic Range) technique, like \emph{tone mapping}, would solve the problem that our raytracer has with dark scenes before reaching full convergence.
 
-    For producing realistic scenes, realistic materials are needed, and \emph{textures} would have been a desirable feature to have. A \emph{texture mapping} technique for triangle meshes isn't that hard to implement, but special care is needed when dealing with filtering.
+    For producing realistic scenes, realistic materials are needed, and \emph{textures} would have been a desirable feature to have. A \emph{texture mapping} technique for triangle meshes isn't that hard to implement, but special care is needed when dealing with texture filtering.
 
-    Parallelization support is currently achieved with \texttt{OpenMP}, but having support for additional hardware accelerators would have been desirable. Initially, \texttt{OpenMPI} would have been nice to have for speeding up rendering in clusters. The other more important addition which would have been to support \texttt{OpenCL} and \texttt{CUDA}, since the problem adapts easily to massively-parallel graphics hardware.
+    Parallelization support is currently achieved with \texttt{OpenMP}, but having support for additional hardware accelerators would have been desirable. \texttt{OpenMPI} would have been nice to have for speeding up rendering in computer clusters. The other more important addition which would have been to support \texttt{OpenCL} or \texttt{CUDA}, since the raytracing problem easily adapts to massively-parallel graphics hardware.
     	
     \newpage % Next column...
     \nocite{*} % Include all.
