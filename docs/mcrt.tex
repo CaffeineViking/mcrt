@@ -777,7 +777,16 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
             With a larger sphere of interest the result takes significantly longer to compute but the result doesn't become as spotty as the previous configuration.
 
     \section{Discussion and Outlook} \label{sec:discussion_and_outlook}
-    
+    	
+	Some interesting findings can be observed when looking at the results. Some of these are caused implementation details while others are the result of how the path tracer interacts with the photon map.
+
+		The path tracer produces visible and crisp caustics without significant extra computational cost, in our demo scene. This result is interesting since caustics generally are computationally expensive in regular path tracinh. This could be an effect of the very simple geometries the scene and how the objects are placed. To improve the caustics, a caustic photon map can be used instead, as proposed by \cite{jensen1996global}. This would have the effect of speeding up the render while allowing for reduced resoulusion of the global photon map.
+
+		Counter-intuitively, the photon map causes the render time to increase. This can be explained by the super sampling and only using one shadow ray, this causes in the case of the photon map, the same value to be approximated several times for each sub pixel sample. The result could be improved by reducing the lookup time in the photon map or removing the super sampling.
+				
+	"Spotty" regions can be observed when looking at the result render for the photon map with a small estimation radius. These regions are caused by stray shadow photons from the photons reflected in the scene. A possible way to improve the result would be to increase the size of the estimation radius or thresholding how many shadow photons an estimation region can contain before shadow rays are used.
+	
+	The number of shadow rays does not effect the result significantly since the result renders all uses a super sampler. The sub-pixel sampling acts as a complement to many shadow rays. Removing the super sampling the shadow rays contribute much more to the result.
 
     \newpage % Next column...
     \nocite{*} % Include all.
