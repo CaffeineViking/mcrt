@@ -694,21 +694,20 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
 
             The scene becomes much darker since no indirect illumination is present in the scene. There is also no reflection and refraction present, since those count as ray bounces as well. This is a great image for visualizing the difference between the Oren-Nayar and the Lambertian surface. It might not be noticeable, but the falloff around the Oren-Nayar reflector is a less pronounced than that of the Lambertian emitter because the roughness of it is higher.
 
+            In \cref{fig:bounce_rays_4} we can see that indirect light seems to be arriving at the points we sample, but the reflections of high depth return black. This is something which doesn't happen in the baseline configuration.
+
             \begin{figure}[H]
                 \centering
                 \caption{Render of the scene 512x512 at 49 samples per pixel, 1 shadow rays and 4 max ray bounces.}
-                \includegraphics[width=0.7\linewidth]{share/results/bounce_rays_4.png}
+                \includegraphics[width=0.8\linewidth]{share/results/bounce_rays_4.png}
                 \label{fig:bounce_rays_4}
             \end{figure}
-            \vspace{-0.5em}
-
-            In \cref{fig:bounce_rays_4} we can see that indirect light seems to be arriving at the points we sample, but the reflections of high depth return black. This is something which doesn't happen in the baseline configuration.
 
             \vspace{-0.5em}
 
             \subsubsection*{Sampling Density}
 
-            The sampling density specifies how many samples will be taken for each pixel on the screen.
+            The sampling density specifies how many samples will be taken for each pixel on the screen. Since it's something that increases with \(O(n^2)\), it's expensive.
 
             \begin{table}[H]
             \centering
