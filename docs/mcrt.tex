@@ -225,8 +225,8 @@ In some cases a higher resolution secondary \textit{photon map} is used to show 
         Spherical objects are defined as a vector \(\vec{o} \in \mathbb{R}^3\) which denotes the origin of the sphere, and a scalar \(r\) as the radius of the sphere. Sphere-ray intersections are done using a geometric solution to the following:
 
         \begin{align*}
-            \vec{L} = \vec{o_{sphere}} - \vec{o_{ray}} \\
-            t_{ca} = \vec{L} \cdot  \hat{d_{ray}} \\
+            \vec{L} = \vec{o}_{sphere} - \vec{o}_{ray} \\
+            t_{ca} = \vec{L} \cdot  \hat{d}_{ray} \\
         \end{align*}
         if \(t_{ca} < 0\), there's no intersection between ray and sphere. Otherwise look for intersection points using:
         
@@ -239,49 +239,49 @@ In some cases a higher resolution secondary \textit{photon map} is used to show 
             t_{hc} &= \sqrt{r^2 - d^2} \\
             t_0 &= t_{ca} - t_{hc} \\
             t_1 &= t_{ca} + t_{hc} \\
-            t_{min} &= min(t_0, t_1)
+            t_{min} &= \min(t_0, t_1)
         \end{align*}
-        where \(t_{min}\) is the distance from \(\vec{o_{ray}}\) to the closest intersection point on the sphere. If \(t_{min}  < 0\) we don't have an intersection as well. The intersection point is calculated as  \(\vec{i} = \vec{o_{ray}} + t_{min} \hat{d_{ray}} - o_{sphere} \) and the surface normal as \( \hat{n} = || \vec{i} - \vec{o_{sphere}} || \).
+        where \(t_{min}\) is the distance from \(\vec{o}_{ray}\) to the closest intersection point on the sphere. If \(t_{min}  < 0\) we don't have an intersection as well. The intersection point is calculated as  \(\vec{i} = \vec{o}_{ray} + t_{min} \hat{d}_{ray} - \vec{o}_{sphere} \) and the surface normal as \( \hat{n} = || \vec{i} - \vec{o}_{sphere} || \).
 
         \subsubsection{Triangle Polygon} \label{sec:triangle_polygon}
         
-        Intersections between triangles and rays are computed using the \textit{Möller-Trumbore}~\cite{moller2005fast} algorithm, which allow for intersection tests without having to compute plane containing the triangle. First a local coordinate system for the triangle is computed using the corner vertices \(\vec{v_1}\), \(\vec{v_2}\), and \(\vec{v_3}\) of the form:
+        Intersections between triangles and rays are computed using the \textit{Möller-Trumbore}~\cite{moller2005fast} algorithm, which allow for intersection tests without having to compute plane containing the triangle. First a local coordinate system for the triangle is computed using the corner vertices \(\vec{v}_1\), \(\vec{v}_2\), and \(\vec{v}_3\) of the form:
 
 \begin{align*}
-    \hat{e_1} = \vec{v_2} - \vec{v_1} \\
-    \hat{e_2} = \vec{v_3} - \vec{v_1}
+    \hat{e}_1 = \vec{v}_2 - \vec{v}_1 \\
+    \hat{e}_2 = \vec{v}_3 - \vec{v}_1
 \end{align*}
 
-the surface normal is extracted as \( \hat{n} =\hat{e_1} \times \hat{e_2} \), we check if the ray travels parallel with the triangle surface by \(\hat{p} = \hat{d_{ray}} \times \hat{e_2}\), and if the determinant  \(d = \hat{e_1} \cdot \hat{p}\), \(d = 0 \), the ray does not intersect the triangle. Otherwise the intersection test continues:
+the surface normal is extracted as \( \hat{n} =\hat{e}_1 \times \hat{e}_2 \), we check if the ray travels parallel with the triangle surface by \(\hat{p} = \hat{d_{ray}} \times \hat{e}_2\), and if the determinant  \(d = \hat{e}_1 \cdot \hat{p}\), \(d = 0 \), the ray does not intersect the triangle. Otherwise the intersection test continues:
 
 \begin{align*}
-    \vec{t} &= \vec{o_{ray}} - \vec{v_1} \\
+    \vec{t} &= \vec{o}_{ray} - \vec{v_1} \\
     \vec{q} &= \vec{t} \times \hat{e_1} \\\\
     u &= \vec{t} \cdot \hat{p} * d^{-1} \\
-    v &= \hat{d_{ray}} \cdot \vec{q} * d^{-1}
+    v &= \hat{d}_{ray} \cdot \vec{q} * d^{-1}
 \end{align*} 
 if the two conditions
  
 \begin{align*}
-    u < 0 \; &\textbf{and} \; u > 1 \\
-    v < 0 \; &\textbf{and}  \; u + v > 1 
+    u < 0 \; &\textbf{or} \; u > 1 \\
+    v < 0 \; &\textbf{or}  \; u + v > 1 
 \end{align*}
-holds we have an intersection and the distance \(t\) the ray has to travel to the intersection point can be calculated as \(\vec{e_2} \cdot \vec{q} * d^{-1} \).
+\emph{don't} hold, we have an intersection and the distance \(t\) the ray has to travel to the intersection point can be calculated as \(\vec{e_2} \cdot \vec{q} * d^{-1} \). The triangle normal is simply \(\hat{n} = \vec{e}_1 \times \vec{e}_2\), if \(\hat{n} \cdot \hat{r}_{ray} > 1\), o.w. \(\hat{n} = \vec{e}_2 \times \vec{e}_1\).
 
         
         \subsubsection{Triangle Mesh} \label{sec:triangle_mesh}
         
         To speed up the intersection test for geometries using multiple triangles we use a hierarchical geometric representation where the geometry of interest is encapsulated within a bounding sphere, this speeds up the test since only the triangles are taken into account if we already know that the ray will intersect the bounding sphere.
 
-    The bounding sphere is calculated by picking the smallest and largest \textit{vertecies} from the vertex set \(\mathcal{V}\)
+    The bounding sphere is calculated by picking the smallest and largest \textit{vertices} from the vertex set \(\mathcal{V}\)
     \begin{align*} 
-        \vec{v_{min}} &= \underset{\vec{v} \in \mathcal{V}}{argmin}(\vec{v}) \\
-        \vec{v_{max}} &= \underset{\vec{v} \in \mathcal{V}}{argmax}(\vec{v})
+        \vec{v}_{min} &= \underset{\vec{v} \in \mathcal{V}}{\text{arg\ min}}(\vec{v}) \\
+        \vec{v}_{max} &= \underset{\vec{v} \in \mathcal{V}}{\text{arg\ max}}(\vec{v})
     \end{align*}
     and defining the bounding sphere as:
     \begin{align*}
-        radius &= \frac{ || \vec{v_{min}} - \vec{v_{max}} ||}{2} \\
-        \vec{origin} &= \frac{\vec{v_{max}} - \vec{v_{min}}}{2}
+        radius &= \frac{ || \vec{v}_{min} - \vec{v}_{max} ||}{2} \\
+        \vec{origin} &= \frac{\vec{v}_{max} - \vec{v}_{min}}{2}
     \end{align*}
 
         \subsection{Surface Properties} \label{sec:surface_properties}
@@ -311,7 +311,7 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
 
                 Unfortunately, while the Lambertian model might be good for some surface types, it's inappropriate for others, such as concrete, ceramic and cloth. Which is a shame, since it's an simple and intuitive model.
 
-                Surfaces which are diffuse and have rough texture can be accurately modeled with the \emph{Oren-Nayar}~\cite{oren1994generalization} \emph{reflection model}. It's based on the \emph{microfacet model} introduced by \emph{Torrace-Sparrow}~\cite{torrance1967theory}, which assumes a surface is composed of infinitesimally small, flat, Lambertian reflectors (as shown in the last section). An intuitive sketch of such a surface can be seen in \cref{fig:oren-nayar_model}, where the V-shaped microfacets are actually supposed to be infinitesimally small sized.
+                Surfaces which are diffuse and have rough texture can be accurately modeled with a \emph{Oren-Nayar}~\cite{oren1994generalization} \emph{reflection model}. It's based on the \emph{microfacet model} introduced by \emph{Torrance-Sparrow}~\cite{torrance1967theory}, that assumes a surface is composed of infinitesimally small, flat, Lambertian reflectors (as shown in the last section). An intuitive sketch of such a surface can be seen in \cref{fig:oren-nayar_model}, where the V-shaped microfacets are actually supposed to be infinitesimally small sized.
 
                 \begin{figure}[H]
                     \centering
@@ -329,11 +329,11 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
                         \alpha = \max\, \{\theta_i, \theta_o\} \; , \; \beta = \min\, \{\theta_i, \theta_o\} \; ,\\
                         \gamma = \max\, \{0, \phi_i - \phi_o\} \; ,
                     \end{split}
-                \end{equation} where \(\theta\) is the \emph{inclination} and \(\phi\) the \emph{azimuth} of \(\hat{\omega}\). By changing \(\sigma\) we can control the \emph{surfaces' roughness}. Notice that this BRDF dependents on the ray angle, and is therefore \emph{anisotropic}. Implementing this isn't that straightforward since our raytracer has \(\hat{\omega}\)'s that aren't easily decomposable into the form \(\hat{\omega} = (\theta, \phi)\). It boils down to doing projections onto the surface plane. We can get a vector parallel to the plane with \(\hat{p} = \hat{\omega}_i \times \hat{\omega}_o\) and then \(\hat{q} = \hat{p} \times \hat{n}\). By projecting down \(\hat{\omega}_i\) onto \(\hat{q}\) with \(\hat{\omega}_{i\parallel \hat{q}}\), we get \(\theta = \hat{\omega}_i \cdot \hat{q} \; , \; \phi = \hat{\omega}_{i\parallel \hat{q}} \cdot \hat{q}\).
+                \end{equation} where \(\theta\) is the \emph{inclination} and \(\phi\) the \emph{azimuth} of \(\hat{\omega}\). By changing \(\sigma\) we can control the \emph{surfaces' roughness}. Notice that this BRDF depends on the ray's angle, and is therefore \emph{anisotropic}. Implementing this isn't that straightforward since our raytracer has \(\hat{\omega}\)'s that aren't easily decomposable into the form \(\hat{\omega} = (\theta, \phi)\). It boils down to doing projections onto the surface plane. We can get a vector parallel to the plane with \(\hat{p} = \hat{\omega}_i \times \hat{\omega}_o\) and then \(\hat{q} = \hat{p} \times \hat{n}\). By projecting down \(\hat{\omega}_i\) onto \(\hat{q}\) with \(\hat{\omega}_{i\parallel \hat{q}}\), we get \(\theta = \hat{\omega}_i \cdot \hat{q} \; , \; \phi = \hat{\omega}_{i\parallel \hat{q}} \cdot \hat{q}\).
 
                 Because the qualitative Oren-Nayar calculations have quite a few expensive operations, we've chosen to implement \emph{Yasuhiro Fujii's}~\cite{fujii2015improvement} Oren-Nayar variant. It doesn't require trigonometric functions, and gives empirically almost indistinguishable results to O-N. Like regular Oren-Nayar, it suffers from not following energy conservation laws when \(\sigma' > 0.97\).
 
-                Actually, experimentally, \emph{Y. Fujii} has found that his proposed approach matches regular Oren-Nayar better than the qualitative Oren-Nayar found in \cite{oren1994generalization}.
+                Actually, experimentally, \emph{Y. Fujii} has found that his proposed approach matches regular Oren-Nayar better than the qualitative Oren-Nayar within \cite{oren1994generalization}.
 
                 \vspace{-1em}
 
@@ -363,7 +363,7 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
                 To wrap things up, when we hit a diffuse surface, we wish to know the ratio of radiance that will leave the surface. For this we need to choose between the Lambertian and Oren-Nayar model to calculate \(f_r\). Each surface in our scene defs. it's \(f_r\) model to use.
 
         \subsection{Direct Light Contributions} \label{sec:direct_light_contributions}
-        Most importance rays that are sent from the camera into the scene never hit a light source. Therefore, the direct light from the light sources to an intesection point needs to contribute to the total radiance at the point. This is computed with \emph{shadow rays}, which are sent from each intersection point to the sources of light. The shadow rays will provide light contributions to the radiance at the ray intersection points. To determine if the intersection point lies in shadow, a visbility test is performed. Transparent objects are obviously ignored by the visibility test.
+        Most importance rays that are sent from the camera into the scene never hit a light source. Therefore, the direct light from the light sources to an intersection point needs to contribute to the total radiance at the point. This is computed with \emph{shadow rays}, which are sent from each intersection point to the sources of light. The shadow rays will provide light contributions to the radiance at the ray intersection points. To determine if the intersection point lies in shadow, a visbility test is performed. Transparent objects are obviously ignored by the visibility test.
             \subsubsection{Point Light Source} \label{sec:point_light_source}
             The shadow ray $S_2 = x - y$ from an intersection point $y$ to a point light source position $x$ is launched. If it does not hit any object, it will pass the visibility test, and will therefore contribute radiance to the surface. The Lambertian cosine falloff, based on the angle $\theta_{S_2}$ between the normal $N$ and $S_2$, is applied, as can be seen in the equation below.
 
@@ -778,34 +778,36 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
 
     \section{Discussion and Outlook} \label{sec:discussion_and_outlook}
 
-	Some interesting findings can be observed when looking at the results. Some of these are caused by implementation details while others are the result of how the path tracer interacts with the photon map.
+    A couple of interesting findings can be observed when looking closely at the results. Some of these pertain to the implementation details, while others are indirectly caused by how the path tracer interacts with the raytracer's photon mapping extension.
 
-	The path tracer produces visible and crisp caustics without significant extra computational cost. This result is interesting since caustics generally are computationally expensive in regular path tracing. This could be an effect of the very simple geometries in the scene and how the objects are placed. To improve the caustics, a caustic photon map can be used instead, as proposed by \textit{Jensen}~\cite{jensen1996global}. This would have the effect of speeding up the rendering while allowing for reduced resolution of the global photon map.
+    The path tracer produces visible and crisp caustics without significant extra computational cost. This result is interesting since caustics generally are computationally expensive in regular path tracing. We believe that this could be the effect of us having very simple geometry in the scene, and how the objects are placed in it. To improve the caustics in the general case, a caustic photon map can be used instead, as proposed by \textit{Jensen}~\cite{jensen1996global}. This would have the effect of speeding-up rendering while allowing for a reduced resolution of the global photon map.
 
-		Counter-intuitively, the photon map causes the render time to increase. This can be explained by the fact that the path tracer only uses one shadow ray. This causes both implementations to compute the same number of rays while the photon map also requires lookups in the photon map data structure. The result could be improved by reducing the lookup time in the photon map or by removing super-sampling.
-				
-	"Spotty" regions can be observed when looking at the rendered image for the photon map with a small estimation radius. These regions are caused by stray shadow photons from the photons reflected in the scene. A possible way to improve the result would be to increase the size of the estimation radius or thresholding how many shadow photons an estimation region can contain before shadow rays are used.
-	
-	The number of shadow rays does not affect the result significantly since the renderer uses super-sampling, effectively doing monte carlo raytracing before computing shadow rays. To increase the relevance of the shadow rays, the super sampler could be disabled.
+    Counter-intuitively, the photon map causes the render time to increase. Our theory is that this is caused by the fact that the path tracer only uses one shadow ray and doesn't estimate indirect light. Meaning, the amount of work being done in the direct light calculations of the path tracer aren't enough to motivate the photon map optimization. The photon map still uses an expensive nearest neighbor look-up. This result could be counter-acted by reducing the look-up time of the photon map or by removing supersampling (meaning we have to increase the amount of shadow ray samples as well).
 
-    While the monte carlo raytracer already gives pretty photorealistic results, it is by no means perfect. Here, we provide an outline of potential future work.
+    ``Spotty'' regions can be observed when looking at the rendered image for the photon map with a small estimation radius. These regions are caused by stray shadow photons from the photons reflected in the scene. A possible way to improve the result would be to increase the size of the estimation radius or thresholding how many shadow photons an estimation region can contain before shadow rays are used. However, this increases computation time.
 
-    Both BRDFs in \texttt{mcrt} are for diffuse surfaces, but there are other BRDFs for specular surfaces as well, such as the \emph{Torrance-Sparrow}~\cite{torrance1967theory} and \emph{Cook-Torrance}~\cite{cook1982reflectance} models. It would be interesting to integrate these into the raytracer.
+    The number of shadow rays does not affect the result significantly since the renderer uses supersampling, effectively doing the necessary Monte Carlo integration of the area in the camera. To increase the relevance of the shadow ray parameter, supersampling could be disabled or reduced to a degree.
 
-    In the raytracer, all meshes are wrapped around a sphere for eliminating low-effort intersection tests. Usually, for meshes with many more triangles, it's insufficient, and causes long render times. Instead, a \emph{bounding volume hierarchy} would be a more appropriate general method.
+    While the monte carlo raytracer already gives pretty photorealistic results, it is not perfect. Below we'll provide an outline of potential improvements.
 
-    The photon mapping implementation only supports direct light contributions. In \emph{Jensen's}~\cite{jensen1996global} original paper, indirect light is also accounted for in the \emph{global photon map}, and also has a high-resolution \emph{caustics photon map}.
+    Both BRDFs in \texttt{mcrt} are for diffuse surfaces, but there are other BRDFs for specular surfaces as well, such as the \emph{Torrance-Sparrow}~\cite{torrance1967theory} and \emph{Cook-Torrance}~\cite{cook1982reflectance} models. It would be interesting to integrate these into our renderer too for completeness.
 
-    Additional effects such as \emph{depth of field} and \emph{motion blur} can be approximated with a \emph{distribution raytracer} such as those presented in \emph{Cook et al.}~\cite{cook1984distributed}. The amount of additional work to integrate these effects into \texttt{mcrt} are not huge, and would give nice results.
+    Also, in the raytracer, all meshes are wrapped around a sphere for eliminating low-effort intersection tests. Usually, for meshes with many more triangles, it's insufficient, and causes long render times. Instead, a \emph{bounding volume hierarchy} should have been used, potentially reducing it to \(O(\log n)\) tests.
 
-    Something which would be interesting to implement is a \emph{spectral raytracing} extension, with support for e.g. \emph{black-body radiation} like shown in \emph{Zhang et al.}~\cite{spectral2016zhang}. Instead of using RGB-channels for storing radiance, the ray wavelength could have been stored instead. Giving a more physically plausible render such as light defined in temperature, chromatic aberrations, and thin film light interference.
+    In our photon mapping implementation, we only only support estimation of the direct light contributions. In \emph{Jensen's}~\cite{jensen1996global} original paper, indirect light is also accounted for in the \emph{global photon map}, and also has a high-resolution \emph{caustics photon map}. As we discussed before, this might have made photon mapping more useful and actually sped things up.
 
-    Perhaps some sort of \emph{HDR} (High-Dynamic Range) technique, like \emph{tone mapping}, would solve the problem that our raytracer has with dark scenes before reaching full convergence.
+    Additional effects such as \emph{depth of field} and \emph{motion blur} can be approximated with a \emph{distribution raytracer} such as those presented in \emph{Cook et al.}~\cite{cook1984distributed}. The amount of additional work to integrate these effects into \texttt{mcrt} are not huge, and give nice results.
 
-    For producing realistic scenes, realistic materials are needed, and \emph{textures} would have been a desirable feature to have. A \emph{texture mapping} technique for triangle meshes isn't that hard to implement, but special care is needed when dealing with texture filtering.
+    Something which would be interesting to implement is a \emph{spectral raytracing} extension, with support for e.g. \emph{black-body radiation} like shown in \emph{Zhang et al.}~\cite{spectral2016zhang}. Instead of using RGB-channels for storing radiance, the ray wavelength could have been stored instead. Giving a more physically plausible render, such as radiance affected by the temperature, chromatic aberrations, and thin film light interference.
 
-    Parallelization support is currently achieved with \texttt{OpenMP}, but having support for additional hardware accelerators would have been desirable. \texttt{OpenMPI} would have been nice to have for speeding up rendering in computer clusters. The other more important addition which would have been to support \texttt{OpenCL} or \texttt{CUDA}, since the raytracing problem easily adapts to massively-parallel graphics hardware.
-    	
+    Perhaps some sort of \emph{HDR} (High-Dynamic Range) technique, like \emph{tone mapping}, would solve the problem we get when our raytracer initially has with dark scenes, before reaching full convergence.
+
+    For producing realistic scenes, realistic materials are needed, and \emph{textures} would have been a desirable feature to have. A \emph{texture mapping} technique for triangle meshes isn't that hard to implement, but special care is needed when dealing with texture filtering. Some \texttt{OpenGL} things we take for granted...
+
+    Finally, parallelization support is achieved with \texttt{OpenMP}, but having support for additional hardware accelerators would have been desirable. \texttt{OpenMPI} would have been nice to have for speeding up rendering in computer clusters. The other more important addition which would have made a big difference is to support massively-parallel graphics hardware via APIs like \texttt{OpenCL} or \texttt{CUDA}, since the raytracing problem easily adapts to MC raytracing.
+
+    If the reader of this report would like to add these or other features to \texttt{mcrt}, feel free to open a PR :)
+
     \newpage % Next column...
     \nocite{*} % Include all.
     \bibliographystyle{abbrv}
