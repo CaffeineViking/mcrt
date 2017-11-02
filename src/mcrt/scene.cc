@@ -229,7 +229,7 @@ namespace mcrt {
                     glm::dvec3 brdf = rayHit.material->brdf(rayHit.position, rayHit.normal, -photon->incoming, -ray.direction);
                     color += w * brdf * photon->color;
                 }
-                rayColor += color / (glm::pi<double>() * (photonEstimationRadius*photonEstimationRadius));
+                rayColor += color / ((1 - 2/3) * glm::pi<double>() * (photonEstimationRadius*photonEstimationRadius));
             }
             // Photon mapping conditions not met, use MC raytracing instead
             else {

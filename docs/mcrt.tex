@@ -476,7 +476,7 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
 
             The filter is normalized by $1 - \tfrac{2}{3k}$ giving the final equation.
             \begin{equation*}
-         L(x \rightarrow \omega_{out}) = \sum_{i=1}^M f_r(x, \omega_{in,i}, \omega_{out}) \frac{\phi(x_i \leftarrow \omega_{in,i}) }{\pi r^2}
+              L(x \rightarrow \omega_{out}) = \sum_{i=1}^M f_r(x, \omega_{in,i}, \omega_{out}) \frac{\phi(x_i \leftarrow \omega_{in,i}) w_p }{(1-\tfrac{2}{3k}) \pi r^2}
             \end{equation*}
 
         \subsection{Anti-Aliasing \& Sampling} \label{sec:anti-aliasing_and_sampling}
@@ -778,6 +778,7 @@ holds we have an intersection and the distance \(t\) the ray has to travel to th
             With a larger sphere of interest the result takes significantly longer to compute but the result doesn't become as spotty as the previous configuration.
 
     \section{Discussion and Outlook} \label{sec:discussion_and_outlook}
+    
 
     \newpage % Next column...
     \nocite{*} % Include all.
