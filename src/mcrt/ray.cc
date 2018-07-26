@@ -1,5 +1,7 @@
 #include "mcrt/ray.hh"
 
+#define GLM_ENABLE_EXPERIMENTAL
+
 #include <glm/gtx/rotate_vector.hpp> 
 #include <glm/gtc/constants.hpp>
 

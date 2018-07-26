@@ -1,5 +1,7 @@
 #include "mcrt/photon.hh"
 
+#define GLM_ENABLE_EXPERIMENTAL
+
 #include <glm/gtx/string_cast.hpp>
 
 std::ostream& operator<<(std::ostream& output, const mcrt::Photon& photon) {

@@ -1,5 +1,7 @@
 #include "mcrt/mesh.hh"
 
+#define GLM_ENABLE_EXPERIMENTAL
+
 #include <iostream>
 #include <glm/gtx/string_cast.hpp>
 

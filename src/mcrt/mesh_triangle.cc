@@ -1,5 +1,7 @@
 #include "mcrt/mesh_triangle.hh"
 
+#define GLM_ENABLE_EXPERIMENTAL
+
 #include <glm/gtx/projection.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtx/string_cast.hpp>

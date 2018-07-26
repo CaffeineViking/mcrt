@@ -1,5 +1,7 @@
 #include "mcrt/material.hh"
 
+#define GLM_ENABLE_EXPERIMENTAL
+
 #include <algorithm>
 #include <glm/gtc/constants.hpp>
 #include <glm/gtx/projection.hpp>
