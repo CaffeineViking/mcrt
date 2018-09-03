@@ -18,7 +18,7 @@ render: FORCE
 view-render: FORCE
 	premake5 gmake
 	make -j8 -C build mcrt config=${config}
-	sleep 2s && feh --force-aliasing -R2 -F --keep-zoom-vp share/render.png &
+	sleep 2s && feh --force-aliasing -R2 -F share/render.png &
 	bin/mcrt ${files} ${scene} ${param}
 
 profile: FORCE
