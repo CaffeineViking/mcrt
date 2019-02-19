@@ -8,7 +8,7 @@ Monte Carlo Raytracer from Scratch
     <img width=33% src="/docs/share/whitted_raytracing.png" alt="Utah Teapot"/>
 </p>
 
-A *Monte Carlo raytracer* produces *photorealistic images* of given scenes (given good assets and enough time to fully converge). It's a technique which allows *global illumination*, giving optical effects such as *color bleeding*, *hard and soft shadows* and *caustics*. In this repository you'll find a full Monte Carlo raytracer implementation written in modern C++, along with the accompaying paper [*Monte Carlo Raytracing from Scratch*](https://caffeineviking.net/share/papers/mcrt.pdf) which describes the theory and practical details needed to both understand and implement your own raytracer, along with some benchmarks, reflections and future work. Our raytracer is written from the ground up, and doesn't need any libraries to be linked. We've used the header only libraries: *g-truc/glm* (for vector and matrix operations), *nlohmann/json* (for our scene loader) and *syoyo/tinyobjloader* (for loading meshes).
+A *Monte Carlo raytracer* produces *photorealistic images* of given scenes (given good assets and enough time to fully converge). It's a technique which allows *global illumination*, giving optical effects such as *color bleeding*, *hard and soft shadows* and *caustics*. In this repository you'll find a full Monte Carlo raytracer implementation written in modern C++, along with the accompaying paper [*Monte Carlo Raytracing from Scratch*](https://caffeineviking.net/papers/mcrt.pdf) which describes the theory and practical details needed to both understand and implement your own raytracer, along with some benchmarks, reflections and future work. Our raytracer is written from the ground up, and doesn't need any libraries to be linked. We've used the header only libraries: *g-truc/glm* (for vector and matrix operations), *nlohmann/json* (for our scene loader) and *syoyo/tinyobjloader* (for loading meshes).
 
 Below you'll find a non-exhaustive list of features:
 
@@ -52,8 +52,8 @@ Features
 * **Anti-aliasing by supersampling**
     * Using the grid pattern
     * Using some random pattern
-* [**Report showing techniques**](https://caffeineviking.net/share/papers/mcrt.pdf)
-    * [**Photon mapping slides**](https://caffeineviking.net/share/papers/giph.pdf)
+* [**Report showing techniques**](https://caffeineviking.net/papers/mcrt.pdf)
+    * [**Photon mapping slides**](https://caffeineviking.net/papers/giph.pdf)
 
 Compiling and Testing
 ---------------------
