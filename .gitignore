@@ -9,6 +9,8 @@ share/*.out
 share/*.csv
 photon-map.csv
 statistics.csv
+desktop.ini
+share/mcrt.ico
 
 # Compiled Object files
 *.slo
