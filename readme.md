@@ -3,9 +3,9 @@ Monte Carlo Raytracer from Scratch
 
 <p align="center">
     <img src="/docs/share/new_render.png" alt="Render 1024x1024 1024 SPP"/>
-    <img width=33% src="/docs/share/cornell_local_illumination.png" alt="Cornell Box  - Local Illumination"/>
-    <img width=33% src="/docs/share/cornell_global_illumination.png" alt="Cornell Box - Global Illumination"/>
-    <img width=33% src="/docs/share/whitted_raytracing.png" alt="Utah Teapot"/>
+    <img width=32.9% src="/docs/share/cornell_local_illumination.png" alt="Cornell Box  - Local Illumination"/>
+    <img width=32.9% src="/docs/share/cornell_global_illumination.png" alt="Cornell Box - Global Illumination"/>
+    <img width=32.9% src="/docs/share/whitted_raytracing.png" alt="Utah Teapot"/>
 </p>
 
 A *Monte Carlo raytracer* produces *photorealistic images* of given scenes (given good assets and enough time to fully converge). It's a technique which allows *global illumination*, giving optical effects such as *color bleeding*, *hard and soft shadows* and *caustics*. In this repository you'll find a full Monte Carlo raytracer implementation written in modern C++, along with the accompaying paper [*Monte Carlo Raytracing from Scratch*](https://caffeineviking.net/papers/mcrt.pdf) which describes the theory and practical details needed to both understand and implement your own raytracer, along with some benchmarks, reflections and future work. Our raytracer is written from the ground up, and doesn't need any libraries to be linked. We've used the header only libraries: *g-truc/glm* (for vector and matrix operations), *nlohmann/json* (for our scene loader) and *syoyo/tinyobjloader* (for loading meshes).
